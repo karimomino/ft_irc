@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/09 14:39:21 by kamin             #+#    #+#             */
-/*   Updated: 2023/05/09 15:42:51 by kamin            ###   ########.fr       */
+/*   Updated: 2023/05/09 15:49:00 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int main(int ac, char  **av)
         if (!bind(d_socket, (struct sockaddr*)&address, sizeof(address)))
         {
             if (listen(d_socket, 3))
-                std::cout << "failed to listen on port" << std::endl;
+                std::cout << "failed to listen on port" << std::endl; 
             else
             {
                 int addrlen = sizeof(address);
