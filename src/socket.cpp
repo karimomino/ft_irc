@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/09 14:39:21 by kamin             #+#    #+#             */
-/*   Updated: 2023/05/11 17:06:10 by kamin            ###   ########.fr       */
+/*   Updated: 2023/05/12 17:59:22 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ int main(int ac, char  **av)
         std::cout << "Failed to create socket" << std::endl;
     else
     {
+        int sock_opt = 1;
+        setsockopt(d_socket, SOL_SOCKET, SO_REUSEADDR, &sock_opt,sizeof(sock_opt));
         std::cout << "Binding PORT ..." << std::endl;
         address.sin_family = AF_INET;
         address.sin_addr.s_addr = INADDR_ANY;
@@ -56,15 +58,18 @@ int main(int ac, char  **av)
                 pfds[1].fd = d_socket;
                 pfds[1].events = POLLIN;
                 int new_socket = 0;
-                while (poll(pfds, 2, 1000) != -1)
+                struct sockaddr_in* pV4Addr;
+                struct in_addr ipAddr;
+                while (poll(pfds, 2, 5000) >= 0)
                 {
                     if (new_socket == 0)
                     {
                         new_socket = accept(d_socket, (struct sockaddr*)&address, (socklen_t*)&addrlen);
-                        struct sockaddr_in* pV4Addr = (struct sockaddr_in*)&address;
-                        struct in_addr ipAddr = pV4Addr->sin_addr;
+                        pV4Addr = (struct sockaddr_in*)&address;
+                        ipAddr = pV4Addr->sin_addr;
                         printf("New Connection From: %s\n",inet_ntoa(ipAddr));
-                        send_err = send(new_socket, ":kooki JOIN #kk\r\n", 18,0x80);
+                        fcntl(new_socket, F_SETFL, O_NONBLOCK);
+                        // send_err = send(new_socket, ":nickKooki JOIN #kk\r\n", 22,0x80);
                         pfds[1].fd = new_socket;
                         pfds[1].events = POLLIN;
                     }
@@ -72,10 +77,17 @@ int main(int ac, char  **av)
                     {
                         char buffer[1024] = { 0 };
                         if(pfds[1].revents & POLLIN) {
-                            send_err = send(new_socket, ":127.0.0.1 001 kooki :123123you there?\r\n", 41,0x80);
+                            // send_err = send(new_socket, ":127.0.0.1 001 nickKooki :123123you there?\r\n", 45,0x80);
                             int val = recv(new_socket, buffer, 1024, MSG_DONTWAIT);
+                            printf("buff: %s\n", buffer);
                             printf("%s\n", buffer);
-                            send_err = send(new_socket, ":127.0.0.1 001 kooki :you there?\r\n", 35,0x80);
+                            char * sss = strdup(":127.0.0.1 001 nickKooki :2you there?\r\n");
+                            // connect(new_socket, (sockaddr *)pV4Addr, sizeof(sockaddr *));
+                            if (buffer[0] != 0)
+                            {
+                                printf("sending...");
+                                send_err = send(new_socket, sss , 40,0);
+                            }
                             memset(buffer, 0, 1024);
                         }
                         if(pfds[1].revents & (POLLERR | POLLHUP)) {
