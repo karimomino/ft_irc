@@ -6,12 +6,11 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 17:41:13 by kamin             #+#    #+#             */
-/*   Updated: 2023/05/12 21:33:02 by kamin            ###   ########.fr       */
+/*   Updated: 2023/05/17 16:56:32 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Server.hpp"
-#include "../includes/Client.hpp"
 
 Server::Server( const int port, const std::string pass ) : _port( port ), _pass( pass )
 {
@@ -50,10 +49,35 @@ int Server::initServer( ) {
 	return ( ret );
 }
 
+std::string Server::parseMessage( int new_socket , char *buff ) {
+
+	std::map <int, Client>::iterator it = getClient(new_socket);
+	std::vector<std::string> wordList = split_string( buff );
+	std::vector<std::string>::iterator word_it = wordList.begin();
+
+	if(!(*word_it).compare("PASS")) {
+		word_it++;
+		it->second.setPass((*word_it));
+	} else if (!(*word_it).compare("NICK")) {
+		word_it++;
+		it->second.setPass((*word_it));
+	} else if (!(*word_it).compare("USER")) {
+		word_it++;
+		it->second.setUser((*word_it));
+	}
+
+	return ("   ");
+}
+
+std::map <int, Client>::iterator Server::getClient( const int fd ) {
+	return( _clientMap.find( fd ) );
+}
+
 int	Server::acceptConnection( void ) {
 	// TODO: recv() the connection message from the client and parse it
 	// int val = recv(new_socket, buffer, 1024, MSG_DONTWAIT);
-	Client newClient = Client("nickKooki", "user", _listen_socket, _hint);
+	Client newClient = Client(_listen_socket, _hint);
+	_clientMap.insert( std::pair<int,Client>(newClient.getClientSocket(), newClient) );
 	if (_connectionCount < MAX_CLIENTS) {
 		std::stringstream ss;
 		std::string connectionMessage;
@@ -63,9 +87,6 @@ int	Server::acceptConnection( void ) {
 		
 		ss << ":127.0.0.1 001 " << "nickKooki :" << "Welcome to kamin's ft_irc " << "nickKooki. " << "This is MOTD\r\n";
 		connectionMessage = ss.str();
-		// debug message
-		std::cout << connectionMessage << std::endl;
-		// send(newClient.getClientSocket(), ":127.0.0.1 001 nickKooki :2you there?\r\n", 40, 0x80);
 		send(newClient.getClientSocket(), connectionMessage.c_str(), connectionMessage.length(), 0x80);
 	} else {
 		std::cout << "Connection Refused, MAX clients Reached" << std::endl;

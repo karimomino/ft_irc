@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 18:23:28 by kamin             #+#    #+#             */
-/*   Updated: 2023/05/12 21:58:15 by kamin            ###   ########.fr       */
+/*   Updated: 2023/05/17 16:54:26 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,19 @@ int main(int ac, char **av) {
 				if ( socket == ircserver.getListenSocket() ) {
 					ircserver.acceptConnection();
 				} else {
+					std::map <int, Client>::iterator tmp = ircserver.getClient( socket );
+					
 					// TODO: loop to receive bigger messages
 					char buff[1024];
 					if ( recv(socket, buff, 1024, MSG_DONTWAIT) > 0 )
-						std::cout << buff << std::endl;
+					{
+						tmp->second.incMsgSent();
+						std::cout << "Message: " << tmp->second.getMsgSent() << std::endl;
+						ircserver.parseMessage( socket, buff );
+						// TODO : check if password matches
+						if ( tmp->second.getMsgSent() <= 3) {}
+
+					}
 					memset(buff, 0 , 1024);
 				}
 			}
