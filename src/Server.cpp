@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 17:41:13 by kamin             #+#    #+#             */
-/*   Updated: 2023/05/17 16:56:32 by kamin            ###   ########.fr       */
+/*   Updated: 2023/05/17 17:16:04 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ std::string Server::parseMessage( int new_socket , char *buff ) {
 	std::vector<std::string> wordList = split_string( buff );
 	std::vector<std::string>::iterator word_it = wordList.begin();
 
+	// TODO: use map of functions instead of all these ifs - init the map on server start
 	if(!(*word_it).compare("PASS")) {
 		word_it++;
 		it->second.setPass((*word_it));
