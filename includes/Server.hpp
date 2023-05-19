@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 17:23:20 by kamin             #+#    #+#             */
-/*   Updated: 2023/05/12 20:39:24 by kamin            ###   ########.fr       */
+/*   Updated: 2023/05/17 16:54:50 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,16 @@
 #include <iostream>
 #include <unistd.h>
 #include <sstream>
+#include <map>
+#include <vector>
+// #include <cstdio>
+#include "../includes/Client.hpp"
 
 #ifndef MAX_CLIENTS
 #define MAX_CLIENTS 2
 #endif
 
+std::vector<std::string> split_string( std::string str );
 
 class Server {
 private:
@@ -33,6 +38,7 @@ private:
 	struct sockaddr_in	_hint;
 	struct pollfd		_poll_fds[ MAX_CLIENTS ];
 	std::string			_pass;
+	std::map<int, Client>	_clientMap;
 public:
 	Server( const int port, const std::string pass );
 	// ~Server();
@@ -41,4 +47,6 @@ public:
 	struct pollfd *getPollFds( void );
 	int getListenSocket( void );
 	int	getConnectionCount ( void );
+	std::map <int, Client>::iterator getClient( const int fd );
+	std::string			parseMessage( int new_socket , char *buff );
 };
