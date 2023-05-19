@@ -1,6 +1,7 @@
 # nino
 compile_commands.json
 .cache
+ircserv
 
 # Prerequisites
 *.d

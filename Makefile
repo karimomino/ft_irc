@@ -1,7 +1,9 @@
 NAME		=	ircserv
 
 SRCS		=	main.cpp			\
-				IRCServer.cpp 		\
+				Server.cpp 			\
+				Exceptions.cpp 		\
+				Client.cpp 			\
 
 SRCS_DIR    =   ./srcs/
 
