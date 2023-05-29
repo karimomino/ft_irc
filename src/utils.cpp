@@ -10,14 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Server.hpp"
+#include "Server.hpp"
 
 std::vector<std::string> split_string( std::string str ) {
     std::stringstream buff(str);
-	std::string word;
-	std::vector<std::string> wordList;
+    std::string word;
+    std::vector<std::string> wordList;
 
-	while( std::getline(buff, word, ' ') )
-		wordList.push_back(word);
+    while( std::getline( buff, word, ' ' ) )
+        wordList.push_back( word );
     return ( wordList );
 }

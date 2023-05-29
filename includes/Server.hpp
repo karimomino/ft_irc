@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#pragma once
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <poll.h>
@@ -32,26 +34,26 @@
 std::vector<std::string> split_string( std::string str );
 
 class Server {
-	private:
-		int									_listen_socket;
-		int									_port;
-		int 								_initServer( void );
-		int									_acceptConnection( void );
-		void								_runServer( void );
-		size_t								_connectionCount;
-		std::string							_pass;
-		std::string							_parseMessage( Client &new_socket , char *buff );
-		struct pollfd						_poll_fds[ MAX_CLIENTS ];
-		struct sockaddr_in					_hint;
-		std::map<int, Client>				_clientMap;
-		std::map <int, Client>::iterator	_getClient( const int fd );
-		std::string							_createMessage( Client client, std::string command );
-	
-	public:
-		typedef std::map<std::string, void (Client::*)( std::string )>::iterator command_it;
-		Server( const int port, const std::string pass );
-		// ~Server();
-		struct pollfd *getPollFds( void );
-		int getListenSocket( void );
-		size_t	getConnectionCount ( void );
+    private:
+        int                                 _listen_socket;
+        int                                 _port;
+        bool                                _initServer( void );
+        int                                 _acceptConnection( void );
+        void                                _runServer( void );
+        size_t                              _connectionCount;
+        std::string                         _pass;
+        std::string                         _parseMessage( Client &new_socket , char *buff );
+        struct pollfd                       _poll_fds[ MAX_CLIENTS ];
+        struct sockaddr_in                  _hint;
+        std::map<int, Client>               _clientMap;
+        std::map<int, Client>::iterator     _getClient( const int fd );
+        std::string                         _createMessage( Client client, std::string command );
+
+    public:
+        typedef std::map<std::string, void (Client::*)( std::string )>::iterator command_it;
+        Server( const int port, const std::string pass );
+        // ~Server();
+        struct pollfd *getPollFds( void );
+        int getListenSocket( void );
+        size_t    getConnectionCount ( void );
 };

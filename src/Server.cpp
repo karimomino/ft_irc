@@ -10,64 +10,67 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Server.hpp"
+#include "Server.hpp"
 #include <cstdio>
 #include <iostream>
 
-Server::Server(const int port, const std::string pass) : _port(port), _pass(pass) {
+Server::Server( const int port, const std::string pass ) : _port( port ), _pass( pass ) {
     _hint.sin_family = AF_INET;
     _hint.sin_port = htons(port);
     _hint.sin_addr.s_addr = INADDR_ANY;
     _connectionCount = 0;
-    if (_initServer())
+
+    if ( _initServer() )
         _runServer();
     else {
-        perror("Failed to init server.");
+        perror( "Failed to init server." );
     }
     (void)_port;
 }
 
-int Server::_initServer() {
-    int ret = 1;
+bool    Server::_initServer( void ) {
+    bool ret = true;
     int sock_opt = 1;
 
-    _listen_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (_listen_socket < 0) {
+    _listen_socket = socket( AF_INET, SOCK_STREAM, 0 );
+    if ( _listen_socket < 0 ) {
         std::cout << "Error creating socket!" << std::endl;
-        ret = 0;
-    } else if (setsockopt(_listen_socket, SOL_SOCKET, SO_REUSEADDR, &sock_opt,
-                                                sizeof(sock_opt))) {
+        ret = false;
+    } else if ( setsockopt( _listen_socket, SOL_SOCKET, SO_REUSEADDR, &sock_opt,
+                sizeof( sock_opt ))) {
         std::cout << "Error setting socket options!" << std::endl;
-        ret = 0;
-    } else if (fcntl(_listen_socket, F_SETFL, O_NONBLOCK) == -1) {
+        ret = false;
+    } else if ( fcntl( _listen_socket, F_SETFL, O_NONBLOCK ) == -1 ) {
         std::cout << "Error setting socket to non-blocking!" << std::endl;
-        ret = 0;
-    } else if (bind(_listen_socket, (sockaddr *)&_hint, sizeof(_hint)) < 0) {
+        ret = false;
+    } else if ( bind( _listen_socket, ( sockaddr * )&_hint, sizeof( _hint )) < 0 ) {
         std::cout << "Error binding!" << std::endl;
-        ret = 0;
-    } else if (listen(_listen_socket, MAX_CLIENTS)) {
+        ret = false;
+    } else if ( listen( _listen_socket, MAX_CLIENTS )) {
         std::cout << "Failed to listen" << std::endl;
-        ret = 0;
+        ret = false;
     }
+
     _connectionCount = 1;
-    memset(&_poll_fds, 0, MAX_CLIENTS + 1);
+    memset( &_poll_fds, 0, MAX_CLIENTS + 1 );
     _poll_fds[0].fd = _listen_socket;
     _poll_fds[0].events = POLLIN;
-    return (ret);
+
+    return ( ret );
 }
 
-void Server::_runServer(void) {
+void Server::_runServer( void ) {
     time_t now;
     struct pollfd *poll_fds = _poll_fds;
 
     // Server Loop
-    while (true) {
-        poll(poll_fds, MAX_CLIENTS + 1, 1000);
+    while ( true ) {
+        poll( poll_fds, MAX_CLIENTS + 1, 1000 );
 
-        for (size_t i = 0; i < _connectionCount; i++) {
+        for ( size_t i = 0; i < _connectionCount; i++ ) {
 
             // if no change on this socket, run next iteration
-            if (poll_fds[i].revents == 0)
+            if ( poll_fds[i].revents == 0 )
                 continue;
 
             int socket = poll_fds[i].fd;
@@ -102,57 +105,57 @@ void Server::_runServer(void) {
     }
 }
 
-std::string Server::_parseMessage(Client &client, char *buff) {
+std::string Server::_parseMessage( Client &client, char *buff ) {
 
-    std::vector<std::string> wordList = split_string(buff);
+    std::vector<std::string> wordList = split_string( buff );
     std::vector<std::string>::iterator word_it = wordList.begin();
-    std::string comm = (*word_it);
+    std::string comm = ( *word_it );
 
-    if (!comm.compare("PASS")) {
+    if ( !comm.compare( "PASS" )) {
         word_it++;
         client.setPass(*word_it);
         std::cout << "PASS changed" << std::endl;
-    } else if (!comm.compare("NICK")) {
+    } else if ( !comm.compare( "NICK" )) {
         word_it++;
-        client.setNick(*word_it);
+        client.setNick( *word_it );
         std::cout << "Nickname changed" << std::endl;
-    } else if (!comm.compare("USER")) {
+    } else if ( !comm.compare( "USER" )) {
         word_it++;
-        client.setUser(*word_it);
+        client.setUser( *word_it );
         std::cout << "Username changed" << std::endl;
-    } else if (!comm.compare("JOIN")) {
+    } else if ( !comm.compare( "JOIN" )) {
         // send(client.getClientSocket(), ":nickKooki!loginName@localhost JOIN #kk\r\n", 41,0x80);
         word_it++;
         std::string mes = ":" + client.getNick() + "!" + client.getUser() + "@localhost JOIN " +
-        									(*word_it).substr(0, (*word_it).length() - 2) + "\r\n";
+            ( *word_it ).substr( 0, ( *word_it ).length() - 2 ) + "\r\n";
         send(client.getClientSocket(), mes.c_str(), mes.length(), 0x80);
 
         // // mes = ":127.0.0.1 332 " + client.getNick() + " " + (*word_it).substr(0, (*word_it).length() - 2) + " :some topic" + "\r\n";
         // // send(client.getClientSocket(), mes.c_str(), mes.length(), 0);
         std::cout << mes << std::endl;
-        mes = ":127.0.0.1 MODE " + (*word_it).substr(0, (*word_it).length() - 2) + " +nt\r\n";
-        send(client.getClientSocket(), mes.c_str(), mes.length(), 0);
+        mes = ":127.0.0.1 MODE " + ( *word_it ).substr( 0, (*word_it).length() - 2 ) + " +nt\r\n";
+        send( client.getClientSocket(), mes.c_str(), mes.length(), 0 );
         std::cout << mes << std::endl;
         // // MODE #test +nt
-        mes = ":127.0.0.1 353 " + client.getNick() + " = " + (*word_it).substr(0, (*word_it).length() - 2) + " :@" + client.getNick() + "\r\n";
+        mes = ":127.0.0.1 353 " + client.getNick() + " = " + ( *word_it ).substr( 0, ( *word_it ).length() - 2 ) + " :@" + client.getNick() + "\r\n";
         send(client.getClientSocket(), mes.c_str(), mes.length(), 0);
         std::cout << mes << std::endl;
 
-        mes = ":127.0.0.1 366 " + client.getNick() + " " + (*word_it).substr(0, (*word_it).length() - 2) + " :End of NAMES list\r\n";
-        send(client.getClientSocket(), mes.c_str(), mes.length(), 0);
+        mes = ":127.0.0.1 366 " + client.getNick() + " " + ( *word_it ).substr( 0, ( *word_it ).length() - 2 ) + " :End of NAMES list\r\n";
+        send( client.getClientSocket(), mes.c_str(), mes.length(), 0 );
         std::cout << mes << std::endl;
-    } else if (!comm.compare("PRIVMSG") && client.getRegisteredStatus()) {
+    } else if ( !comm.compare( "PRIVMSG" ) && client.getRegisteredStatus() ) {
         // std::string mes = ":nickKooki PRIVMSG #blah :hello himotha fucka\r\n";
 
         std::string mes = ":nickKooki!loginName@127.0.0.1 PRIVMSG #blah :im in blah\r\n";
-        send(client.getClientSocket(), mes.c_str(), mes.length(), 0x80);
+        send( client.getClientSocket(), mes.c_str(), mes.length(), 0x80 );
         mes = ":nickKooki PRIVMSG #karimm :im in karimmm\r\n";
-        send(client.getClientSocket(), mes.c_str(), mes.length(), 0x80);
+        send( client.getClientSocket(), mes.c_str(), mes.length(), 0x80 );
 
-    } else if (!comm.compare("QUIT")) {
+    } else if ( !comm.compare( "QUIT" )) {
         _connectionCount--;
-        close(client.getClientSocket());
-    } 
+        close( client.getClientSocket() );
+    }
     else {
         std::cout << buff << std::endl;
     }
@@ -161,24 +164,24 @@ std::string Server::_parseMessage(Client &client, char *buff) {
     // {
     // 	std::cout << "Client is not registered yet. Please set passowrd, nick, and user to be able to use any commands." << std::endl;
     // }
-    return ("	 ");
+    return ( "	 " );
 }
 
-std::map<int, Client>::iterator Server::_getClient(const int fd) {
-    return (_clientMap.find(fd));
+std::map<int, Client>::iterator Server::_getClient( const int fd ) {
+    return ( _clientMap.find( fd ));
 }
 
-int Server::_acceptConnection(void) {
-    Client newClient = Client(_listen_socket, _hint);
+int Server::_acceptConnection( void ) {
+    Client newClient = Client( _listen_socket, _hint );
     std::cout << "Current connection count " << _connectionCount << std::endl;
     _clientMap.insert(
-            std::pair<int, Client>(newClient.getClientSocket(), newClient));
-    if (_connectionCount < MAX_CLIENTS) {
+            std::pair<int, Client>( newClient.getClientSocket(), newClient ));
+    if ( _connectionCount < MAX_CLIENTS ) {
         std::stringstream ss;
         std::string connectionMessage;
 
-        _poll_fds[_connectionCount].fd = newClient.getClientSocket();
-        _poll_fds[_connectionCount].events = POLLIN;
+        _poll_fds[ _connectionCount ].fd = newClient.getClientSocket();
+        _poll_fds[ _connectionCount ].events = POLLIN;
 
         // ss << ":127.0.0.1 001 "
         // 	 << "nickKooki :"
@@ -198,12 +201,11 @@ int Server::_acceptConnection(void) {
 }
 
 struct pollfd *Server::getPollFds(void) {
-    return (this->_poll_fds);
+    return ( this->_poll_fds );
 }
 
-int Server::getListenSocket(void) { return (this->_listen_socket); }
+int Server::getListenSocket( void ) { return ( this->_listen_socket ); }
 
-size_t Server::getConnectionCount(void) { return (this->_connectionCount); }
+size_t Server::getConnectionCount( void ) { return ( this->_connectionCount ); }
 
 // std::string	Server::
-  

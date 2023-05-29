@@ -10,16 +10,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#pragma once
+
 #include <string>
 #include <vector>
 
 class Message {
-	private:
-		std::string	_finalMessage;
-		std::string	_prefix;
-		std::string	_command;
-		std::string	_arguments;
-	public:
-		Message( std::string nick, std::string user, std::string host, std::vector<std::string>::iterator tokens );
-
+    private:
+        std::string    _finalMessage;
+        std::string    _prefix;
+        std::string    _command;
+        std::string    _arguments;
+    public:
+        Message( std::string nick, std::string user, std::string host, std::vector<std::string>::iterator tokens );
 };

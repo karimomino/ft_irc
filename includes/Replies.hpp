@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#pragma once
+
 #ifndef REPLIES_HPP
 # define REPLIES_HPP
 # define CRLF "\r\n"
