@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 19:56:23 by kamin             #+#    #+#             */
-/*   Updated: 2023/05/19 20:27:03 by kamin            ###   ########.fr       */
+/*   Updated: 2023/05/27 17:32:31 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,12 @@
 class Client
 {
 private:
-	int		_client_socket;
-	char	*_nick;
-	char	*_user;
-	char	*_pass;
-	size_t	_msgSent;
-	std::map<std::string, void (Client::*)( std::string )> _commands;
+	int			_client_socket;
+	std::string	_nick;
+	std::string	_user;
+	std::string	_pass;
+	size_t		_msgSent;
+	bool		_isRegistered;
 
 
 public:
@@ -31,6 +31,7 @@ public:
 	// ~Client( void );
 	int getClientSocket( void );
 	size_t	getMsgSent( void );
+	int		joinChannel( std::string chan );
 	void	incMsgSent( void );
 	std::string	getPass( void );
 	void	setPass( std::string newPass );
@@ -38,4 +39,6 @@ public:
 	void	setNick( std::string newNick );
 	std::string	getUser( void );
 	void	setUser( std::string newUser );
+	bool	getRegisteredStatus( void );
+
 };

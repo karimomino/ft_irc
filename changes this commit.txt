@@ -1,0 +1,2 @@
+removed unused variable
+made _commands in Client public to be accessible when needed

@@ -6,24 +6,20 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 20:01:27 by kamin             #+#    #+#             */
-/*   Updated: 2023/05/19 20:28:25 by kamin            ###   ########.fr       */
+/*   Updated: 2023/05/28 20:11:17 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Client.hpp"
 #include <functional>
-
-int multiply(int a, int b) { return a * b; }
+#include <iostream>
 
 Client::Client( int listen_socket, struct sockaddr_in hint )
 {
 	int addrlen = sizeof(hint);
 	_client_socket = accept(listen_socket, (sockaddr *)&hint, (socklen_t*)&addrlen);
-	_nick = nullptr;
-	_user = nullptr;
-	_pass = nullptr;
+	_isRegistered = false;
 	_msgSent = 0;
-	_commands.insert(std::pair<std::string, void (Client::*)( std::string  )>("NICK" , &Client::setNick ));
 }
 
 int Client::getClientSocket( void ) {
@@ -34,18 +30,47 @@ size_t	Client::getMsgSent( void ) {
 	return ( this->_msgSent );
 }
 
+std::string	Client::getNick( void ) {
+	return ( _nick );
+}
+
+std::string	Client::getUser( void ) {
+
+	return ( _user );
+}
+
 void	Client::incMsgSent( void ) {
 	++_msgSent;
 }
 
 void	Client::setPass( std::string pass) {
-	pass.copy(_pass, pass.length());
+	_pass =  pass.substr(0, pass.length() - 2);
+	// _pass[_pass.length() - 1] = '\0';
+	std::cout << "setting pass to :" << _pass << std::endl;
+
+	if ( _pass.length() && _nick.length() && _user.length() )
+		_isRegistered = true;
 }
 
 void	Client::setNick( std::string nick) {
-	nick.copy(_nick, nick.length());
+	_nick =  nick.substr(0, nick.length() - 2);
+	// _nick[_nick.length() - 1] = '\0';
+
+	std::cout << "setting nick to :" << _nick << std::endl;
+
+	if ( _pass.length() && _nick.length() && _user.length() )
+		_isRegistered = true;
 }
 
 void	Client::setUser( std::string user) {
-	user.copy(_user, user.length());
+	std::cout << "setting user to :" << user << std::endl;
+	_user =  user.substr(0, user.length());
+
+	if ( _pass.length() && _nick.length() && _user.length() )
+		_isRegistered = true;
+}
+
+bool	Client::getRegisteredStatus( void )
+{
+	return ( _isRegistered );
 }
