@@ -12,7 +12,54 @@
 
 #include "Server.hpp"
 #include <cstdio>
+#include <cstring>
 #include <iostream>
+#include <utility>
+
+void    Server::_joinCommand( std::string const & command ) {
+    std::cout << command << std::endl;
+}
+
+
+template <typename T>
+bool Server::_addCommandFunction( std::string const & keyValue , T funPtr ) {
+    if ( !funPtr )
+        return ( false );
+
+    T * allocPtr = new T;
+    *allocPtr = funPtr;
+    
+    this->_commandsFunctions.insert(
+            std::pair< std::string const, void *>( keyValue, allocPtr ) );
+
+    return ( true );
+}
+
+bool Server::_initCommandsFunctions( void ) {
+    _addCommandFunction( "JOIN", &Server::_joinCommand ); 
+
+    return ( true );
+}
+
+void Server::_executeCommand( std::string const & message ) {
+    size_t foundSpace = message.find( ' ' );
+    std::string commandType = message.substr( 0, foundSpace );
+
+    std::map< std::string const, void *>::iterator cmd = _commandsFunctions.find( commandType );
+
+    // TODO:
+    //      - maybe throw an exception if you can't find the command so the server can send back to the client
+    //      - remove the print msg ..
+    if ( cmd == _commandsFunctions.end() ) {
+        std::cerr << "Can't find command" << std::endl;
+        return ;
+    }
+
+    // TODO: find a way to detect the casting automatically ..
+    cmdFunPtr cmdFun = ( *( cmdFunPtr * )( cmd->second ));
+    ( this->*cmdFun )( message );
+
+}
 
 Server::Server( const int port, const std::string pass ) : _port( port ), _pass( pass ) {
     _hint.sin_family = AF_INET;
@@ -20,12 +67,23 @@ Server::Server( const int port, const std::string pass ) : _port( port ), _pass(
     _hint.sin_addr.s_addr = INADDR_ANY;
     _connectionCount = 0;
 
+    _initCommandsFunctions();
+
     if ( _initServer() )
         _runServer();
     else {
         perror( "Failed to init server." );
     }
+
     (void)_port;
+}
+
+Server::~Server( void ) {
+    // TODO: free all the alloc memory for ptr to the functions
+    std::map<std::string const, void *>::iterator it = _commandsFunctions.begin();
+
+    for ( ; it != _commandsFunctions.end(); it++ )
+        delete ( ( cmdFunPtr * )( it->second ));
 }
 
 bool    Server::_initServer( void ) {
@@ -200,12 +258,12 @@ int Server::_acceptConnection( void ) {
     return (0);
 }
 
-struct pollfd *Server::getPollFds(void) {
+const struct pollfd * Server::getPollFds( void ) const {
     return ( this->_poll_fds );
 }
 
-int Server::getListenSocket( void ) { return ( this->_listen_socket ); }
+int Server::getListenSocket( void ) const { return ( this->_listen_socket ); }
 
-size_t Server::getConnectionCount( void ) { return ( this->_connectionCount ); }
+size_t Server::getConnectionCount( void ) const { return ( this->_connectionCount ); }
 
 // std::string	Server::
