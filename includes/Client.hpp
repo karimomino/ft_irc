@@ -6,13 +6,15 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 19:56:23 by kamin             #+#    #+#             */
-/*   Updated: 2023/05/27 17:32:31 by kamin            ###   ########.fr       */
+/*   Updated: 2023/05/31 15:29:53 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
 #include <sys/socket.h>
+#include <netdb.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <map>
 
 class Client
@@ -22,7 +24,10 @@ private:
 	std::string	_nick;
 	std::string	_user;
 	std::string	_pass;
+	struct sockaddr_in* _pV4Addr;
+	std::string	_ip;
 	size_t		_msgSent;
+	struct addrinfo *_servinfo;
 	bool		_isRegistered;
 
 
@@ -40,5 +45,7 @@ public:
 	std::string	getUser( void );
 	void	setUser( std::string newUser );
 	bool	getRegisteredStatus( void );
+	void	setAddrInfo( void );
+	std::string	getIp( void );
 
 };

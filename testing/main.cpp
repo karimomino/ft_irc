@@ -15,7 +15,7 @@ int main() {
     fun_map.insert(pair<string, void *>("JOIN", test));
     map<string, void *>::iterator it = fun_map.find( "JOIN");
     if (it == fun_map.end())
-        cout << "something wrong nigga" << endl;
+        cout << "something wrong bro" << endl;
     else
         // printf("this is address of f: % p \t this is address of test: %p \t this is test address: %p\n", f, test, *(derp *)(it->second) );
         retStr = (*(derp *)(it->second))("swag");

@@ -6,18 +6,22 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 20:01:27 by kamin             #+#    #+#             */
-/*   Updated: 2023/05/28 20:11:17 by kamin            ###   ########.fr       */
+/*   Updated: 2023/06/08 09:08:10 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Client.hpp"
 #include <functional>
 #include <iostream>
+#include <netdb.h>
+#include <sys/socket.h>
 
 Client::Client( int listen_socket, struct sockaddr_in hint )
 {
 	int addrlen = sizeof(hint);
 	_client_socket = accept(listen_socket, (sockaddr *)&hint, (socklen_t*)&addrlen);
+	_pV4Addr = (struct sockaddr_in*)&hint;
+	setAddrInfo(  );
 	_isRegistered = false;
 	_msgSent = 0;
 }
@@ -44,26 +48,21 @@ void	Client::incMsgSent( void ) {
 }
 
 void	Client::setPass( std::string pass) {
-	_pass =  pass.substr(0, pass.length() - 2);
+	_pass =  pass.substr(0, pass.length());
 	// _pass[_pass.length() - 1] = '\0';
-	std::cout << "setting pass to :" << _pass << std::endl;
-
 	if ( _pass.length() && _nick.length() && _user.length() )
 		_isRegistered = true;
 }
 
 void	Client::setNick( std::string nick) {
-	_nick =  nick.substr(0, nick.length() - 2);
+	_nick =  nick.substr(0, nick.length());
 	// _nick[_nick.length() - 1] = '\0';
-
-	std::cout << "setting nick to :" << _nick << std::endl;
 
 	if ( _pass.length() && _nick.length() && _user.length() )
 		_isRegistered = true;
 }
 
 void	Client::setUser( std::string user) {
-	std::cout << "setting user to :" << user << std::endl;
 	_user =  user.substr(0, user.length());
 
 	if ( _pass.length() && _nick.length() && _user.length() )
@@ -73,4 +72,25 @@ void	Client::setUser( std::string user) {
 bool	Client::getRegisteredStatus( void )
 {
 	return ( _isRegistered );
+}
+
+void	Client::setAddrInfo( void ) {
+	// struct addrinfo ai;
+
+	// memset( &ai , 0 , sizeof(ai) );
+	// ai.ai_family = AF_INET;
+	// ai.ai_socktype = SOCK_STREAM;
+	// getaddrinfo(NULL , port.c_str() , &ai , &_servinfo);
+	// struct sockaddr_in *ipv4 = (struct sockaddr_in *)_servinfo->ai_addr;
+	// _ip = inet_ntoa(ipv4->sin_addr);
+	struct in_addr ipAddr = _pV4Addr->sin_addr;
+
+	std::string blah = inet_ntoa(ipAddr);
+	this->_ip = blah;
+	// blah.copy(_ip, blah.length() , 0);
+	// std::string(inet_ntoa(ipAddr)).copy(_ip, std::string(inet_ntoa(ipAddr)).length() , 0);
+}
+
+std::string Client::getIp( void ) {
+	return ( _ip );
 }

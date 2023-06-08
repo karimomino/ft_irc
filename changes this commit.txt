@@ -1,2 +1,15 @@
-removed unused variable
-made _commands in Client public to be accessible when needed
+Separated server funtions into commands files in src/command_utils
+
+Handled TCP recv = 0 closed connection to close connection from server side
+
+JOIN command implementation
+    working:
+        - join channel
+        - send names list to everyone
+        - set the initial modes
+    TODO:
+        join multiple channels in single command
+        - change topic
+        - invitation system
+        - give op
+        - channel key

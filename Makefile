@@ -1,9 +1,13 @@
 NAME		=	ircserv
 
-SRCS		=	main.cpp			\
-				Server.cpp 			\
-				Client.cpp 			\
-				utils.cpp			\
+SRCS		=	main.cpp				\
+				Server.cpp 				\
+				Client.cpp 				\
+				Channel.cpp 			\
+				utils.cpp				\
+				command_utils/join.cpp	\
+				command_utils/commands.cpp	\
+				command_utils/privmsg.cpp	\
 
 SRCS_DIR    =   ./src/
 
@@ -11,7 +15,7 @@ OBJS		=	$(addprefix $(SRCS_DIR), $(SRCS:.cpp=.o))
 
 CXX			=	c++
 
-CXXFLAGS	=	-Wall -Werror -Wextra -std=c++98 -Iincludes
+CXXFLAGS	=	-Wall -Werror -Wextra -std=c++98 -Iincludes -g3
 
 RM			=	rm -f
 
