@@ -1,10 +1,13 @@
 #include <iostream>
 #include <map>
 #include <string>
+
 using namespace std;
+
 string someFuntion(string str) {
-  return (str);
+    return (str);
 }
+
 int main() {
     typedef string ( *derp )(string);
 

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 20:01:27 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/08 09:08:10 by kamin            ###   ########.fr       */
+/*   Updated: 2023/06/09 00:32:21 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Client.hpp"
+#include "Client.hpp"
 #include <functional>
 #include <iostream>
 #include <netdb.h>
@@ -27,24 +27,24 @@ Client::Client( int listen_socket, struct sockaddr_in hint )
 }
 
 int Client::getClientSocket( void ) {
-	return ( this->_client_socket );
+    return ( this->_client_socket );
 }
 
-size_t	Client::getMsgSent( void ) {
-	return ( this->_msgSent );
+size_t    Client::getMsgSent( void ) {
+    return ( this->_msgSent );
 }
 
-std::string	Client::getNick( void ) {
-	return ( _nick );
+std::string    Client::getNick( void ) {
+    return ( _nick );
 }
 
-std::string	Client::getUser( void ) {
+std::string    Client::getUser( void ) {
 
-	return ( _user );
+    return ( _user );
 }
 
-void	Client::incMsgSent( void ) {
-	++_msgSent;
+void    Client::incMsgSent( void ) {
+    ++_msgSent;
 }
 
 void	Client::setPass( std::string pass) {
@@ -65,11 +65,11 @@ void	Client::setNick( std::string nick) {
 void	Client::setUser( std::string user) {
 	_user =  user.substr(0, user.length());
 
-	if ( _pass.length() && _nick.length() && _user.length() )
-		_isRegistered = true;
+    if ( _pass.length() && _nick.length() && _user.length() )
+        _isRegistered = true;
 }
 
-bool	Client::getRegisteredStatus( void )
+bool    Client::getRegisteredStatus( void )
 {
 	return ( _isRegistered );
 }

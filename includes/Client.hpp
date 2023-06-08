@@ -3,12 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 19:56:23 by kamin             #+#    #+#             */
-/*   Updated: 2023/05/31 15:29:53 by kamin            ###   ########.fr       */
+/*   Updated: 2023/06/09 00:40:05 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#pragma once
 
 #include <string>
 #include <sys/socket.h>

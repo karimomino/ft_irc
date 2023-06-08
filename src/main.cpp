@@ -10,28 +10,27 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Server.hpp"
+#include "Server.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
 
-int	validParams(int ac, char **av) {
-	int	valid_params = 1;
-	
-	if ( ac != 3 ) {
-		std::cout << "Usage: ./ircserv <port> <password>" << std::endl;
-		std::cout << "where 1 <= <port> <= 65535" << std::endl;
-		valid_params = 0;
-	} 
-	(void)av;
-	// TODO: check valid port range
-	return ( valid_params );
+bool validParams( int ac, char **av ) {
+    bool valid_params = true;
+
+    if ( ac != 3 ) {
+        std::cout << "Usage: ./ircserv <port> <password>" << std::endl;
+        std::cout << "where 1 <= <port> <= 65535" << std::endl;
+        valid_params = false;
+    }
+    ( void )av;
+    // TODO: check valid port range
+    return ( valid_params );
 }
 
-int main(int ac, char **av) {
-
-	if ( validParams(ac, av) ) {
-		Server ircserver = Server( atoi(av[1]) , av[2] );	
-	}
-	return ( 0 );
+int main( int ac, char **av ) {
+    if ( validParams( ac, av )) {
+        Server ircserver = Server( atoi( av[1] ) , av[2] );
+    }
+    return ( 0 );
 }

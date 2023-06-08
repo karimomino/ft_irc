@@ -3,12 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Replies.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/27 19:27:26 by kamin             #+#    #+#             */
-/*   Updated: 2023/05/30 14:02:40 by kamin            ###   ########.fr       */
+/*   Updated: 2023/06/09 00:39:53 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#pragma once
 
 #ifndef REPLIES_HPP
 # define REPLIES_HPP
