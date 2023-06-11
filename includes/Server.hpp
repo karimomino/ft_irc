@@ -6,7 +6,7 @@
 /*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 17:23:20 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/09 00:37:43 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/06/10 01:58:09 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,55 +33,56 @@
 #define MAX_CLIENTS 4
 
 std::vector<std::string> split_string( string str , string delim );
-std::string	ft_itoa( int num );
+std::string    ft_itoa( int num );
 typedef std::vector< Channel > ChanVector;
-typedef	std::vector< pollfd > PollVector;
+typedef std::vector< pollfd > PollVector;
 
 #endif
 
 
 class Server {
-	private:
-		const int							_port;
-		const std::string					_pass;
-	
-		int									_listen_socket;
-		size_t								_connectionCount;
+    private:
+        typedef void ( Server::*cmdFun )( Client const &, std::string const & );
+        typedef std::map< std::string const, cmdFun > CmdMap;
 
-		PollVector							_poll_fds;
-		struct sockaddr_in					_hint;
-		std::map<int, Client>				_clientMap;
-		ChanVector							_channels;
+        const int                            _port;
+        const std::string                    _pass;
+    
+        int                                  _listen_socket;
+        size_t                               _connectionCount;
 
-		int 								_initServer( void );
-		int									_acceptConnection( void );
-		void								_runServer( void );
-		void								_parseMessage( Client &new_socket , char *buff );
-		std::map <int, Client>::iterator	_getClient( const int fd );
-		std::string							_createMessage( Client client, string command );
-		void								_joinChannel( Client client , string name);
-		void								_broadcastJoin( Client client , Channel chan , string name );
-		ChanVector::iterator				_findChannel( ChanVector &channels , std::string name ) const;
+        PollVector                           _poll_fds;
+        struct sockaddr_in                   _hint;
+        std::map<int, Client>                _clientMap;
+        ChanVector                           _channels;
+        CmdMap                               _commands;
 
-		void								_privmsg( string full_command , Client client );
+        int                                 _initServer( void );
+        int                                 _acceptConnection( void );
+        void                                _runServer( void );
+        void                                _parseMessage( Client &new_socket , char *buff );
+        std::map<int, Client>::iterator     _getClient( const int fd );
+        std::string                         _createMessage( Client client, string command );
+        void                                _joinChannel( Client client, string name);
+        void                                _broadcastJoin( Client client , Channel chan , string name );
+        ChanVector::iterator                _findChannel( ChanVector &channels , std::string name ) const;
 
-        /**                 COMMANDS TYPEDEF                 **/
-        typedef void ( Server::*cmdFunPtr )( std::string const & );
-        std::map<std::string const , void *> _commandsFunctions;
+        void                                _privmsg( string full_command , Client client );
 
-        /**               COMMANDS HELPER FUN                **/
-        template <typename T>
-        bool  _addCommandFunction( std::string const & keyValue, T );
+        /**              COMMANDS FUN TYPEDEF                **/
+
+        /**              COMMANDS HELPER FUN                 **/
+        bool  _addCommandFunction( std::string const & keyValue, cmdFun );
         bool  _initCommandsFunctions( void );
-        void  _executeCommand( std::string const & message );
+        void  _executeCommand( Client const & client, std::string const & message );
 
-        /**                     COMMANDS FUN                 **/
-        void  _joinCommand( std::string const & command );
-	
-	public:
-		typedef std::map<string, void (Client::*)( string )>::iterator command_it;
-		Server( const int port, const string pass );
-		~Server();
-		int getListenSocket( void ) const;
-		size_t	getConnectionCount ( void ) const;
+        /**                   COMMANDS FUN                   **/
+        void  _joinCommand( Client const & c, std::string const & command );
+    
+    public:
+        typedef std::map<string, void (Client::*)( string )>::iterator command_it;
+        Server( const int port, const string pass );
+        // ~Server();
+        int getListenSocket( void ) const;
+        size_t    getConnectionCount ( void ) const;
 };

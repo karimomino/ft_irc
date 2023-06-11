@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Server.hpp"
+#include "Server.hpp"
 #include <cstdio>
 #include <iostream>
 #include <string>
@@ -30,15 +30,25 @@ Server::Server(const int port, const std::string pass) : _port(port), _pass(pass
     else {
         perror("Failed to init server.");
     }
+
     (void)_port;
 }
 
-Server::~Server( void ) {
-    // TODO: free all the alloc memory for ptr to the functions
-    std::map<std::string const, void *>::iterator it = _commandsFunctions.begin();
+bool Server::_addCommandFunction( std::string const & keyValue , cmdFun funPtr ) {
+    if ( !funPtr )
+        return ( false );
 
-    for ( ; it != _commandsFunctions.end(); it++ )
-        delete ( ( cmdFunPtr * )( it->second ));
+    this->_commands.insert(
+            std::pair< std::string const, cmdFun >( keyValue, funPtr ) );
+
+    return ( true );
+}
+
+bool Server::_initCommandsFunctions( void ) {
+    // TODO: add all the commands functions
+    // _addCommandFunction( "EXAMPLE", &Server::_exampleCmd );
+
+    return ( true );
 }
 
 int Server::_initServer() {
@@ -85,7 +95,6 @@ void Server::_runServer(void) {
 
     // Server Loop
     while (true) {
-        
         poll(_poll_fds.data(), _poll_fds.size(), 300);
 
         for (size_t i = 0; i < _poll_fds.size(); i++) {
@@ -166,47 +175,16 @@ int Server::getListenSocket(void) const { return (this->_listen_socket); }
 
 size_t Server::getConnectionCount(void) const{ return (this->_connectionCount); }
 
-void    Server::_joinCommand( std::string const & command ) {
-    std::cout << command << std::endl;
-}
-
-
-template <typename T>
-bool Server::_addCommandFunction( std::string const & keyValue , T funPtr ) {
-    if ( !funPtr )
-        return ( false );
-
-    T * allocPtr = new T;
-    *allocPtr = funPtr;
-    
-    this->_commandsFunctions.insert(
-            std::pair< std::string const, void *>( keyValue, allocPtr ) );
-
-    return ( true );
-}
-
-bool Server::_initCommandsFunctions( void ) {
-    _addCommandFunction( "JOIN", &Server::_joinCommand ); 
-
-    return ( true );
-}
-
-void Server::_executeCommand( std::string const & message ) {
+void Server::_executeCommand( Client const & client, std::string const & message ) {
     size_t foundSpace = message.find( ' ' );
     std::string commandType = message.substr( 0, foundSpace );
 
-    std::map< std::string const, void *>::iterator cmd = _commandsFunctions.find( commandType );
-
-    // TODO:
-    //      - maybe throw an exception if you can't find the command so the server can send back to the client
-    //      - remove the print msg ..
-    if ( cmd == _commandsFunctions.end() ) {
-        std::cerr << "Can't find command" << std::endl;
+    CmdMap::iterator cmd = _commands.find( commandType );
+    // TODO: send an error message to the client
+    if ( cmd == _commands.end() ) {
         return ;
     }
 
-    // TODO: find a way to detect the casting automatically ..
-    cmdFunPtr cmdFun = ( *( cmdFunPtr * )( cmd->second ));
-    ( this->*cmdFun )( message );
-
+    cmdFun fun = ( cmdFun )( cmd->second );
+    ( this->*fun )( client, message );
 }

@@ -21,13 +21,13 @@ void test3( string s ) {
 }
 
 void findFun( string s, map<int, void *>::iterator it ) {
-    // try {
-    //     fun tmp = (*( fun * )( it->second ));
-    //     tmp();
-    //     return ;
-    // } catch ( const std::exception & e ) {
-    //     cout << "Not fun function" << endl;
-    // }
+    try {
+        fun tmp = (*( fun * )( it->second ));
+        tmp();
+        return ;
+    } catch ( const std::exception & e ) {
+        cout << "Not fun function" << endl;
+    }
 
     try {
         funx tmp = (*( funx * )( it->second ));

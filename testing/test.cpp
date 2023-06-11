@@ -1,42 +1,51 @@
 #include <iostream>
-#include <map>
 
-using namespace std;
-typedef void ( *fun )( void );
-typedef void ( *funS )( std::string );
-map<int, void *> funMap;
-
-void test1( void ) {
-    cout << "This is test 1 function" << endl;
+// Example functions with different argument types and return types
+void Function1() {
+    std::cout << "Function 1 called." << std::endl;
 }
 
-void test2( void ) {
-    cout << "This is test 2 function" << endl;
+void Function2(int arg) {
+    std::cout << "Function 2 called with arg: " << arg << std::endl;
 }
 
-void test3( string ) {
-    cout << "This is test 3 function" << endl;
+int Function3(double arg1, int arg2) {
+    std::cout << "Function 3 called with arg1: " << arg1 << ", arg2: " << arg2 << std::endl;
+    return arg2;
 }
 
-int main( void ) {
-    {
-        // test1
-        fun * tmp = new fun( &test1 );
-        funMap.insert( pair<int, void *>( 0, (void *)tmp ) );
+// Wrapper function for function with no arguments
+void CallFunction0(void* funPtr) {
+    void (*functionPtr)() = reinterpret_cast<void (*)()>(funPtr);
+    functionPtr();
+}
 
-        // test2
-        fun *tmp2 = new fun( &test2 );
-        funMap.insert( pair<int, void *>( 1, (void *)tmp2 ) );
+// Wrapper function for function with one argument
+void CallFunction1(void* funPtr, int arg) {
+    void (*functionPtr)(int) = reinterpret_cast<void (*)(int)>(funPtr);
+    functionPtr(arg);
+}
 
-        // test3
-        funS *tmp3 = new funS( &test3 );
-        funMap.insert( pair<int, void *>( 1, (void *)tmp3 ) );
-    }
+// Wrapper function for function with two arguments
+int CallFunction2(void* funPtr, double arg1, int arg2) {
+    int (*functionPtr)(double, int) = reinterpret_cast<int (*)(double, int)>(funPtr);
+    return functionPtr(arg1, arg2);
+}
 
-    for ( int i = 0; i < 3; i++ ) {
-        map<int, void *>::iterator it = funMap.find( i );
-        fun tmp = (*( fun * )( it->second ));
-        tmp();
-        // it();
-    }
+int main() {
+    // Create an array of void* pointers to store the function pointers
+    void* fun[3];
+
+    // Assign function pointers to the void* array
+    fun[0] = reinterpret_cast<void*>(&Function1);
+    fun[1] = reinterpret_cast<void*>(&Function2);
+    fun[2] = reinterpret_cast<void*>(&Function3);
+
+    // Invoke the functions using the void* pointers and wrapper functions
+    CallFunction0(fun[0]);
+    CallFunction1(fun[1], 42);
+    int result = CallFunction2(fun[2], 3.14, 42);
+    std::cout << "Function 3 returned: " << result << std::endl;
+
+    return 0;
 }
