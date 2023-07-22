@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 16:10:25 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/26 13:29:51 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/22 13:50:07 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ string  findTargetName( string full_command ) {
     chan_name = *(++split_it);
     std::cout << "SEND IN CHANNEL: " << chan_name << std::endl;
     return ( chan_name );
-
 }
 
 string  findMsgOrigin ( Client client ) {
@@ -32,7 +31,6 @@ string  findMsgOrigin ( Client client ) {
 
     std::cout << "ORIGIN OF MESSAGE: " << origin << std::endl;
     return ( origin );
-    
 }
 
 string findText( string full_command ) {
@@ -52,24 +50,20 @@ void Server::_privmsg( string full_command , Client client) {
 
     std::cout << "####################START MESSAGE COMMAND#############################" << std::endl;
     std::cout << "COMMAND: " << full_command;
-    string target = findTargetName( full_command );
-    ChanVector::iterator    chan_it = _findChannel(_channels, target);
-    Client    *client_found = _findClientByNick( _clientMap , target);
-    std::vector< std::string > tmp_nicks;
-    if ( chan_it == _channels.end() && client_found == NULL )
-        std::cout << "failed to find cahnnel" << std::endl;
-    else
-        tmp_nicks = chan_it->getNicks();
+    // string channelName = findChannelName( full_command );
+    // ChanVector::iterator    chan_it = _findChannel(_channels, channel);
+    Channel channel = _channels.find( channelName )->second;
+    std::vector< std::string > tmp_nicks = channel.getNicks();
 
     string text = findText( full_command );
-    string msg_to_client = findMsgOrigin( client ) + "PRIVMSG " + target + " :" + text;
+    string msg_to_client = findMsgOrigin( client ) + "PRIVMSG " + channelName + " :" + text;
     std::string actual_nick;
 
 
     for (size_t i = 0; i < tmp_nicks.size(); i++) {
         if ( tmp_nicks[i][0] == '@' )
             actual_nick = tmp_nicks[i].substr( 1, tmp_nicks[i].length() - 1 );
-        else 
+        else
             actual_nick = tmp_nicks[i];
 
         for ( std::map<int, Client>::iterator client_it = _clientMap.begin() ; client_it != _clientMap.end(); client_it++) {

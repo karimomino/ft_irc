@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Server.hpp"
+#include "Server.hpp"
 #include <cstdio>
 #include <iostream>
 #include <string>
@@ -22,12 +22,34 @@ Server::Server(const int port, const std::string pass) : _port(port), _pass(pass
     _hint.sin_port = htons(port);
     _hint.sin_addr.s_addr = INADDR_ANY;
     _connectionCount = 0;
+
+    _initCommandsFunctions();
+
     if (_initServer())
         _runServer();
     else {
         perror("Failed to init server.");
     }
+
     (void)_port;
+}
+
+bool Server::_addCommandFunction( std::string const & keyValue , cmdFun funPtr ) {
+    if ( !funPtr )
+        return ( false );
+
+    this->_commands.insert(
+            std::pair< std::string const, cmdFun >( keyValue, funPtr ) );
+
+    return ( true );
+}
+
+bool Server::_initCommandsFunctions( void ) {
+    // TODO: add all the commands functions
+    // _addCommandFunction( "EXAMPLE", &Server::_exampleCmd );
+    _addCommandFunction( "KICK", &Server::_kickCommand );
+
+    return ( true );
 }
 
 int Server::_initServer() {
@@ -53,8 +75,7 @@ int Server::_initServer() {
     } else if (listen(_listen_socket, MAX_CLIENTS)) {
         std::cout << "Failed to listen" << std::endl;
         ret = 0;
-    } else if ( ret )
-    {
+    } else if ( ret ) {
         tmp_fd.fd = _listen_socket;
         tmp_fd.events = POLLIN;
         tmp_fd.revents = 0;
@@ -74,7 +95,6 @@ void Server::_runServer(void) {
 
     // Server Loop
     while (true) {
-        
         poll(_poll_fds.data(), _poll_fds.size(), 300);
 
         for (size_t i = 0; i < _poll_fds.size(); i++) {
@@ -152,4 +172,22 @@ int Server::_acceptConnection(void) {
 
 int Server::getListenSocket(void) const { return (this->_listen_socket); }
 
-size_t Server::getConnectionCount(void) const{ return (this->_connectionCount); }
+size_t Server::getConnectionCount(void) const { return (this->_connectionCount); }
+
+void Server::_executeCommand( Client const & client, std::string const & message ) {
+    size_t foundSpace = message.find( ' ' );
+    std::string commandType = message.substr( 0, foundSpace );
+
+    CmdMap::iterator cmd = _commands.find( commandType );
+    // TODO: send an error message to the client
+    if ( cmd == _commands.end() ) {
+        return ;
+    }
+
+    cmdFun fun = ( cmdFun )( cmd->second );
+    ( this->*fun )( client, message );
+}
+
+bool Server::_sendMessage( Client client, std::string const & msg ) {
+    return ( send( client.getClientSocket(), msg.c_str(), msg.length(), 0x80 ) );
+}

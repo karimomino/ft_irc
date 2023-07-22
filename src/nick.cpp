@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Server.hpp"
+#include "Server.hpp"
 
 // int nick( int sock, char *nick , Server serv, std::vector<std::string>::iterator word_it) {
 //     std::map <int, Client>::iterator it = serv.getClient(sock);

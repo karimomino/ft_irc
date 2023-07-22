@@ -15,44 +15,49 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <map>
 
 typedef std::string string;
 
 #endif
 
+class Client;
 
 class Channel {
     typedef std::vector< string > StrVector;
-    
-    private:
-        string                 _name;
-        string                 _topic;
-        string                 _key;
-        bool                        _isInviteOnly;
-        bool                        _topicOpOnly;
-        StrVector  _nicks;
-        StrVector  _invitations;
-        
-        void    _removeInvitation( string );
-        
+    typedef std::map< std::string const, const Client *>::iterator _clients_it;
+    typedef std::map< std::string const, const Client *>::const_iterator _clients_const_it;
 
+private:
+    string                 _name;
+    string                 _topic;
+    string                 _key;
+    bool                   _isInviteOnly;
+    bool                   _topicOpOnly;
+    StrVector              _invitations;
+    std::map<std::string const, const Client *> _clients;
 
-    public:
-        Channel( string name , string topic , string key , bool inv , bool top );
-        ~Channel( void );
-        
-        void        setName( string );
-        void        setTopicMode( bool );
-        void        setInviteMode( bool );
+    void    _removeInvitation( string );
 
-        const string getName( void );
-        const string getTopic( void );
-        const string getMode( void );
+public:
+    Channel( string name , string topic , string key , bool inv , bool top );
+    ~Channel( void );
 
-        void    addInvitation( string );
-        
-        void    addUser( string );
+    /* METHODS */
+    void    addInvitation( string );
+    void    addUser( std::string const & nick, Client & client );
+    bool    removeUser( std::string const & nick );
+    // void    addUser( string );
 
-        string	getUsersStr( void );
-        StrVector getNicks( void ) const ;
+    /* GETTERS */
+    const string getName( void )     const;
+    const string getTopic( void )    const;
+    const string getMode( void )     const;
+    string	 getUsersStr( void ) const;
+    StrVector    getNicks( void ) const ;
+
+    /* SETTERS */
+    void        setName( string );
+    void        setTopicMode( bool );
+    void        setInviteMode( bool );
 };

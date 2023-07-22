@@ -6,11 +6,11 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 20:01:27 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/26 13:33:18 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/22 13:46:58 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Client.hpp"
+#include "Client.hpp"
 #include <functional>
 #include <iostream>
 #include <netdb.h>
@@ -26,25 +26,24 @@ Client::Client( int listen_socket, struct sockaddr_in hint )
 	_msgSent = 0;
 }
 
-int Client::getClientSocket( void ) {
-	return ( this->_client_socket );
+int Client::getClientSocket( void ) const {
+    return ( this->_client_socket );
 }
 
-size_t	Client::getMsgSent( void ) {
-	return ( this->_msgSent );
+size_t    Client::getMsgSent( void ) const {
+    return ( this->_msgSent );
 }
 
-std::string	Client::getNick( void ) {
-	return ( _nick );
+std::string    Client::getNick( void ) const {
+    return ( _nick );
 }
 
-std::string	Client::getUser( void ) {
-
-	return ( _user );
+std::string    Client::getUser( void ) const {
+    return ( _user );
 }
 
-void	Client::incMsgSent( void ) {
-	++_msgSent;
+void    Client::incMsgSent( void ) {
+    ++_msgSent;
 }
 
 void	Client::setPass( std::string pass) {
@@ -65,12 +64,11 @@ void	Client::setNick( std::string nick) {
 void	Client::setUser( std::string user) {
 	_user =  user.substr(0, user.length());
 
-	if ( _pass.length() && _nick.length() && _user.length() )
-		_isRegistered = true;
+    if ( _pass.length() && _nick.length() && _user.length() )
+        _isRegistered = true;
 }
 
-bool	Client::getRegisteredStatus( void )
-{
+bool    Client::getRegisteredStatus( void ) const {
 	return ( _isRegistered );
 }
 
@@ -91,6 +89,6 @@ void	Client::setAddrInfo( void ) {
 	// std::string(inet_ntoa(ipAddr)).copy(_ip, std::string(inet_ntoa(ipAddr)).length() , 0);
 }
 
-std::string Client::getIp( void ) {
+std::string Client::getIp( void ) const {
 	return ( _ip );
 }

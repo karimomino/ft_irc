@@ -11,10 +11,12 @@
 /* ************************************************************************** */
 
 #include "../includes/Channel.hpp"
+#include "Client.hpp"
 #include <iostream>
+#include <map>
 #include <string>
 
-Channel::Channel( string name , string topic , string key , bool inv , bool top ) 
+Channel::Channel( string name , string topic , string key , bool inv , bool top )
     : _name( name ) , _topic( topic ) , _key( key ) , _isInviteOnly( inv ) , _topicOpOnly( top ) {}
 
 Channel::~Channel( void ) {}
@@ -31,11 +33,11 @@ void	Channel::setInviteMode( bool mode ) {
     _isInviteOnly = mode;
 }
 
-const std::string Channel::getName( void ) {
+const std::string Channel::getName( void ) const {
     return ( _name );
 }
 
-const std::string Channel::getTopic( void ) {
+const std::string Channel::getTopic( void ) const {
     return ( _topic );
 }
 
@@ -53,23 +55,35 @@ void Channel::_removeInvitation( std::string nick ) {
         _invitations.erase(nick_pos);
 }
 
-void Channel::addUser( std::string nick ) {
-    _nicks.push_back( nick );
+void Channel::addUser( std::string const & nick, Client & client ) {
+    _clients.insert( std::pair<std::string, const Client *>( nick, &client ) );
 }
 
-string  Channel::getUsersStr( void ) {
-    string  nicks;
-    
-    for (size_t i = 0; _nicks.size() > 0 && i < _nicks.size(); i++) {
-        if (i == 0 )
-            nicks.append( _nicks[i] );
-        else
-         nicks.append( " " + _nicks[i]);
+string  Channel::getUsersStr( void ) const {
+    std::string  nicks;
+
+    for ( _clients_const_it it = _clients.begin(); it != _clients.end(); ++it ) {
+        std::string nick = it->first;
+        nicks.append( nick );
     }
-    
+
     return ( nicks );
 }
 
 Channel::StrVector Channel::getNicks( void ) const {
-            return ( _nicks );
-        }
+    std::vector< std::string > nicks;
+
+    // TODO: fix it later to make it more efficient
+    for ( _clients_const_it it = _clients.begin(); it != _clients.end(); it++ ) {
+        std::string nick = it->first;
+        nicks.push_back( nick );
+    }
+    return ( nicks );
+}
+
+bool Channel::removeUser( std::string const & nick ) {
+    if ( _clients.find( nick ) == _clients.end() )
+        return ( false );
+    _clients.erase( nick );
+    return ( true );
+}
