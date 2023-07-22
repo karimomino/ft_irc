@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 20:42:02 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/08 11:36:21 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/22 12:34:18 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,27 @@
 ChanVector::iterator Server::_findChannel( ChanVector &channels , std::string name ) const {
 
     ChanVector::iterator    chan_it = channels.begin();
-
     for (chan_it = channels.begin(); chan_it != channels.end(); chan_it++) {
         if ( chan_it->getName() == name )
             break ;
     }
 
     return ( chan_it );
+}
+
+Client  *Server::_findClientByNick( std::map<int, Client> &clients , string nick ) const {
+
+    std::map<int, Client>::iterator    client_it = clients.begin();
+    Client                    *client = NULL;
+
+    for (client_it = clients.begin(); client_it != clients.end(); client_it++) {
+        if ( client_it->second.getNick() == nick ) {
+            client = &client_it->second;
+            break ;
+        }
+    }
+
+    return ( client );
 }
 
 void    Server::_broadcastJoin( Client client , Channel chan , string name ) {
@@ -52,6 +66,7 @@ void    Server::_joinChannel( Client client , std::string name ) {
     // ChanVector::iterator chan = _findChannel( _channels, name);
     // TODO: join multiple channels in a single command
     // TODO: Check invite only and key
+    // TODO: check if nick is already in channel
     if ( _findChannel( _channels, name) == _channels.end() )
     {
         _channels.push_back( Channel( name, "Default Topic" , "" , false , true ) );

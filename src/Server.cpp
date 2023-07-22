@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 18:41:14 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/08 12:54:29 by kamin            ###   ########.fr       */
+/*   Updated: 2023/06/09 10:25:11 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,6 @@ int Server::_acceptConnection(void) {
     _clientMap.insert(
             std::pair<int, Client>(newClient.getClientSocket(), newClient));
     pollfd  tmp_fd;
-    // pollfd  *tmp_fd = new pollfd;
     if (_connectionCount < MAX_CLIENTS) {
         tmp_fd.fd = newClient.getClientSocket();
         tmp_fd.events = POLLIN;

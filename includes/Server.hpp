@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 17:23:20 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/08 08:51:10 by kamin            ###   ########.fr       */
+/*   Updated: 2023/06/26 13:05:54 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 std::vector<std::string> split_string( string str , string delim );
 std::string	ft_itoa( int num );
 typedef std::vector< Channel > ChanVector;
+typedef std::vector< Client > ClientVector;
 typedef	std::vector< pollfd > PollVector;
 
 #endif
@@ -61,7 +62,8 @@ class Server {
 		void								_joinChannel( Client client , string name);
 		void								_broadcastJoin( Client client , Channel chan , string name );
 		ChanVector::iterator				_findChannel( ChanVector &channels , std::string name ) const;
-
+		Client								*_findClientByNick( std::map<int, Client> &clients , string nick ) const;
+		void								_pong ( Client client );
 		void								_privmsg( string full_command , Client client );
 
 	
