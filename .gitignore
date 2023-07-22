@@ -2,6 +2,8 @@
 compile_commands.json
 .cache
 ircserv
+.DS_Store
+brain.md
 
 # Prerequisites
 *.d
