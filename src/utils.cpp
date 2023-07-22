@@ -14,7 +14,7 @@
 #include <sstream>
 #include <string>
 
-std::vector<std::string> split_string( string str , string delim ) {
+std::vector<std::string> split_string( std::string str , string delim ) {
     // std::stringstream buff(str);
 	std::string word;
 	std::vector<std::string> wordList;

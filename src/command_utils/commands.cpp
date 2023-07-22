@@ -44,7 +44,9 @@ void Server::_parseMessage(Client &client, char *buff) {
         } else if (!command_prefix.compare("QUIT")) {
             _connectionCount--;
             close(client.getClientSocket());
-        } 
+        } else if (!command_prefix.compare("KICK")) {
+            _kickCommand( client, buff );
+        }
         
     }
 

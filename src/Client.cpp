@@ -26,20 +26,19 @@ Client::Client( int listen_socket, struct sockaddr_in hint )
 	_msgSent = 0;
 }
 
-int Client::getClientSocket( void ) {
+int Client::getClientSocket( void ) const {
     return ( this->_client_socket );
 }
 
-size_t    Client::getMsgSent( void ) {
+size_t    Client::getMsgSent( void ) const {
     return ( this->_msgSent );
 }
 
-std::string    Client::getNick( void ) {
+std::string    Client::getNick( void ) const {
     return ( _nick );
 }
 
-std::string    Client::getUser( void ) {
-
+std::string    Client::getUser( void ) const {
     return ( _user );
 }
 
@@ -69,8 +68,7 @@ void	Client::setUser( std::string user) {
         _isRegistered = true;
 }
 
-bool    Client::getRegisteredStatus( void )
-{
+bool    Client::getRegisteredStatus( void ) const {
 	return ( _isRegistered );
 }
 
@@ -91,6 +89,6 @@ void	Client::setAddrInfo( void ) {
 	// std::string(inet_ntoa(ipAddr)).copy(_ip, std::string(inet_ntoa(ipAddr)).length() , 0);
 }
 
-std::string Client::getIp( void ) {
+std::string Client::getIp( void ) const {
 	return ( _ip );
 }

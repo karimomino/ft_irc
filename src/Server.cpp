@@ -47,6 +47,7 @@ bool Server::_addCommandFunction( std::string const & keyValue , cmdFun funPtr )
 bool Server::_initCommandsFunctions( void ) {
     // TODO: add all the commands functions
     // _addCommandFunction( "EXAMPLE", &Server::_exampleCmd );
+    _addCommandFunction( "KICK", &Server::_kickCommand );
 
     return ( true );
 }
@@ -74,8 +75,7 @@ int Server::_initServer() {
     } else if (listen(_listen_socket, MAX_CLIENTS)) {
         std::cout << "Failed to listen" << std::endl;
         ret = 0;
-    } else if ( ret )
-    {
+    } else if ( ret ) {
         tmp_fd.fd = _listen_socket;
         tmp_fd.events = POLLIN;
         tmp_fd.revents = 0;
@@ -173,7 +173,7 @@ int Server::_acceptConnection(void) {
 
 int Server::getListenSocket(void) const { return (this->_listen_socket); }
 
-size_t Server::getConnectionCount(void) const{ return (this->_connectionCount); }
+size_t Server::getConnectionCount(void) const { return (this->_connectionCount); }
 
 void Server::_executeCommand( Client const & client, std::string const & message ) {
     size_t foundSpace = message.find( ' ' );
@@ -187,4 +187,8 @@ void Server::_executeCommand( Client const & client, std::string const & message
 
     cmdFun fun = ( cmdFun )( cmd->second );
     ( this->*fun )( client, message );
+}
+
+bool Server::_sendMessage( Client client, std::string const & msg ) {
+    return ( send( client.getClientSocket(), msg.c_str(), msg.length(), 0x80 ) );
 }

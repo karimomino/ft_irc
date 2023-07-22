@@ -34,7 +34,8 @@
 
 std::vector<std::string> split_string( string str , string delim );
 std::string    ft_itoa( int num );
-typedef std::vector< Channel > ChanVector;
+// typedef std::vector< Channel > ChanVector;
+typedef std::map< std::string, Channel> chan_map;
 typedef std::vector< pollfd > PollVector;
 
 #endif
@@ -47,14 +48,15 @@ class Server {
 
         const int                            _port;
         const std::string                    _pass;
-    
+
         int                                  _listen_socket;
         size_t                               _connectionCount;
 
         PollVector                           _poll_fds;
         struct sockaddr_in                   _hint;
         std::map<int, Client>                _clientMap;
-        ChanVector                           _channels;
+        // ChanVector                           _channels;
+        chan_map                             _channels;
         CmdMap                               _commands;
 
         int                                 _initServer( void );
@@ -65,7 +67,7 @@ class Server {
         std::string                         _createMessage( Client client, string command );
         void                                _joinChannel( Client client, string name);
         void                                _broadcastJoin( Client client , Channel chan , string name );
-        ChanVector::iterator                _findChannel( ChanVector &channels , std::string name ) const;
+        // ChanVector::iterator                _findChannel( chan_map & channels , std::string name ) const;
 
         void                                _privmsg( string full_command , Client client );
 
@@ -77,8 +79,11 @@ class Server {
         void  _executeCommand( Client const & client, std::string const & message );
 
         /**                   COMMANDS FUN                   **/
-        void  _joinCommand( Client const & c, std::string const & command );
-    
+        void    _joinCommand( Client const & user, std::string const & command );
+        void    _kickCommand( Client const & client, std::string const & msg );
+
+        bool    _sendMessage( Client client, std::string const & msg );
+
     public:
         typedef std::map<string, void (Client::*)( string )>::iterator command_it;
         Server( const int port, const string pass );

@@ -36,18 +36,23 @@ private:
 public:
     Client( int listen_socket, struct sockaddr_in hint );
     // ~Client( void );
-    int getClientSocket( void );
-    size_t    getMsgSent( void );
-    int        joinChannel( std::string chan );
-    void    incMsgSent( void );
-    std::string    getPass( void );
-    void    setPass( std::string newPass );
-    std::string    getNick( void );
-    void    setNick( std::string newNick );
-    std::string    getUser( void );
-    void    setUser( std::string newUser );
-    bool    getRegisteredStatus( void );
-    void    setAddrInfo( void );
-    std::string    getIp( void );
 
+        /* METHODS */
+    void    incMsgSent( void );
+    int     joinChannel( std::string chan );
+
+        /* GETTERS */
+    int         getClientSocket( void )     const;
+    size_t      getMsgSent( void )          const;
+    std::string getUser( void )             const;
+    std::string getPass( void )             const;
+    std::string getNick( void )             const;
+    std::string getIp( void )               const;
+    bool        getRegisteredStatus( void ) const;
+
+        /* SETTERS */
+    void    setPass( std::string newPass );
+    void    setNick( std::string newNick );
+    void    setUser( std::string newUser );
+    void    setAddrInfo( void );
 };

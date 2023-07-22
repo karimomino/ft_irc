@@ -8,6 +8,7 @@ SRCS		=	main.cpp				\
 				command_utils/join.cpp	\
 				command_utils/commands.cpp	\
 				command_utils/privmsg.cpp	\
+				command_utils/kick.cpp	\
 
 SRCS_DIR    =   ./src/
 
