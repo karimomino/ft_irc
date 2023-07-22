@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 20:43:53 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/07 10:32:32 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/22 14:06:54 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 
 typedef std::string string;
 
-#endif
 
 class Client;
 
@@ -61,3 +60,5 @@ public:
     void        setTopicMode( bool );
     void        setInviteMode( bool );
 };
+
+#endif

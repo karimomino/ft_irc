@@ -6,13 +6,23 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 16:10:25 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/22 13:50:07 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/22 13:55:24 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Server.hpp"
 #include <cstdio>
 #include <iostream>
+
+string  findChannelName( string full_command ) {
+    string chan_name;
+    std::vector< string > split_command = split_string( full_command , " ");
+    std::vector< string >::iterator split_it = split_command.begin();
+
+    chan_name = *(++split_it);
+    std::cout << "SEND IN CHANNEL: " << chan_name << std::endl;
+    return ( chan_name );
+}
 
 string  findTargetName( string full_command ) {
     string chan_name;
@@ -50,7 +60,7 @@ void Server::_privmsg( string full_command , Client client) {
 
     std::cout << "####################START MESSAGE COMMAND#############################" << std::endl;
     std::cout << "COMMAND: " << full_command;
-    // string channelName = findChannelName( full_command );
+    string channelName = findChannelName( full_command );
     // ChanVector::iterator    chan_it = _findChannel(_channels, channel);
     Channel channel = _channels.find( channelName )->second;
     std::vector< std::string > tmp_nicks = channel.getNicks();

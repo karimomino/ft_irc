@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 17:23:20 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/22 13:46:47 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/22 13:54:57 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ class Server {
         std::string                         _createMessage( Client client, string command );
         void                                _joinChannel( Client client, string name);
         void                                _broadcastJoin( Client client , Channel chan , string name );
+        Client  *_findClientByNick( std::map<int, Client> &clients , string nick ) const;
+        void    _pong( Client client);
         // ChanVector::iterator                _findChannel( chan_map & channels , std::string name ) const;
 
         void                                _privmsg( string full_command , Client client );
