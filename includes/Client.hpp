@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
+/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 19:56:23 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/10 01:57:26 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/07/22 16:05:58 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,9 @@ private:
     size_t        _msgSent;
     struct addrinfo *_servinfo;
     bool        _isRegistered;
+    bool        _isWelcomed;
+    
+    void        _welcomeClient( void );
 
 
 public:

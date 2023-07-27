@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 20:43:53 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/22 14:06:54 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/25 14:36:11 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,19 @@
 #include <string>
 #include <algorithm>
 #include <map>
+#include "Server.hpp"
+
+#ifdef DEBUG
+#define DEBUG_MSG(str) do { std::cout << str << std::endl; } while( false )
+#else
+#define DEBUG_MSG(str) do { } while ( false )
+#endif
 
 typedef std::string string;
 
 
 class Client;
+class Server;
 
 class Channel {
     typedef std::vector< string > StrVector;
@@ -44,8 +52,9 @@ public:
 
     /* METHODS */
     void    addInvitation( string );
-    void    addUser( std::string const & nick, Client & client );
+    void    addUser( std::string const & nick, Client const & client );
     bool    removeUser( std::string const & nick );
+    bool    sendMessage( Server& t , std::string const & origin , std::string const & msg ) const;
     // void    addUser( string );
 
     /* GETTERS */
@@ -54,6 +63,7 @@ public:
     const string getMode( void )     const;
     string	 getUsersStr( void ) const;
     StrVector    getNicks( void ) const ;
+    const Client *getClientByNick( const std::string nick); 
 
     /* SETTERS */
     void        setName( string );

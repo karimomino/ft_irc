@@ -6,23 +6,13 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 20:42:02 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/22 13:54:44 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/25 14:35:15 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Server.hpp"
 
-// ChanVector::iterator Server::_findChannel( ChanVector &channels , std::string name ) const {
-//
-//     ChanVector::iterator    chan_it = channels.begin();
-//
-//     for (chan_it = channels.begin(); chan_it != channels.end(); chan_it++) {
-//         if ( chan_it->getName() == name )
-//             break ;
-//     }
-//
-//     return ( chan_it );
-// }
+
 
 Client  *Server::_findClientByNick( std::map<int, Client> &clients , string nick ) const {
 
@@ -60,48 +50,39 @@ void    Server::_broadcastJoin( Client client , Channel chan , string name ) {
 
 }
 
-void    Server::_joinChannel( Client client , std::string name ) {
+void    Server::_joinChannel( Client const & client , std::string name ) {
 
     string msg;
-    // figure out why below commented line segfaults
-    // ChanVector::iterator chan = _findChannel( _channels, name);
     // TODO: join multiple channels in a single command
     // TODO: Check invite only and key
-    // if ( _findChannel( _channels, name) == _channels.end() )
     if ( _channels.find( name ) == _channels.end() )
     {
-        // _channels.push_back( Channel( name, "Default Topic" , "" , false , true ) );
         _channels.insert( std::pair< std::string, Channel>( name, Channel( name, "Default Topic" , "" , false , true ) ) );
-        // _findChannel( _channels, name)->addUser( "@" + client.getNick() );
-        // _findChannel( _channels, name )->addUser( "@" + client.getNick(), client );
+        DEBUG_MSG("ADDING CLIENT TO CHAN: " << client.getNick() << " with fd: " << client.getClientSocket() << std::endl);
         _channels.find( name )->second.addUser( "@" + client.getNick(), client );
 
-        std::cout << "Attempting to join new channel ..." << std::endl;
+        DEBUG_MSG("Attempting to join new channel ...");
 
         msg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getIp() + " JOIN :" + name + "\r\n";
         send(client.getClientSocket(), msg.c_str() , msg.length()  , 0x80);
 
-        std::cout << "full join msg: " << msg << std::endl;
+        DEBUG_MSG("full join msg: " << msg);
 
         msg = ":localhost MODE " + name + " +t\r\n";
         send(client.getClientSocket(), msg.c_str() , msg.length()  , 0x80);
     } else {
-        // _findChannel( _channels, name)->addUser( client.getNick() );
-        // _findChannel( _channels, name )->addUser( client.getNick(), client );
-        _channels.find( name )->second.addUser( "@" + client.getNick(), client );
+        _channels.find( name )->second.addUser( client.getNick(), client );
+        DEBUG_MSG("ADDING CLIENT TO CHAN: " << client.getNick() << " with fd: " << client.getClientSocket() << std::endl);
         msg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getIp() + " JOIN " + name + "\r\n";
         send(client.getClientSocket(), msg.c_str() , msg.length()  , 0x80);
-
-        // msg = ":localhost 332 " + client.getNick() + " " + name + " :" + _findChannel( _channels, name)->getTopic() + "\r\n";
         msg = ":localhost 332 " + client.getNick() + " " + name + " :" + _channels.find( name )->second.getTopic() + "\r\n";
         send(client.getClientSocket(), msg.c_str(), msg.length(), 0);
-        // _broadcastJoin(client, *_findChannel( _channels, name), name);
         _broadcastJoin(client, _channels.find( name )->second, name);
     }
-    // msg = ":localhost 353 " + client.getNick() + " = " + name + " :" + _findChannel( _channels, name)->getUsersStr() + "\r\n";
     msg = ":localhost 353 " + client.getNick() + " = " + name + " :" + _channels.find( name )->second.getUsersStr() + "\r\n";
+    DEBUG_MSG("THIS IS THE NAMES COMMAND: " << msg);
     send(client.getClientSocket(), msg.c_str(), msg.length(), 0);
-
     msg = ":localhost 366 " + client.getNick() + " " + name + " :End of /NAMES list\r\n";
+    DEBUG_MSG("THIS IS THE END NAMES####: " << msg);
     send(client.getClientSocket(), msg.c_str(), msg.length(), 0);
 }

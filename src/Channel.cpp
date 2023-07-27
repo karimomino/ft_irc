@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/29 15:07:23 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/07 10:33:12 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/25 14:36:20 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void Channel::_removeInvitation( std::string nick ) {
         _invitations.erase(nick_pos);
 }
 
-void Channel::addUser( std::string const & nick, Client & client ) {
+void Channel::addUser( std::string const & nick, Client const & client ) {
     _clients.insert( std::pair<std::string, const Client *>( nick, &client ) );
 }
 
@@ -64,7 +64,7 @@ string  Channel::getUsersStr( void ) const {
 
     for ( _clients_const_it it = _clients.begin(); it != _clients.end(); ++it ) {
         std::string nick = it->first;
-        nicks.append( nick );
+        nicks.append( " " + nick );
     }
 
     return ( nicks );
@@ -86,4 +86,27 @@ bool Channel::removeUser( std::string const & nick ) {
         return ( false );
     _clients.erase( nick );
     return ( true );
+}
+
+const Client *Channel::getClientByNick( const std::string nick) {
+    const Client *cli = (_clients.find( nick )->second);
+    return (cli);
+}
+
+// std::string constructMessage( Client target , std::string const & msg ) {
+//     std::string finalMsg = msg + target.getNick() + " :" + 
+// }
+
+bool    Channel::sendMessage( Server& t , std::string const & origin , std::string const & msg ) const {
+    bool sendRet = false;
+    for (_clients_const_it it = _clients.begin(); it != _clients.end(); it++)
+    {
+        const Client *curr_client = it->second;
+        std::string finalMsg = origin + "PRIVMSG " + _name + " :" + msg;
+        DEBUG_MSG(finalMsg << std::endl);
+        DEBUG_MSG("CLIENT NAME: " << it->first << "\nCLIENT FD: " << curr_client->getClientSocket() << std::endl);
+        // if (*split_string(origin , ":").begin() != curr_client.getNick())
+        sendRet =  t._sendMessage( *curr_client , finalMsg );
+    }
+    return ( sendRet );
 }

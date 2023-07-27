@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 17:23:20 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/22 13:54:57 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/25 14:35:34 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,14 @@
 #ifndef MAX_CLIENTS
 #define MAX_CLIENTS 4
 
+class Channel;
+typedef std::string string;
 std::vector<std::string> split_string( string str , string delim );
 std::string    ft_itoa( int num );
 // typedef std::vector< Channel > ChanVector;
 typedef std::map< std::string, Channel> chan_map;
 typedef std::vector< pollfd > PollVector;
 
-#endif
 
 
 class Server {
@@ -65,7 +66,7 @@ class Server {
         void                                _parseMessage( Client &new_socket , char *buff );
         std::map<int, Client>::iterator     _getClient( const int fd );
         std::string                         _createMessage( Client client, string command );
-        void                                _joinChannel( Client client, string name);
+        void                                _joinChannel( Client const & client, string name);
         void                                _broadcastJoin( Client client , Channel chan , string name );
         Client  *_findClientByNick( std::map<int, Client> &clients , string nick ) const;
         void    _pong( Client client);
@@ -84,7 +85,10 @@ class Server {
         void    _joinCommand( Client const & user, std::string const & command );
         void    _kickCommand( Client const & client, std::string const & msg );
 
-        bool    _sendMessage( Client client, std::string const & msg );
+        bool    _sendMessage( Client const & client, std::string const & msg );
+        bool    _sendMessage( Channel const & chan, std::string const & origin, std::string const & msg );
+
+        void    _sendAMessage( std::string full_command );
 
     public:
         typedef std::map<string, void (Client::*)( string )>::iterator command_it;
@@ -92,4 +96,7 @@ class Server {
         // ~Server();
         int getListenSocket( void ) const;
         size_t    getConnectionCount ( void ) const;
+
+        friend class Channel;
 };
+#endif

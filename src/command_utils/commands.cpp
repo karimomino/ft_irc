@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 15:40:43 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/26 13:42:59 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/24 12:28:57 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void Server::_parseMessage(Client &client, char *buff) {
 
     for ( std::vector<std::string>::iterator cmd_it = cmd_list.begin() ; cmd_it != cmd_list.end() ; cmd_it++ ) {
         std::string comm = (*cmd_it);
-        std::cout <<"command : " << comm << std::endl;
+        DEBUG_MSG("command : " << comm);
         std::vector<std::string> word_list = split_string(comm , " " );
         std::vector<std::string>::iterator word_it = word_list.begin();
         std::string command_prefix = *word_it;
