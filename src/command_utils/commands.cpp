@@ -14,12 +14,12 @@
 
 void Server::_parseMessage(Client &client, char *buff) {
 
-    std::vector<std::string> cmd_list = split_string(buff , "\r\n" );
+    std::vector<std::string> cmd_list = utils::split(buff , "\r\n" );
 
     for ( std::vector<std::string>::iterator cmd_it = cmd_list.begin() ; cmd_it != cmd_list.end() ; cmd_it++ ) {
         std::string comm = (*cmd_it);
         std::cout <<"command : " << comm << std::endl;
-        std::vector<std::string> word_list = split_string(comm , " " );
+        std::vector<std::string> word_list = utils::split(comm , " " );
         std::vector<std::string>::iterator word_it = word_list.begin();
         std::string command_prefix = *word_it;
 

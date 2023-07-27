@@ -55,8 +55,8 @@ void Channel::_removeInvitation( std::string nick ) {
         _invitations.erase(nick_pos);
 }
 
-void Channel::addUser( std::string const & nick, Client & client ) {
-    _clients.insert( std::pair<std::string, const Client *>( nick, &client ) );
+void Channel::addUser( std::string const & nick, Client const & client ) {
+    _clients.insert( std::pair<std::string, Client const *>( nick, &client ) );
 }
 
 string  Channel::getUsersStr( void ) const {
@@ -81,9 +81,26 @@ Channel::StrVector Channel::getNicks( void ) const {
     return ( nicks );
 }
 
-bool Channel::removeUser( std::string const & nick ) {
-    if ( _clients.find( nick ) == _clients.end() )
+bool Channel::kickUser( std::string const & nick, std::string const & kickResponse ) {
+    _clients_const_it user = _clients.find( nick );
+    if ( user == _clients.end() )
         return ( false );
+
+    send( user->second->getClientSocket(), kickResponse.c_str(), kickResponse.length(), 0x80 );
     _clients.erase( nick );
+
     return ( true );
+}
+
+std::vector<Client const *> Channel::getClients( void ) const {
+    std::vector<Client const *> clients;
+
+    for ( _clients_const_it it = _clients.begin(); it != _clients.end(); it++ )
+        clients.push_back( it->second );
+
+    return ( clients );
+}
+
+Client const & Channel::findClient( std::string const & nick ) const {
+    return ( *_clients.find( nick )->second );
 }

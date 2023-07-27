@@ -188,6 +188,18 @@ void Server::_executeCommand( Client const & client, std::string const & message
     ( this->*fun )( client, message );
 }
 
-bool Server::_sendMessage( Client client, std::string const & msg ) {
+bool Server::_sendMessage( Client const & client, std::string const & msg ) {
+    std::cout << "## RESPONSE: [" << msg << std::endl;
+
     return ( send( client.getClientSocket(), msg.c_str(), msg.length(), 0x80 ) );
+}
+
+bool Server::_sendMessage( Channel const & chan, std::string const & msg ) {
+    std::vector<Client const *> clients = chan.getClients();
+
+    for ( std::vector<Client const *>::iterator it = clients.begin(); it != clients.end(); it++ ) {
+        send( (*it)->getClientSocket(), msg.c_str(), msg.length(), 0x80 );
+        std::cout << "## RESPONSE: " << msg<< std::endl;
+    }
+    return ( true );
 }

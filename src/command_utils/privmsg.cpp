@@ -16,7 +16,7 @@
 
 string  findChannelName( string full_command ) {
     string chan_name;
-    std::vector< string > split_command = split_string( full_command , " ");
+    std::vector< string > split_command = utils::split( full_command , " ");
     std::vector< string >::iterator split_it = split_command.begin();
 
     chan_name = *(++split_it);
@@ -26,7 +26,7 @@ string  findChannelName( string full_command ) {
 
 string  findTargetName( string full_command ) {
     string chan_name;
-    std::vector< string > split_command = split_string( full_command , " ");
+    std::vector< string > split_command = utils::split( full_command , " ");
     std::vector< string >::iterator split_it = split_command.begin();
 
     chan_name = *(++split_it);
@@ -45,13 +45,13 @@ string  findMsgOrigin ( Client client ) {
 
 string findText( string full_command ) {
     string text;
-    std::vector< string > split_command = split_string( full_command , ":");
+    std::vector< string > split_command = utils::split( full_command , ":");
     std::vector< string >::iterator split_it = split_command.begin();
     split_it++;
     text = *split_it;
     for (split_it = split_it + 1; split_it != split_command.end() ; split_it++)
         text += ":" + *split_it;
-        
+
     std::cout << "MESSAGE CONTENT: " << text << std::endl;
     return ( text );
 }

@@ -60,9 +60,10 @@ void    Server::_broadcastJoin( Client client , Channel chan , string name ) {
 
 }
 
-void    Server::_joinChannel( Client client , std::string name ) {
+void    Server::_joinChannel( Client const & client , std::string name ) {
 
     string msg;
+    // name = name.substr( 1, name.length() - 1 );
     // figure out why below commented line segfaults
     // ChanVector::iterator chan = _findChannel( _channels, name);
     // TODO: join multiple channels in a single command
@@ -70,10 +71,9 @@ void    Server::_joinChannel( Client client , std::string name ) {
     // if ( _findChannel( _channels, name) == _channels.end() )
     if ( _channels.find( name ) == _channels.end() )
     {
-        // _channels.push_back( Channel( name, "Default Topic" , "" , false , true ) );
         _channels.insert( std::pair< std::string, Channel>( name, Channel( name, "Default Topic" , "" , false , true ) ) );
-        // _findChannel( _channels, name)->addUser( "@" + client.getNick() );
-        // _findChannel( _channels, name )->addUser( "@" + client.getNick(), client );
+
+        // std::cout << "address new channel: [" << &client << "] - [" << client.getNick() << std::endl;
         _channels.find( name )->second.addUser( "@" + client.getNick(), client );
 
         std::cout << "Attempting to join new channel ..." << std::endl;
@@ -86,9 +86,8 @@ void    Server::_joinChannel( Client client , std::string name ) {
         msg = ":localhost MODE " + name + " +t\r\n";
         send(client.getClientSocket(), msg.c_str() , msg.length()  , 0x80);
     } else {
-        // _findChannel( _channels, name)->addUser( client.getNick() );
-        // _findChannel( _channels, name )->addUser( client.getNick(), client );
-        _channels.find( name )->second.addUser( "@" + client.getNick(), client );
+        // std::cout << "address found channel: [" << &client << "] - [" << client.getNick() << std::endl;
+        _channels.find( name )->second.addUser( client.getNick(), client );
         msg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getIp() + " JOIN " + name + "\r\n";
         send(client.getClientSocket(), msg.c_str() , msg.length()  , 0x80);
 
