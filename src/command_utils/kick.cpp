@@ -1,108 +1,39 @@
 #include "Server.hpp"
 
-static bool findIndicies( std::string const & msg, size_t * firstHash, size_t * firstSpace, size_t * secondSpace ) {
-    *firstHash = msg.find( "#" );
-    *firstSpace = msg.find( " ", *firstHash );
-    *secondSpace = msg.find( " ", *firstSpace + 1 );
-
-    if ( *firstHash == std::string::npos || *firstSpace == std::string::npos
-        || *secondSpace == std::string::npos ) {
-        std::cerr << "Error: executing kick command" << std::endl;
-        return false;
-    }
-
-    return ( true );
+// S <-   :dan!d@localhost KICK #test alice :dan
+static std::string const kickeResponse( Channel const & chan, Client const & kickedUser, Client const & cmdUser ) {
+    std::string const msg = ":" + cmdUser.getNick() + "!" + cmdUser.getUser() + "@10.18.201.76 KICK " +  chan.getName() + " " + kickedUser.getNick() + " :" + cmdUser.getNick() + "\r\n";
+    std::cout << "KICK RESPONSE [" << msg.substr( 0, msg.length() - 1 ) << "]" << std::endl;;
+    return ( msg );
 }
 
-std::vector<std::string> split(std::string const & str, std::string const & delimiter) {
-    std::vector<std::string> v;
-    // (void)str;
-    // (void)delimiter;
-    if ( !str.empty() ) {
-        size_t start = 0;
-        do {
-            size_t idx = str.find(delimiter, start);
-            if (idx == string::npos) {
-                break;
-            }
- 
-            size_t length = idx - start;
-            string x = str;
-            v.push_back(x.substr(start, length));
-            start += ( length + delimiter.size() );
-        } while ( true );
-        v.push_back( str.substr( start ) );
-    }
-    return ( v );
-}
-
-// Parameters: <channel> <user> [<comment>]
-// command : KICK #channel user :comment
+// Parameters: <channel> <user> [<reason>]
+// command : KICK #channel user :reason
 void Server::_kickCommand( Client const & client, std::string const & msg ) {
-    (void)client;
-    // (void)msg;
-    typedef std::vector<std::string> cstring_vec;
+    // TODO: check user priv
+    // TODO: add the reason part to the response message
+    typedef std::vector<std::string const> cstring_vec;
 
-    size_t firstHash, firstSpace, secondSpace;
-    if ( !findIndicies( msg, &firstHash, &firstSpace, &secondSpace ) )
-        return ;
+    cstring_vec chanList = message::extractArgs( msg, "#" );
+    cstring_vec nickList = message::extractNickList( msg );
+    cstring_vec reasonList = message::extractArgs( msg, ":" );
 
-    std::string const channelName = msg.substr( firstHash, firstSpace - firstHash );
-    std::cout << "channelName: [" << channelName << "]" << std::endl;
-    std::string const username = msg.substr( firstSpace + 1, secondSpace - firstSpace  - 1 ); // user to be kicked
-    std::cout << "username: [" << username << "]" << std::endl;
-    std::string const kickComment = msg.substr( secondSpace + 1, msg.length() - secondSpace  - 1 );
-    std::cout << "kickComment: [" << kickComment << "]" << std::endl;
+    cstring_vec::iterator chan_it = chanList.begin();
+    cstring_vec::iterator  nick_it = nickList.begin();
+    cstring_vec::iterator reason_it = reasonList.begin();
 
+    for ( ; chan_it != chanList.end(); chan_it++ ) {
+        std::string chan_name = "#" + *chan_it;
+        std::map<std::string, Channel>::iterator currChan_it = _channels.find( chan_name );
+        if ( currChan_it != _channels.end() ) {
+            std::string const msgResponse = kickeResponse( currChan_it->second, currChan_it->second.findClient( *nick_it ), client );
+            if ( currChan_it->second.kickUser( *nick_it, msgResponse ) )
+                _sendMessage( currChan_it->second, msgResponse );
+        }
 
-    cstring_vec  channels_vec = split( channelName, "," );
-    cstring_vec  usernames_vec = split( username, "," );
-    cstring_vec  comments_vec = split( kickComment, "," );
-
-    // for ( cstring_vec::iterator chanName_it = channels_vec.begin();
-    // chanName_it != channels_vec.end(); chanName_it++ ) {
-    //     cstring_vec::iterator usernames_vec_it = usernames_vec.begin();
-    //     cstring_vec::iterator comments_vec_it = comments_vec.begin();
-    //     chan_map::iterator chan_it = _channels.find( *chanName_it );
-
-    //     // TODO: check if it reached the limit of users or comments
-    //     // TODO: Clean the code
-    //     if ( chan_it != _channels.end() ) {
-    //         Channel foundChannel = chan_it->second;
-    //         if ( !foundChannel.removeUser( *usernames_vec_it ) ) {
-    //             for ( std::map<int, Client>::iterator it = _clientMap.begin(); it != _clientMap.end(); it++ ) {
-    //                 std::cout << "----------> [" << it->second.getNick() << "] <-------------" << std::endl;
-    //                 if ( it->second.getNick() == *usernames_vec_it ) {
-    //                     // _sendMessage( it->second, "test msg test msg" );
-    //                     // S <-   :dan!d@localhost KICK #Melbourne alice :dan
-    //                     _sendMessage( it->second, ":" + client.getNick() + "!" + client.getUser()
-    //                         + "@localhost KICK " + *chanName_it + " " + it->second.getNick() + ":" + client.getNick() + "\r\n" );
-    //                     // _sendMessage( );
-    //                     break ;
-    //                 }
-    //             }
-    //         }
-    //         else {
-    //             std::cerr << "Error: Can't find user [" << *usernames_vec_it << "] in channel ["
-    //                 << *chanName_it << std::endl;
-    //         }
-
-    //     } else {
-    //         std::cerr << "Error: Can't find channel [" << *chanName_it << "]" << std::endl;
-    //     }
-    //     if ( usernames_vec_it != usernames_vec.end() )
-    //         usernames_vec_it++;
-    //     if ( comments_vec_it != comments_vec_it )
-    //         comments_vec_it++;
-    // }
+        if ( nick_it != nickList.end() )
+            nick_it++;
+        if ( reason_it != reasonList.end() )
+            reason_it++;
+    }
 }
-
-// ChanVector::iterator it = _channels.begin();
-// for ( ; it != _channels.end(); it++ ) {
-//     if ( channelName == it->getName() )
-//         break ;
-// }
-// if ( it == _channels.end() ) {
-//     std::cerr << "Error: can't find channel" << std::endl;
-//     return ;
-// }

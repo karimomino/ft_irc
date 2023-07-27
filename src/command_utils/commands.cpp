@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 15:40:43 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/24 12:28:57 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/28 01:09:03 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 void Server::_parseMessage(Client &client, char *buff) {
 
-    std::vector<std::string> cmd_list = split_string(buff , "\r\n" );
+    std::vector<std::string> cmd_list = utils::split(buff , "\r\n" );
 
     for ( std::vector<std::string>::iterator cmd_it = cmd_list.begin() ; cmd_it != cmd_list.end() ; cmd_it++ ) {
         std::string comm = (*cmd_it);
         DEBUG_MSG("command : " << comm);
-        std::vector<std::string> word_list = split_string(comm , " " );
+        std::vector<std::string> word_list = utils::split(comm , " " );
         std::vector<std::string>::iterator word_it = word_list.begin();
         std::string command_prefix = *word_it;
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 18:41:14 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/27 18:06:19 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/28 01:15:48 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,4 +184,14 @@ bool Server::_sendMessage( Client const & client, std::string const & msg ) {
 
 bool Server::_sendMessage( Channel const & chan, std::string const & origin, std::string const & msg ) {
     return ( chan.sendMessage(*this , origin , msg) );
+}
+
+bool Server::_sendMessage( Channel const & chan, std::string const & msg ) {
+    std::vector<Client const *> clients = chan.getClients();
+
+    for ( std::vector<Client const *>::iterator it = clients.begin(); it != clients.end(); it++ ) {
+        send( (*it)->getClientSocket(), msg.c_str(), msg.length(), 0x80 );
+        std::cout << "## RESPONSE: " << msg<< std::endl;
+    }
+    return ( true );
 }

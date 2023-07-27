@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 16:10:25 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/27 17:51:06 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/28 01:10:17 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 static string  findTargetName( string full_command ) {
     string chan_name;
-    std::vector< string > split_command = split_string( full_command , " ");
+    std::vector< string > split_command = utils::split( full_command , " ");
     std::vector< string >::iterator split_it = split_command.begin();
 
     chan_name = *(++split_it);
@@ -35,7 +35,7 @@ static string  findMsgOrigin ( Client client ) {
 
 static string findText( string full_command ) {
     string text;
-    std::vector< string > split_command = split_string( full_command , ":");
+    std::vector< string > split_command = utils::split( full_command , ":");
     std::vector< string >::iterator split_it = split_command.begin();
     split_it++;
     text = *split_it;

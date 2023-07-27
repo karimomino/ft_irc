@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 20:43:53 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/25 14:36:11 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/28 01:14:26 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ class Server;
 
 class Channel {
     typedef std::vector< string > StrVector;
-    typedef std::map< std::string const, const Client *>::iterator _clients_it;
-    typedef std::map< std::string const, const Client *>::const_iterator _clients_const_it;
+    typedef std::map< std::string const, Client const *> _clients_const;
+    typedef _clients_const::const_iterator _clients_const_it;
 
 private:
     string                 _name;
@@ -42,7 +42,7 @@ private:
     bool                   _isInviteOnly;
     bool                   _topicOpOnly;
     StrVector              _invitations;
-    std::map<std::string const, const Client *> _clients;
+    std::map<std::string const, Client const *> _clients;
 
     void    _removeInvitation( string );
 
@@ -53,17 +53,18 @@ public:
     /* METHODS */
     void    addInvitation( string );
     void    addUser( std::string const & nick, Client const & client );
-    bool    removeUser( std::string const & nick );
+    bool    kickUser( std::string const & nick, std::string const & kickResponse );
+    Client const & findClient( std::string const & name ) const;
     bool    sendMessage( Server& t , std::string const & origin , std::string const & msg ) const;
     // void    addUser( string );
 
     /* GETTERS */
-    const string getName( void )     const;
-    const string getTopic( void )    const;
-    const string getMode( void )     const;
-    string	 getUsersStr( void ) const;
-    StrVector    getNicks( void ) const ;
-    const Client *getClientByNick( const std::string nick); 
+    const string                getName( void )     const;
+    const string                getTopic( void )    const;
+    const string                getMode( void )     const;
+    string	                getUsersStr( void ) const;
+    StrVector                   getNicks( void )    const;
+    std::vector<Client const *> getClients( void )  const;
 
     /* SETTERS */
     void        setName( string );

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 20:01:27 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/22 16:06:22 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/28 01:17:37 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <netdb.h>
 #include <sys/socket.h>
 
-Client::Client( int listen_socket, struct sockaddr_in hint ) :   _pV4Addr((struct sockaddr_in*)&hint), _isRegistered(false), _isWelcomed(false)
+Client::Client( int listen_socket, struct sockaddr_in & hint ) : _pV4Addr((struct sockaddr_in*)&hint), _isRegistered(false), _isWelcomed(false)
 {
 	int addrlen = sizeof(hint);
 	_client_socket = accept(listen_socket, (sockaddr *)&hint, (socklen_t*)&addrlen);
