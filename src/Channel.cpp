@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/29 15:07:23 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/25 14:36:20 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/31 12:36:13 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,18 +41,31 @@ const std::string Channel::getTopic( void ) const {
     return ( _topic );
 }
 
-// const std::string Channel::getMode( void ) {
-//     return ( _mode );
-// }
+std::string const & Channel::getKey( void ) const {
+    return ( _key );
+}
 
-void Channel::addInvitation( std::string nick ) {
-    _invitations.push_back( nick );
+bool Channel::isInviteOnly( void ) const {
+    return ( _isInviteOnly );
+}
+bool Channel::isTopicOpOnly( void ) const {
+    return ( _topicOpOnly );
+}
+
+bool Channel::isInvited ( string nick ) {
+    bool isInvited = false;
+
+    if (_invitations.find( nick ) != _invitations.end() )
+        isInvited = true;
+    return ( isInvited );
+}
+
+void Channel::addInvitation( Client const &client ) {
+    _invitations.insert(std::pair<std::string, const Client *>( client.getNick() , &client ));
 }
 
 void Channel::_removeInvitation( std::string nick ) {
-    StrVector::iterator    nick_pos = std::find(_invitations.begin(), _invitations.end(), nick);
-    if ( nick_pos != _invitations.end())
-        _invitations.erase(nick_pos);
+    _invitations.erase( nick );
 }
 
 void Channel::addUser( std::string const & nick, Client const & client ) {

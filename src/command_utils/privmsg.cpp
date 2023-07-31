@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 16:10:25 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/27 17:51:06 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/28 13:10:33 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static string  findTargetName( string full_command ) {
 static string  findMsgOrigin ( Client client ) {
     string origin;
 
-    origin = ":" + client.getNick() + "!" + client.getUser() + "@127.0.0.1" + client.getIp() + " ";
+    origin = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getIp() + " ";
 
     DEBUG_MSG("ORIGIN OF MESSAGE: " << origin);
     return ( origin );

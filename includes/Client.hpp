@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 19:56:23 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/22 16:05:58 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/27 20:52:17 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ private:
 
 
 public:
-    Client( int listen_socket, struct sockaddr_in hint );
+    Client( int listen_socket, struct sockaddr_in const & hint );
     // ~Client( void );
 
         /* METHODS */

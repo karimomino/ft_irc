@@ -12,13 +12,13 @@
 			"args": ["4445" , "123123"],
 			// "program": "/usr/bin/env",
 			// "args": ["-i", "${workspaceFolder}/minishell"],
-            "stopAtEntry": false,
+            "stopAtEntry": true,
             "cwd": "${fileDirname}",
             "environment": [],
-            "externalConsole": true,
+            "externalConsole": false,
             "MIMode": "lldb",
-            // "miDebuggerPath": "/usr/bin/gdb",
- //           "miDebuggerServerAddress": "127.0.0.1:9999",
+            "miDebuggerPath": "/usr/bin/gdb",
+        //    "miDebuggerServerAddress": "127.0.0.1:9999",
             "preLaunchTask": "Build",
             "setupCommands": [
                 {
@@ -40,7 +40,4 @@
 
         }
     ]
-}
-
-	]
 }

@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 17:23:20 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/25 14:35:34 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/30 12:02:14 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ std::string    ft_itoa( int num );
 // typedef std::vector< Channel > ChanVector;
 typedef std::map< std::string, Channel> chan_map;
 typedef std::vector< pollfd > PollVector;
+typedef std::vector<std::string>::const_iterator vec_const_it;
+typedef std::vector<std::string>::iterator vec_it;
 
 
 
@@ -52,11 +54,12 @@ class Server {
 
         int                                  _listen_socket;
         size_t                               _connectionCount;
+        std::string                          _ip_string;
 
         PollVector                           _poll_fds;
         struct sockaddr_in                   _hint;
         std::map<int, Client>                _clientMap;
-        // ChanVector                           _channels;
+        // ChanVector                        _channels;
         chan_map                             _channels;
         CmdMap                               _commands;
 
@@ -66,8 +69,12 @@ class Server {
         void                                _parseMessage( Client &new_socket , char *buff );
         std::map<int, Client>::iterator     _getClient( const int fd );
         std::string                         _createMessage( Client client, string command );
-        void                                _joinChannel( Client const & client, string name);
+        void                                _joinChannel( Client const & client, string chanList , string chanKeys );
+        void                                _joinCreate( Client const & client , string chan , string topic , string key , bool inv , bool top );
+        void                                _joinExistingChannel( Client const & client , string chan );
+        void                                _sendNames( Client const & client , string chan);
         void                                _broadcastJoin( Client client , Channel chan , string name );
+        bool                                _allowedToJoin( Client client , Channel chan , string key ) const;
         Client  *_findClientByNick( std::map<int, Client> &clients , string nick ) const;
         void    _pong( Client client);
         // ChanVector::iterator                _findChannel( chan_map & channels , std::string name ) const;
