@@ -6,7 +6,7 @@
 /*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 18:41:14 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/01 22:43:54 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/01 22:46:27 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,13 +180,8 @@ void Server::_executeCommand( Client const & client, std::string const & message
     ( this->*fun )( client, message );
 }
 
-bool Server::_sendMessage( Client const & client, std::string const & msg ) {
-    ssize_t sendRet = send( client.getClientSocket(), msg.c_str(), msg.length(), 0x80 );
-    return ( sendRet >= 0 ? true : false );
-}
-
-bool Server::_sendMessage( Channel const & chan, std::string const & origin, std::string const & msg ) {
-    return ( chan.sendMessage(*this , origin , msg) );
+bool Server::sendMsg( Client const & client, std::string const & msg ) const {
+    return ( send( client.getClientSocket(), msg.c_str(), msg.length(), 0x80 ));
 }
 
 bool Server::sendMsg( Channel const & chan, std::string const & origin, std::string const & msg ) const {

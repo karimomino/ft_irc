@@ -6,7 +6,7 @@
 /*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/29 15:07:23 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/01 22:43:13 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/01 22:50:14 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,19 +53,18 @@ bool Channel::isTopicOpOnly( void ) const {
 }
 
 bool Channel::isInvited ( string nick ) {
-    bool isInvited = false;
+    (void)nick;
+    return ( true );
+    // bool isInvited = false;
 
-    if (_invitations.find( nick ) != _invitations.end() )
-        isInvited = true;
-    return ( isInvited );
+    // if (_invitations.find( nick ) != _invitations.end() )
+        // isInvited = true;
+    // return ( isInvited );
 }
 
 void Channel::addInvitation( Client const &client ) {
-    _invitations.insert(std::pair<std::string, const Client *>( client.getNick() , &client ));
-}
-
-void Channel::_removeInvitation( std::string nick ) {
-    _invitations.erase( nick );
+    (void)client;
+    // _invitations.insert(std::pair<std::string, const Client *>( client.getNick() , &client ));
 }
 
 void Channel::addUser( std::string const & nick, Client const & client ) {
@@ -109,7 +108,7 @@ bool Channel::kickUser( std::string const & nick, std::string const & kickRespon
 //     std::string finalMsg = msg + target.getNick() + " :" + 
 // }
 
-bool    Channel::sendMessage( Server const & t , std::string const & origin , std::string const & msg ) const {
+bool    Channel::sendMsg( Server const & t , std::string const & origin , std::string const & msg ) const {
     bool sendRet = false;
     for (_cclients_const_it it = _clients.begin(); it != _clients.end(); it++)
     {
@@ -118,10 +117,11 @@ bool    Channel::sendMessage( Server const & t , std::string const & origin , st
         DEBUG_MSG(finalMsg << std::endl);
         DEBUG_MSG("CLIENT NAME: " << it->first << "\nCLIENT FD: " << curr_client->getClientSocket() << std::endl);
         // if (*split_string(origin , ":").begin() != curr_client.getNick())
-        sendRet =  t._sendMessage( *curr_client , finalMsg );
+        sendRet =  t.sendMsg( *curr_client , finalMsg );
     }
     return ( sendRet );
 }
+
 std::vector<Client const *> Channel::getClients( void ) const {
     std::vector<Client const *> clients;
 

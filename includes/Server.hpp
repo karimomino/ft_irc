@@ -35,8 +35,6 @@
 
 class Channel;
 typedef std::string string;
-std::vector<std::string> split_string( string str , string delim );
-std::string    ft_itoa( int num );
 typedef std::map< std::string, Channel> chan_map;
 typedef std::vector< pollfd > PollVector;
 typedef std::vector<std::string>::const_iterator vec_const_it;

@@ -24,15 +24,6 @@ static string  findTargetName( string full_command ) {
     return ( chan_name );
 }
 
-static string  findMsgOrigin ( Client client ) {
-    string origin;
-
-    origin = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getIp() + " ";
-
-    DEBUG_MSG("ORIGIN OF MESSAGE: " << origin);
-    return ( origin );
-}
-
 static string findText( string full_command ) {
     string text;
     std::vector< string > split_command = utils::split( full_command , ":");

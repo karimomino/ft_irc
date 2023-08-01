@@ -29,7 +29,7 @@ Client  *Server::_findClientByNick( std::map<int, Client> &clients , string nick
 }
 
 void    Server::_broadcastJoin( Client client , Channel chan , string name ) {
-    std::vector< std::string > tmp_nicks = chan.getNicks();
+    std::vector< std::string const> tmp_nicks = chan.getNicks();
     std::string msg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getIp() + " JOIN :" + name + "\r\n";
     std::string actual_nick;
     for (size_t i = 0; i < tmp_nicks.size(); i++) {
@@ -119,8 +119,8 @@ void    Server::_joinChannel( Client const & client , string chans , string keys
 
     string msg;
     // TODO: Check invite only and key
-    std::vector<std::string> chanList = split_string( chans , "," );
-    std::vector<std::string> chanListKeysCandidates = split_string( keys , "," );
+    std::vector<std::string> chanList = utils::split( chans , "," );
+    std::vector<std::string> chanListKeysCandidates = utils::split( keys , "," );
     std::vector<string> chanListKeys(chanList.size() , "");
     findKey( chanListKeys , chanListKeysCandidates );
     vec_it keysIt = chanListKeys.begin();
@@ -136,6 +136,4 @@ void    Server::_joinChannel( Client const & client , string chans , string keys
         }
         keysIt++;
     }
-    
-    
 }

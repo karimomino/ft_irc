@@ -6,11 +6,7 @@
 /*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 20:43:53 by kamin             #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2023/08/01 22:18:12 by ommohame         ###   ########.fr       */
-=======
-/*   Updated: 2023/07/31 12:32:12 by kamin            ###   ########.fr       */
->>>>>>> karimDev
+/*   Updated: 2023/08/01 22:50:32 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +62,7 @@ public:
     bool           isMember( std::string const & nick ) const;
     bool           isOperator( std::string const & nick ) const;
     bool           addInvitation( std::string const & nick );
+    void           addInvitation( Client const &client );
     bool           removeInvitation( std::string const & nick );
 
     /* GETTERS */
@@ -75,6 +72,10 @@ public:
     const string  getUsersStr( void ) const;
     _cstring_vec  getNicks( void )    const;
     _cclients_vec getClients( void )  const;
+    bool          isInviteOnly( void ) const;
+    bool          isTopicOpOnly( void ) const;
+    bool          isInvited ( string nick );
+    std::string const & getKey( void ) const;
 
     /* SETTERS */
     void        setName( string );
