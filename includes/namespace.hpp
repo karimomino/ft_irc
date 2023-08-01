@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include "Server.hpp"
 
 namespace server {}
 
@@ -12,6 +13,7 @@ std::string ft_itoa( int num );
 }
 
 namespace message {
+std::string const getMsgOrigin( Client const & client );
 std::vector<std::string const> extractNickList( std::string const & msg );
 std::vector<std::string const> extractArgs( std::string const & msg, std::string const & delm );
 }

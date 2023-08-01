@@ -52,17 +52,5 @@ void Server::_parseMessage(Client &client, char *buff) {
         } else if (!command_prefix.compare("KICK")) {
             _kickCommand( client, buff );
         }
-        
     }
-
-
-    
-    // else {
-    //     std::cout << buff << std::endl;
-    // }
-
-    // if ( !client.getRegisteredStatus() )
-    // {
-    // 	std::cout << "Client is not registered yet. Please set passowrd, nick, and user to be able to use any commands." << std::endl;
-    // }
 }

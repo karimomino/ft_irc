@@ -6,7 +6,7 @@
 /*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 18:41:14 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/28 01:15:48 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/01 22:20:16 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ bool Server::_addCommandFunction( std::string const & keyValue , cmdFun funPtr )
 bool Server::_initCommandsFunctions( void ) {
     // TODO: add all the commands functions
     // _addCommandFunction( "EXAMPLE", &Server::_exampleCmd );
-    _addCommandFunction( "KICK", &Server::_kickCommand );
 
     return ( true );
 }
@@ -186,7 +185,11 @@ bool Server::_sendMessage( Channel const & chan, std::string const & origin, std
     return ( chan.sendMessage(*this , origin , msg) );
 }
 
-bool Server::_sendMessage( Channel const & chan, std::string const & msg ) {
+bool Server::sendMsg( Channel const & chan, std::string const & origin, std::string const & msg ) const {
+    return ( chan.sendMsg(*this, origin , msg) );
+}
+
+bool Server::sendMsg( Channel const & chan, std::string const & msg ) const {
     std::vector<Client const *> clients = chan.getClients();
 
     for ( std::vector<Client const *>::iterator it = clients.begin(); it != clients.end(); it++ ) {
@@ -194,4 +197,16 @@ bool Server::_sendMessage( Channel const & chan, std::string const & msg ) {
         std::cout << "## RESPONSE: " << msg<< std::endl;
     }
     return ( true );
+}
+
+bool    Server::sendMsg( std::string const & numReply, Client const & client, std::string const & msg ) const {
+    std::string const finalMsg = ":"SERVER_NAME" "+ numReply + " " + client.getNick()
+        + " :" + msg + "\r\n";
+    return ( send( client.getClientSocket(), finalMsg.c_str(), finalMsg.length(), 0x80 ) );
+}
+
+bool    Server::sendMsg( std::string const & numReply, Client const & client, std::string const & arg, std::string const & msg ) const {
+    std::string const finalMsg = ":"SERVER_NAME" "+ numReply + " " + client.getNick()
+        + " " + arg + " :" + msg + "\r\n";
+    return ( send( client.getClientSocket(), finalMsg.c_str(), finalMsg.length(), 0x80 ) );
 }

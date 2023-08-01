@@ -6,7 +6,7 @@
 /*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 20:43:53 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/28 01:14:26 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/01 22:18:12 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@
 #include "Server.hpp"
 
 #ifdef DEBUG
-#define DEBUG_MSG(str) do { std::cout << str << std::endl; } while( false )
+# define DEBUG_MSG(str) do { std::cout << str << std::endl; } while( false )
 #else
-#define DEBUG_MSG(str) do { } while ( false )
+# define DEBUG_MSG(str) do { } while ( false )
 #endif
 
 typedef std::string string;
@@ -31,40 +31,46 @@ class Client;
 class Server;
 
 class Channel {
-    typedef std::vector< string > StrVector;
-    typedef std::map< std::string const, Client const *> _clients_const;
-    typedef _clients_const::const_iterator _clients_const_it;
+    typedef std::vector<std::string const>  _cstring_vec;
+    typedef std::vector< Client const *>    _cclients_vec;
+
+    typedef std::map< std::string const, Client const *>    _cclients_map;
+    typedef _cclients_map::const_iterator                   _cclients_const_it;
+
+    typedef _cstring_vec        _invitations_vec;
+    typedef _invitations_vec    _invitations_it;
 
 private:
-    string                 _name;
-    string                 _topic;
-    string                 _key;
-    bool                   _isInviteOnly;
-    bool                   _topicOpOnly;
-    StrVector              _invitations;
-    std::map<std::string const, Client const *> _clients;
+    std::string        _name;
+    std::string        _topic;
+    std::string        _key;
+    bool               _isInviteOnly;
+    bool               _topicOpOnly;
+    _cclients_map      _clients;
+    _invitations_vec   _invitations;
 
-    void    _removeInvitation( string );
 
 public:
     Channel( string name , string topic , string key , bool inv , bool top );
     ~Channel( void );
 
     /* METHODS */
-    void    addInvitation( string );
-    void    addUser( std::string const & nick, Client const & client );
-    bool    kickUser( std::string const & nick, std::string const & kickResponse );
+    void           addUser( std::string const & nick, Client const & client );
+    bool           kickUser( std::string const & nick, std::string const & kickResponse );
     Client const & findClient( std::string const & name ) const;
-    bool    sendMessage( Server& t , std::string const & origin , std::string const & msg ) const;
-    // void    addUser( string );
+    bool           sendMsg( Server const & t , std::string const & origin , std::string const & msg ) const;
+    bool           isMember( std::string const & nick ) const;
+    bool           isOperator( std::string const & nick ) const;
+    bool           addInvitation( std::string const & nick );
+    bool           removeInvitation( std::string const & nick );
 
     /* GETTERS */
-    const string                getName( void )     const;
-    const string                getTopic( void )    const;
-    const string                getMode( void )     const;
-    string	                getUsersStr( void ) const;
-    StrVector                   getNicks( void )    const;
-    std::vector<Client const *> getClients( void )  const;
+    const string  getName( void )     const;
+    const string  getTopic( void )    const;
+    const string  getMode( void )     const;
+    const string  getUsersStr( void ) const;
+    _cstring_vec  getNicks( void )    const;
+    _cclients_vec getClients( void )  const;
 
     /* SETTERS */
     void        setName( string );

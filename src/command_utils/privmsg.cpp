@@ -6,7 +6,7 @@
 /*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 16:10:25 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/28 01:10:17 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/01 22:21:00 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,6 @@ static string  findTargetName( string full_command ) {
     return ( chan_name );
 }
 
-static string  findMsgOrigin ( Client client ) {
-    string origin;
-
-    origin = ":" + client.getNick() + "!" + client.getUser() + "@127.0.0.1" + client.getIp() + " ";
-
-    DEBUG_MSG("ORIGIN OF MESSAGE: " << origin);
-    return ( origin );
-}
-
 static string findText( string full_command ) {
     string text;
     std::vector< string > split_command = utils::split( full_command , ":");
@@ -41,7 +32,6 @@ static string findText( string full_command ) {
     text = *split_it;
     for (split_it = split_it + 1; split_it != split_command.end() ; split_it++)
         text += ":" + *split_it;
-        
     DEBUG_MSG("MESSAGE CONTENT: " << text);
     return ( text );
 }
@@ -54,12 +44,12 @@ void Server::_privmsg( string full_command , Client client) {
 
     string text = findText( full_command );
     std::string actual_nick;
-    
+
     if (target[0] == '#') {
         Channel channel = _channels.find( target )->second;
-        _sendMessage( channel , findMsgOrigin( client ) , text);
+        sendMsg( channel , message::getMsgOrigin( client ) , text);
     } else {
-            string msg_to_client = findMsgOrigin( client ) + "PRIVMSG " + target + " :" + text;
+            string msg_to_client = message::getMsgOrigin( client ) + "PRIVMSG " + target + " :" + text;
             Client *client = _findClientByNick(_clientMap, target);
             if ( client ) {
                 send( client->getClientSocket(), msg_to_client.c_str() , msg_to_client.length(), 0x80);
@@ -67,5 +57,4 @@ void Server::_privmsg( string full_command , Client client) {
         }
 
     DEBUG_MSG("####################END MESSAGE COMMAND###############################");
-
 }

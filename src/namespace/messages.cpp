@@ -30,3 +30,12 @@ std::vector<std::string const> message::extractArgs( std::string const & msg, st
 
     return ( list );
 }
+
+std::string const message::getMsgOrigin( Client const & client ) {
+    // TODO: remove "127.0.0.1" after implementing getIp
+    std::string const origin = ":" + client.getNick() + "!" + client.getUser() + "@127.0.0.1" + client.getIp() + " ";
+
+    DEBUG_MSG("ORIGIN OF MESSAGE: " << origin);
+    return ( origin );
+}
+
