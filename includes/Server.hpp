@@ -6,7 +6,7 @@
 /*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 17:23:20 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/01 22:19:05 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/01 22:42:49 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ std::vector<std::string> split_string( string str , string delim );
 std::string    ft_itoa( int num );
 typedef std::map< std::string, Channel> chan_map;
 typedef std::vector< pollfd > PollVector;
+typedef std::vector<std::string>::const_iterator vec_const_it;
+typedef std::vector<std::string>::iterator vec_it;
 
 # define SERVER_NAME "42IRCSERV"
 # define NBSP " "
@@ -53,6 +55,7 @@ private:
     const int                            _port;
     const std::string                    _pass;
     int                                  _listen_socket;
+    std::string                          _ip_string;
     size_t                               _connectionCount;
     PollVector                           _poll_fds;
     struct sockaddr_in                   _hint;
@@ -67,13 +70,17 @@ private:
     void                                _parseMessage( Client &new_socket , char *buff );
     std::map<int, Client>::iterator     _getClient( const int fd );
     std::string                         _createMessage( Client client, string command );
-    void                                _joinChannel( Client const & client, string name);
+    void                                _joinChannel( Client const & client, string name); // ?
+    void                                _joinChannel( Client const & client, string chanList , string chanKeys ); // ?
+    void                                _joinCreate( Client const & client , string chan , string topic , string key , bool inv , bool top );
+    void                                _joinExistingChannel( Client const & client , string chan );
     void                                _broadcastJoin( Client client , Channel chan , string name );
     Client                              *_findClientByNick( std::map<int, Client> &clients , string nick ) const;
     void                                _pong( Client client);
     void                                _privmsg( string full_command , Client client );
+    void                                _sendNames( Client const & client , string chan);
+    bool                                _allowedToJoin( Client client , Channel chan , string key ) const;
 
-        // ChanVector::iterator                _findChannel( chan_map & channels , std::string name ) const;
     bool  _addCommandFunction( std::string const & keyValue, cmdFun );
     bool  _initCommandsFunctions( void );
     void  _executeCommand( Client const & client, std::string const & message );

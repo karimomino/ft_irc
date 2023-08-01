@@ -6,7 +6,7 @@
 /*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 18:41:14 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/01 22:20:16 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/01 22:43:54 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,10 @@ int Server::_initServer() {
         tmp_fd.revents = 0;
         _poll_fds.push_back( tmp_fd );
         _connectionCount = 1;
+        struct in_addr ipAddr = _hint.sin_addr;
+
+        std::string ip_string = inet_ntoa(ipAddr);
+        this->_ip_string = ip_string;
     }
 
     return (ret);

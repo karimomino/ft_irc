@@ -6,12 +6,11 @@
 /*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 20:42:02 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/28 01:10:00 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/01 22:44:52 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Server.hpp"
-
 
 
 Client  *Server::_findClientByNick( std::map<int, Client> &clients , string nick ) const {
@@ -50,39 +49,93 @@ void    Server::_broadcastJoin( Client client , Channel chan , string name ) {
 
 }
 
-void    Server::_joinChannel( Client const & client , std::string name ) {
+
+static void findKey( std::vector<std::string> &chanListKeys , std::vector<std::string> const & chanListKeysCandidates ) {
+    vec_it chanListKeysIt = chanListKeys.begin();
+    for (vec_const_it i = chanListKeysCandidates.begin(); i != chanListKeysCandidates.end(); i++)
+    {
+        *chanListKeysIt = *i;
+        chanListKeysIt++;
+    }
+}
+
+void Server::_joinCreate( Client const & client , string chan, string topic , string key , bool inv , bool top ) {
+    string msg;
+    std::pair<chan_map::iterator , bool> channel = _channels.insert( std::pair< std::string, Channel>( chan, Channel( chan, topic , key , inv , top ) ) );
+    if ( _allowedToJoin( client , channel.first->second , key) ) {
+        _channels.find( chan )->second.addUser( "@" + client.getNick(), client );
+        msg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getIp() + " JOIN :" + chan + "\r\n";
+        send(client.getClientSocket(), msg.c_str() , msg.length()  , 0x80);
+
+        msg = ":localhost MODE " + chan + " +t\r\n";
+        send(client.getClientSocket(), msg.c_str() , msg.length()  , 0x80);
+        _sendNames(client , chan);
+    }
+
+
+}
+
+void Server::_joinExistingChannel( Client const & client , string chan ) {
+    DEBUG_MSG("joining existing channel" << std::endl);
+    string msg;
+    _channels.find( chan )->second.addUser( client.getNick(), client );
+    msg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getIp() + " JOIN :" + chan + "\r\n";
+    send(client.getClientSocket(), msg.c_str() , msg.length()  , 0x80);
+    msg = ":" + _ip_string + " 332 " + client.getNick() + " " + chan + " :" + _channels.find( chan )->second.getTopic() + "\r\n";
+    send(client.getClientSocket(), msg.c_str(), msg.length(), 0);
+    _broadcastJoin(client, _channels.find( chan )->second, chan);
+    _sendNames(client , chan);
+}
+
+void Server::_sendNames( Client const & client , string chan) {
+    string msg = ":" + _ip_string + " 353 " + client.getNick() + " = " + chan + " :" + _channels.find( chan )->second.getUsersStr() + "\r\n";
+    send(client.getClientSocket(), msg.c_str(), msg.length(), 0);
+    msg = ":" + _ip_string + " 366 " + client.getNick() + " " + chan + " :End of /NAMES list\r\n";
+    send(client.getClientSocket(), msg.c_str(), msg.length(), 0);
+}
+
+bool Server::_allowedToJoin( Client client , Channel chan , string key ) const {
+    bool allowed = true;
+    if ( chan.isInviteOnly() ) {
+        if ( !chan.isInvited( client.getNick() ) ){ 
+            allowed = false;
+            //:irc.example.com 473 alice #test :Cannot join channel (+i)
+            string msg = ":" + _ip_string + " 473 " + client.getNick() + " " + chan.getName() + " :Cannot join channel (+i)\r\n";
+            send( client.getClientSocket() , msg.c_str() , msg.length() , 0x80 );
+        }
+    }
+
+    if ( allowed ){
+        if ( key.compare(chan.getKey()) ) {
+            allowed = false;
+            //:irc.example.com 475 adrian #test :Cannot join channel (+k) - bad key
+            string msg = ":" + _ip_string + " 475 " + client.getNick() + " " + chan.getName() + " :Cannot join channel (+k) - bad key\r\n";
+        }
+    }
+
+    return ( allowed );
+}
+void    Server::_joinChannel( Client const & client , string chans , string keys ) {
 
     string msg;
-    // TODO: join multiple channels in a single command
     // TODO: Check invite only and key
-    if ( _channels.find( name ) == _channels.end() )
+    std::vector<std::string> chanList = split_string( chans , "," );
+    std::vector<std::string> chanListKeysCandidates = split_string( keys , "," );
+    std::vector<string> chanListKeys(chanList.size() , "");
+    findKey( chanListKeys , chanListKeysCandidates );
+    vec_it keysIt = chanListKeys.begin();
+    for (std::vector<std::string>::iterator i = chanList.begin(); i != chanList.end(); i++)
     {
-        _channels.insert( std::pair< std::string, Channel>( name, Channel( name, "Default Topic" , "" , false , true ) ) );
-        DEBUG_MSG("ADDING CLIENT TO CHAN: " << client.getNick() << " with fd: " << client.getClientSocket() << std::endl);
-        _channels.find( name )->second.addUser( "@" + client.getNick(), client );
-
-        DEBUG_MSG("Attempting to join new channel ...");
-
-        msg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getIp() + " JOIN :" + name + "\r\n";
-        send(client.getClientSocket(), msg.c_str() , msg.length()  , 0x80);
-
-        DEBUG_MSG("full join msg: " << msg);
-
-        msg = ":localhost MODE " + name + " +t\r\n";
-        send(client.getClientSocket(), msg.c_str() , msg.length()  , 0x80);
-    } else {
-        _channels.find( name )->second.addUser( client.getNick(), client );
-        DEBUG_MSG("ADDING CLIENT TO CHAN: " << client.getNick() << " with fd: " << client.getClientSocket() << std::endl);
-        msg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getIp() + " JOIN " + name + "\r\n";
-        send(client.getClientSocket(), msg.c_str() , msg.length()  , 0x80);
-        msg = ":localhost 332 " + client.getNick() + " " + name + " :" + _channels.find( name )->second.getTopic() + "\r\n";
-        send(client.getClientSocket(), msg.c_str(), msg.length(), 0);
-        _broadcastJoin(client, _channels.find( name )->second, name);
+        string chan = *i;
+        string key = *keysIt;
+        chan_map::iterator channel = _channels.find( chan );
+        if ( channel == _channels.end() ) {
+            _joinCreate(client , chan , "Default Topic" , key , false , true );
+        } else if ( _allowedToJoin( client , channel->second , key ) ) {
+            _joinExistingChannel( client , chan);
+        }
+        keysIt++;
     }
-    msg = ":localhost 353 " + client.getNick() + " = " + name + " :" + _channels.find( name )->second.getUsersStr() + "\r\n";
-    DEBUG_MSG("THIS IS THE NAMES COMMAND: " << msg);
-    send(client.getClientSocket(), msg.c_str(), msg.length(), 0);
-    msg = ":localhost 366 " + client.getNick() + " " + name + " :End of /NAMES list\r\n";
-    DEBUG_MSG("THIS IS THE END NAMES####: " << msg);
-    send(client.getClientSocket(), msg.c_str(), msg.length(), 0);
+    
+    
 }

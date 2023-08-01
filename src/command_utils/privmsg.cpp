@@ -6,7 +6,7 @@
 /*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 16:10:25 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/01 22:21:00 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/01 22:45:02 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,15 @@ static string  findTargetName( string full_command ) {
     chan_name = *(++split_it);
     DEBUG_MSG("SEND IN CHANNEL: " << chan_name);
     return ( chan_name );
+}
+
+static string  findMsgOrigin ( Client client ) {
+    string origin;
+
+    origin = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getIp() + " ";
+
+    DEBUG_MSG("ORIGIN OF MESSAGE: " << origin);
+    return ( origin );
 }
 
 static string findText( string full_command ) {

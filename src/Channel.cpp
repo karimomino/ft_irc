@@ -6,7 +6,7 @@
 /*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/29 15:07:23 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/01 22:19:45 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/01 22:43:13 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,23 +41,31 @@ const std::string Channel::getTopic( void ) const {
     return ( _topic );
 }
 
-// const std::string Channel::getMode( void ) {
-//     return ( _mode );
-// }
-
-bool Channel::addInvitation( std::string const & nick ) {
-    std::vector<std::string const >::const_iterator nick_pos = std::find(_invitations.begin(), _invitations.end(), nick);
-    if ( nick_pos != _invitations.end())
-        return ( false );
-    _invitations.push_back( nick );
-    return ( true );
+std::string const & Channel::getKey( void ) const {
+    return ( _key );
 }
 
-bool Channel::removeInvitation( std::string const & nick ) {
-    std::vector<std::string const >::const_iterator nick_pos = std::find(_invitations.begin(), _invitations.end(), nick);
-    // if ( nick_pos != _invitations.end())
-    //     _invitations.erase(nick_pos);
-    return ( true );
+bool Channel::isInviteOnly( void ) const {
+    return ( _isInviteOnly );
+}
+bool Channel::isTopicOpOnly( void ) const {
+    return ( _topicOpOnly );
+}
+
+bool Channel::isInvited ( string nick ) {
+    bool isInvited = false;
+
+    if (_invitations.find( nick ) != _invitations.end() )
+        isInvited = true;
+    return ( isInvited );
+}
+
+void Channel::addInvitation( Client const &client ) {
+    _invitations.insert(std::pair<std::string, const Client *>( client.getNick() , &client ));
+}
+
+void Channel::_removeInvitation( std::string nick ) {
+    _invitations.erase( nick );
 }
 
 void Channel::addUser( std::string const & nick, Client const & client ) {

@@ -6,7 +6,7 @@
 /*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 20:01:27 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/28 01:17:37 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/01 22:43:44 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,12 @@
 #include <netdb.h>
 #include <sys/socket.h>
 
-Client::Client( int listen_socket, struct sockaddr_in & hint ) : _pV4Addr((struct sockaddr_in*)&hint), _isRegistered(false), _isWelcomed(false)
+Client::Client( int listen_socket, struct sockaddr_in const &hint ) :   _pV4Addr((struct sockaddr_in*)&hint), _isRegistered(false), _isWelcomed(false)
 {
 	int addrlen = sizeof(hint);
 	_client_socket = accept(listen_socket, (sockaddr *)&hint, (socklen_t*)&addrlen);
 	_msgSent = 0;
+	setAddrInfo();
 }
 
 int Client::getClientSocket( void ) const {
@@ -85,9 +86,9 @@ void	Client::setAddrInfo( void ) {
 }
 
 void	Client::_welcomeClient( void ) {
-	std::string welcome_001 = ":127.0.0.1 001 " + getNick() + " :Welcome to FT_IRC " + getNick() + "!" + getUser() + "@" + getIp() + "\r\n";
-	std::string your_host = ":127.0.0.1 002 " + getNick() + " :Your host is 127.0.0.1, running version idk anymore\r\n";
-	std::string server_created = ":127.0.0.1 003 " + getNick() + " :Server created sometime this year.\r\n";
+	std::string welcome_001 = ":" + _ip + " 001 " + getNick() + " :Welcome to FT_IRC " + getNick() + "!" + getUser() + "@" + getIp() + "\r\n";
+	std::string your_host = ":" + _ip + " 002 " + getNick() + " :Your host is 127.0.0.1, running version idk anymore\r\n";
+	std::string server_created = ":" + _ip + " 003 " + getNick() + " :Server created sometime this year.\r\n";
 	send(getClientSocket() , welcome_001.c_str() , welcome_001.size() , 0x80);
 	send(getClientSocket() , your_host.c_str() , your_host.size() , 0x80);
 	send(getClientSocket() , server_created.c_str() , server_created.size() , 0x80);
