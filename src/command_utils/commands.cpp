@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 15:40:43 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/26 13:42:59 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/28 01:09:03 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void Server::_parseMessage(Client &client, char *buff) {
 
     for ( std::vector<std::string>::iterator cmd_it = cmd_list.begin() ; cmd_it != cmd_list.end() ; cmd_it++ ) {
         std::string comm = (*cmd_it);
-        std::cout <<"command : " << comm << std::endl;
+        DEBUG_MSG("command : " << comm);
         std::vector<std::string> word_list = utils::split(comm , " " );
         std::vector<std::string>::iterator word_it = word_list.begin();
         std::string command_prefix = *word_it;
@@ -52,17 +52,5 @@ void Server::_parseMessage(Client &client, char *buff) {
         } else if (!command_prefix.compare("KICK")) {
             _kickCommand( client, buff );
         }
-        
     }
-
-
-    
-    // else {
-    //     std::cout << buff << std::endl;
-    // }
-
-    // if ( !client.getRegisteredStatus() )
-    // {
-    // 	std::cout << "Client is not registered yet. Please set passowrd, nick, and user to be able to use any commands." << std::endl;
-    // }
 }

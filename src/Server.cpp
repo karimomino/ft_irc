@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 18:41:14 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/09 10:25:11 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/28 01:15:48 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ bool Server::_addCommandFunction( std::string const & keyValue , cmdFun funPtr )
 bool Server::_initCommandsFunctions( void ) {
     // TODO: add all the commands functions
     // _addCommandFunction( "EXAMPLE", &Server::_exampleCmd );
-    _addCommandFunction( "KICK", &Server::_kickCommand );
 
     return ( true );
 }
@@ -79,10 +78,6 @@ int Server::_initServer() {
         tmp_fd.fd = _listen_socket;
         tmp_fd.events = POLLIN;
         tmp_fd.revents = 0;
-        // _poll_fds.push_back( new pollfd() );
-        // _poll_fds.back()->events = POLLIN;
-        // _poll_fds.back()->fd = _listen_socket;
-        // _poll_fds.back()->revents = 0;
         _poll_fds.push_back( tmp_fd );
         _connectionCount = 1;
     }
@@ -98,7 +93,6 @@ void Server::_runServer(void) {
         poll(_poll_fds.data(), _poll_fds.size(), 300);
 
         for (size_t i = 0; i < _poll_fds.size(); i++) {
-            // std::cout <<"POLL FDS: " << _poll_fds.size() << "\ti: " << i << std::endl;
 
             // if no change on this socket, run next iteration
             if ( (_poll_fds.data())[i].revents == 0 )
@@ -155,12 +149,6 @@ int Server::_acceptConnection(void) {
         tmp_fd.events = POLLIN;
         tmp_fd.revents = 0;
         _poll_fds.push_back( tmp_fd );
-        string welcome_001 = ":127.0.0.1 001 " + newClient.getNick() + " :Welcome to FT_IRC " + newClient.getNick() + "!" + newClient.getUser() + "@" + newClient.getIp() + "\r\n";
-        string your_host = ":127.0.0.1 002 " + newClient.getNick() + " :Your host is 127.0.0.1, running version idk anymore\r\n";
-        string server_created = ":127.0.0.1 003 " + newClient.getNick() + " :Server created sometime this year.\r\n";
-        send(newClient.getClientSocket() , welcome_001.c_str() , welcome_001.size() , 0x80);
-        send(newClient.getClientSocket() , your_host.c_str() , your_host.size() , 0x80);
-        send(newClient.getClientSocket() , server_created.c_str() , server_created.size() , 0x80);
         _connectionCount++;
     } else {
         std::cout << "Connection Refused, MAX clients Reached" << std::endl;
@@ -188,13 +176,16 @@ void Server::_executeCommand( Client const & client, std::string const & message
     ( this->*fun )( client, message );
 }
 
-bool Server::_sendMessage( Client const & client, std::string const & msg ) {
-    std::cout << "## RESPONSE: [" << msg << std::endl;
-
-    return ( send( client.getClientSocket(), msg.c_str(), msg.length(), 0x80 ) );
+bool Server::sendMsg( Client const & client, std::string const & msg ) const {
+    ssize_t sendRet = send( client.getClientSocket(), msg.c_str(), msg.length(), 0x80 );
+    return ( sendRet >= 0 ? true : false );
 }
 
-bool Server::_sendMessage( Channel const & chan, std::string const & msg ) {
+bool Server::sendMsg( Channel const & chan, std::string const & origin, std::string const & msg ) const {
+    return ( chan.sendMsg(*this, origin , msg) );
+}
+
+bool Server::sendMsg( Channel const & chan, std::string const & msg ) const {
     std::vector<Client const *> clients = chan.getClients();
 
     for ( std::vector<Client const *>::iterator it = clients.begin(); it != clients.end(); it++ ) {
@@ -202,4 +193,16 @@ bool Server::_sendMessage( Channel const & chan, std::string const & msg ) {
         std::cout << "## RESPONSE: " << msg<< std::endl;
     }
     return ( true );
+}
+
+bool    Server::sendMsg( std::string const & numReply, Client const & client, std::string const & msg ) const {
+    std::string const finalMsg = ":"SERVER_NAME" "+ numReply + " " + client.getNick()
+        + " :" + msg + "\r\n";
+    return ( send( client.getClientSocket(), finalMsg.c_str(), finalMsg.length(), 0x80 ) );
+}
+
+bool    Server::sendMsg( std::string const & numReply, Client const & client, std::string const & arg, std::string const & msg ) const {
+    std::string const finalMsg = ":"SERVER_NAME" "+ numReply + " " + client.getNick()
+        + " " + arg + " :" + msg + "\r\n";
+    return ( send( client.getClientSocket(), finalMsg.c_str(), finalMsg.length(), 0x80 ) );
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 17:23:20 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/22 13:54:57 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/01 17:41:32 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,15 @@
 #ifndef MAX_CLIENTS
 #define MAX_CLIENTS 4
 
+class Channel;
+typedef std::string string;
 std::vector<std::string> split_string( string str , string delim );
 std::string    ft_itoa( int num );
-// typedef std::vector< Channel > ChanVector;
 typedef std::map< std::string, Channel> chan_map;
 typedef std::vector< pollfd > PollVector;
 
-#endif
+# define SERVER_NAME "42IRCSERV"
+# define NBSP " "
 
 class Server {
 private:
@@ -67,26 +69,34 @@ private:
     std::string                         _createMessage( Client client, string command );
     void                                _joinChannel( Client const & client, string name);
     void                                _broadcastJoin( Client client , Channel chan , string name );
-    Client  *_findClientByNick( std::map<int, Client> &clients , string nick ) const;
-    void    _pong( Client client);
-
+    Client                              *_findClientByNick( std::map<int, Client> &clients , string nick ) const;
+    void                                _pong( Client client);
     void                                _privmsg( string full_command , Client client );
 
+        // ChanVector::iterator                _findChannel( chan_map & channels , std::string name ) const;
     bool  _addCommandFunction( std::string const & keyValue, cmdFun );
     bool  _initCommandsFunctions( void );
     void  _executeCommand( Client const & client, std::string const & message );
 
     /**                   COMMANDS FUN                   **/
-    void    _joinCommand( Client const & user, std::string const & command );
+    void    _joinCommand( Client const & client, std::string const & msg );
     void    _kickCommand( Client const & client, std::string const & msg );
+    void    _modeCommand( Client const & client, std::string const & msg );
 
-    bool    _sendMessage( Client const & client, std::string const & msg );
-    bool    _sendMessage( Channel const & chan, std::string const & msg );
+    void    _sendAMessage( std::string full_command );
 
 public:
-    typedef std::map<string, void (Client::*)( string )>::iterator command_it;
     Server( const int port, const string pass );
     // ~Server();
-    int getListenSocket( void ) const;
+    int       getListenSocket( void ) const;
     size_t    getConnectionCount ( void ) const;
+
+    bool    sendMsg( Client const &, std::string const & msg ) const ;
+    bool    sendMsg( Channel const &, std::string const & msg ) const ;
+    bool    sendMsg( Channel const &, std::string const & origin, std::string const & msg ) const;
+
+    bool    sendMsg( std::string const & numReply, Client const & client, std::string const & msg ) const;
+    bool    sendMsg( std::string const & numReply, Client const & client, std::string const & arg, std::string const & msg ) const;
+    friend class Channel;
 };
+#endif
