@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/29 15:07:23 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/31 12:36:13 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/31 15:25:49 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,14 +112,15 @@ const Client *Channel::getClientByNick( const std::string nick) {
 
 bool    Channel::sendMessage( Server& t , std::string const & origin , std::string const & msg ) const {
     bool sendRet = false;
+    string originNick = (*split_string(origin , "!").begin());
+    originNick.erase(originNick.begin());
     for (_clients_const_it it = _clients.begin(); it != _clients.end(); it++)
     {
         const Client *curr_client = it->second;
         std::string finalMsg = origin + "PRIVMSG " + _name + " :" + msg;
-        DEBUG_MSG(finalMsg << std::endl);
-        DEBUG_MSG("CLIENT NAME: " << it->first << "\nCLIENT FD: " << curr_client->getClientSocket() << std::endl);
-        // if (*split_string(origin , ":").begin() != curr_client.getNick())
-        sendRet =  t._sendMessage( *curr_client , finalMsg );
+        DEBUG_MSG("MMESSAGE ORIGIN: " << originNick << std::endl);
+        if ( !originNick.compare(curr_client->getNick()) )
+            sendRet =  t._sendMessage( *curr_client , finalMsg );
     }
     return ( sendRet );
 }

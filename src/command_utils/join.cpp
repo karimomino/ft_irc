@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 20:42:02 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/31 14:43:19 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/04 21:57:36 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void    Server::_broadcastJoin( Client client , Channel chan , string name ) {
         for ( std::map<int, Client>::iterator client_it = _clientMap.begin() ; client_it != _clientMap.end(); client_it++) {
             if ( client_it->second.getNick() == actual_nick )
             {
-                send(client_it->second.getClientSocket() , msg.c_str() , msg.length(), 0x80);
+                send(client_it->second.getClientSocket() , msg.c_str() , msg.length(), MSG_DONTWAIT);
                 break;
             }
         }
@@ -65,10 +65,11 @@ void Server::_joinCreate( Client const & client , string chan, string topic , st
     if ( _allowedToJoin( client , channel.first->second , key) ) {
         _channels.find( chan )->second.addUser( "@" + client.getNick(), client );
         msg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getIp() + " JOIN :" + chan + "\r\n";
-        send(client.getClientSocket(), msg.c_str() , msg.length()  , 0x80);
+        send(client.getClientSocket(), msg.c_str() , msg.length()  , MSG_DONTWAIT);
+        DEBUG_MSG("SEND JOIN MESSA: " << msg << std::endl);
 
         msg = ":localhost MODE " + chan + " +t\r\n";
-        send(client.getClientSocket(), msg.c_str() , msg.length()  , 0x80);
+        send(client.getClientSocket(), msg.c_str() , msg.length()  , MSG_DONTWAIT);
         _sendNames(client , chan);
     }
 
@@ -80,18 +81,22 @@ void Server::_joinExistingChannel( Client const & client , string chan ) {
     string msg;
     _channels.find( chan )->second.addUser( client.getNick(), client );
     msg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getIp() + " JOIN :" + chan + "\r\n";
-    send(client.getClientSocket(), msg.c_str() , msg.length()  , 0x80);
+    DEBUG_MSG("SEND JOIN MESSA: " << msg << std::endl);
+    send(client.getClientSocket(), msg.c_str() , msg.length()  , MSG_DONTWAIT);
     msg = ":" + _ip_string + " 332 " + client.getNick() + " " + chan + " :" + _channels.find( chan )->second.getTopic() + "\r\n";
-    send(client.getClientSocket(), msg.c_str(), msg.length(), 0);
+    send(client.getClientSocket(), msg.c_str(), msg.length(), MSG_DONTWAIT);
+    msg = ":" + _ip_string + " 332 " + client.getNick() + " " + chan + "dan!~d@localhost 1547691506\r\n";
+    send(client.getClientSocket(), msg.c_str(), msg.length(), MSG_DONTWAIT);
+            // :irc.example.com 333 alice #test dan!~d@localhost 1547691506
     _broadcastJoin(client, _channels.find( chan )->second, chan);
     _sendNames(client , chan);
 }
 
 void Server::_sendNames( Client const & client , string chan) {
     string msg = ":" + _ip_string + " 353 " + client.getNick() + " = " + chan + " :" + _channels.find( chan )->second.getUsersStr() + "\r\n";
-    send(client.getClientSocket(), msg.c_str(), msg.length(), 0);
+    send(client.getClientSocket(), msg.c_str(), msg.length(), MSG_DONTWAIT);
     msg = ":" + _ip_string + " 366 " + client.getNick() + " " + chan + " :End of /NAMES list\r\n";
-    send(client.getClientSocket(), msg.c_str(), msg.length(), 0);
+    send(client.getClientSocket(), msg.c_str(), msg.length(), MSG_DONTWAIT);
 }
 
 bool Server::_allowedToJoin( Client client , Channel chan , string key ) const {
@@ -101,7 +106,7 @@ bool Server::_allowedToJoin( Client client , Channel chan , string key ) const {
             allowed = false;
             //:irc.example.com 473 alice #test :Cannot join channel (+i)
             string msg = ":" + _ip_string + " 473 " + client.getNick() + " " + chan.getName() + " :Cannot join channel (+i)\r\n";
-            send( client.getClientSocket() , msg.c_str() , msg.length() , 0x80 );
+            send( client.getClientSocket() , msg.c_str() , msg.length() , MSG_DONTWAIT );
         }
     }
 

@@ -16,7 +16,7 @@
             "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": false,
-            "MIMode": "lldb",
+            "MIMode": "gdb",
             "miDebuggerPath": "/usr/bin/gdb",
         //    "miDebuggerServerAddress": "127.0.0.1:9999",
             "preLaunchTask": "Build",

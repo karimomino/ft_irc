@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 20:43:53 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/31 12:32:12 by kamin            ###   ########.fr       */
+/*   Updated: 2023/07/31 16:26:58 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ class Channel {
 
 private:
     string                 _name;
+    string                 _creatorOrigin;
     string                 _topic;
     string                 _key;
     bool                   _isInviteOnly;

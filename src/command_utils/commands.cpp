@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 15:40:43 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/31 13:58:45 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/04 21:45:29 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void Server::_parseMessage(Client &client, char *buff) {
             if ( c == NULL )
                 client.setNick(*word_it);
             else
-                send( client.getClientSocket(), err.c_str(), err.length() , 0x80 );
+                send( client.getClientSocket(), err.c_str(), err.length() , MSG_DONTWAIT );
         } else if (!command_prefix.compare("USER") && !client.getRegisteredStatus()) {
             word_it++;
             client.setUser(*word_it);

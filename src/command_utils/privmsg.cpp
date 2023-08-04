@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 16:10:25 by kamin             #+#    #+#             */
-/*   Updated: 2023/07/28 13:10:33 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/04 21:45:29 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void Server::_privmsg( string full_command , Client client) {
             string msg_to_client = findMsgOrigin( client ) + "PRIVMSG " + target + " :" + text;
             Client *client = _findClientByNick(_clientMap, target);
             if ( client ) {
-                send( client->getClientSocket(), msg_to_client.c_str() , msg_to_client.length(), 0x80);
+                send( client->getClientSocket(), msg_to_client.c_str() , msg_to_client.length(), MSG_DONTWAIT);
             }
         }
 

@@ -40,7 +40,7 @@ elliot:
 $(NAME)		:	$(OBJS) elliot
 				@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
 				
-debug		:	CXXFLAGS+= -DDEBUG
+debug		:	CXXFLAGS+= -DDEBUG -g3
 
 debug		:	fclean $(NAME)
 
