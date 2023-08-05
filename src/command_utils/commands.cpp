@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 15:40:43 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/04 21:45:29 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/05 17:24:51 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 void Server::_parseMessage(Client &client, char *buff) {
 
-    std::vector<std::string> cmd_list = split_string(buff , "\r\n" );
+    std::vector<std::string> cmd_list = utils::split(buff , "\r\n" );
 
     for ( std::vector<std::string>::iterator cmd_it = cmd_list.begin() ; cmd_it != cmd_list.end() ; cmd_it++ ) {
         std::string comm = (*cmd_it);
         DEBUG_MSG("Client sent command: " << comm << std::endl);
-        std::vector<std::string> word_list = split_string(comm , " " );
+        std::vector<std::string> word_list = utils::split(comm , " " );
         std::vector<std::string>::iterator word_it = word_list.begin();
         std::string command_prefix = *word_it;
 
@@ -61,6 +61,5 @@ void Server::_parseMessage(Client &client, char *buff) {
         } else if (!command_prefix.compare("KICK")) {
             _kickCommand( client, buff );
         }
-        
     }
 }
