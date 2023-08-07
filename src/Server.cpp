@@ -203,13 +203,13 @@ bool Server::sendMsg( Channel const & chan, std::string const & msg ) const {
 }
 
 bool    Server::sendMsg( std::string const & numReply, Client const & client, std::string const & msg ) const {
-    std::string const finalMsg = ":" SERVER_NAME " "+ numReply + " " + client.getNick()
+    std::string const finalMsg = ":" + _ip_string + " "+ numReply + " " + client.getNick()
         + " :" + msg + "\r\n";
     return ( sendMsg( client, finalMsg ) );
 }
 
 bool    Server::sendMsg( std::string const & numReply, Client const & client, std::string const & arg, std::string const & msg ) const {
-    std::string const finalMsg = ":"SERVER_NAME" "+ numReply + " " + client.getNick()
+    std::string const finalMsg = ":" + _ip_string + " "+ numReply + " " + client.getNick()
         + " " + arg + " :" + msg + "\r\n";
     std::cout << "CLIENT MSG: [" << finalMsg.substr( 0, finalMsg.length() - 2 ) << "]" << std::endl;
     return ( sendMsg( client, finalMsg ) );
