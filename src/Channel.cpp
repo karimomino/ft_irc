@@ -15,6 +15,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <Server.hpp>
 
 Channel::Channel( string name , string topic , string key , bool inv , bool top )
     : _name( name ) , _topic( topic ) , _key( key ) , _isInviteOnly( inv ) , _topicOpOnly( top ) {}
@@ -52,19 +53,26 @@ bool Channel::isTopicOpOnly( void ) const {
     return ( _topicOpOnly );
 }
 
-bool Channel::isInvited ( string nick ) {
-    (void)nick;
+bool Channel::isInvited ( std::string const & nick ) const {
+    std::vector<std::string>::const_iterator it = std::find( _invitations.begin(), _invitations.end(), nick );
+    if ( it == _invitations.end() )
+        return ( false );
     return ( true );
-    // bool isInvited = false;
-
-    // if (_invitations.find( nick ) != _invitations.end() )
-        // isInvited = true;
-    // return ( isInvited );
 }
 
-void Channel::addInvitation( Client const &client ) {
-    (void)client;
-    // _invitations.insert(std::pair<std::string, const Client *>( client.getNick() , &client ));
+bool Channel::addInvitation( std::string const & nick ) {
+    if ( isInvited( nick ) )
+        return ( false );
+    _invitations.push_back( nick );
+    return ( true );
+}
+
+bool Channel::removeInvitation( std::string const & nick ) {
+    std::vector<std::string>::iterator it = std::find( _invitations.begin(), _invitations.end(), nick );
+    if ( it == _invitations.end() )
+        return ( false );
+    _invitations.erase( it );
+    return ( true );
 }
 
 void Channel::addUser( std::string const & nick, Client const & client ) {
@@ -82,8 +90,8 @@ const string  Channel::getUsersStr( void ) const {
     return ( nicks );
 }
 
-Channel::_cstring_vec Channel::getNicks( void ) const {
-    _cstring_vec nicks;
+Channel::_string_vec Channel::getNicks( void ) const {
+    _string_vec nicks;
 
     // TODO: fix it later to make it more efficient
     for ( _cclients_const_it it = _clients.begin(); it != _clients.end(); it++ ) {
@@ -103,10 +111,6 @@ bool Channel::kickUser( std::string const & nick, std::string const & kickRespon
 
     return ( true );
 }
-
-// std::string constructMessage( Client target , std::string const & msg ) {
-//     std::string finalMsg = msg + target.getNick() + " :" + 
-// }
 
 bool    Channel::sendMsg( Server const & t , std::string const & origin , std::string const & msg ) const {
     bool sendRet = false;
@@ -136,6 +140,8 @@ Client const & Channel::findClient( std::string const & nick ) const {
 }
 
 bool Channel::isMember( std::string const & nick ) const {
+    if ( isOperator( nick ) )
+        return ( true );
     if ( _clients.find( nick ) == _clients.end() )
         return ( false );
     return ( true );

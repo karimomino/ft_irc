@@ -32,7 +32,7 @@ private:
     struct addrinfo *_servinfo;
     bool        _isRegistered;
     bool        _isWelcomed;
-    
+
     void        _welcomeClient( void );
 
 
