@@ -1,0 +1,6 @@
+Every client has his ip now. - this can be attached to replies now.
+Client can join multiple channels.
+Checking if user can join depending on invitation and key provided
+
+Bug Fix:
+- joining existing channel not auto switching tab to channel chat.

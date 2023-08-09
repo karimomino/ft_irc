@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 15:40:43 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/26 13:42:59 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/01 22:44:43 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 void Server::_parseMessage(Client &client, char *buff) {
 
-    std::vector<std::string> cmd_list = split_string(buff , "\r\n" );
+    std::vector<std::string> cmd_list = utils::split(buff , "\r\n" );
 
     for ( std::vector<std::string>::iterator cmd_it = cmd_list.begin() ; cmd_it != cmd_list.end() ; cmd_it++ ) {
         std::string comm = (*cmd_it);
-        std::cout <<"command : " << comm << std::endl;
-        std::vector<std::string> word_list = split_string(comm , " " );
+        DEBUG_MSG("Client sent command: " << comm << std::endl);
+        std::vector<std::string> word_list = utils::split(comm , " " );
         std::vector<std::string>::iterator word_it = word_list.begin();
         std::string command_prefix = *word_it;
 
@@ -40,8 +40,17 @@ void Server::_parseMessage(Client &client, char *buff) {
             word_it++;
             client.setUser(*word_it);
         } else if (!command_prefix.compare("JOIN") && client.getRegisteredStatus()) {
+            string chanList = "";
+            string chanKeys = "";
             word_it++;
-            _joinChannel(client, (*word_it).substr(0, (*word_it).length()));
+            if ( word_it != word_list.end() ) {
+                chanList = *word_it;
+            }
+            word_it++;
+            if ( word_it != word_list.end() ) {
+                chanKeys = *word_it;
+            }
+            _joinChannel( client, chanList , chanKeys );
         } else if (!command_prefix.compare("PRIVMSG") && client.getRegisteredStatus()) {
 
             _privmsg( buff , client );
@@ -51,18 +60,8 @@ void Server::_parseMessage(Client &client, char *buff) {
             close(client.getClientSocket());
         } else if (!command_prefix.compare("KICK")) {
             _kickCommand( client, buff );
+        } else if (!command_prefix.compare("INVITE")) {
+            _inviteCommand( client, buff );
         }
-        
     }
-
-
-    
-    // else {
-    //     std::cout << buff << std::endl;
-    // }
-
-    // if ( !client.getRegisteredStatus() )
-    // {
-    // 	std::cout << "Client is not registered yet. Please set passowrd, nick, and user to be able to use any commands." << std::endl;
-    // }
 }
