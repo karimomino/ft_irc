@@ -184,6 +184,11 @@ bool Server::_sendMessage( Client const & client, std::string const & msg ) {
     ssize_t sendRet = send( client.getClientSocket(), msg.c_str(), msg.length(), MSG_DONTWAIT );
     return ( sendRet >= 0 ? true : false );
 }
+bool Server::sendMsg( Client const & client, std::string const & origin, std::string const & msg ) const {
+    std::string const finalMsg = origin + msg + "\r\n";
+    std::cout << "USERR MSG: [" << finalMsg.substr( 0, finalMsg.length() - 2 ) << "]" << std::endl;
+    return ( send( client.getClientSocket(), finalMsg.c_str(), finalMsg.length(), 0x80 ) );
+}
 
 bool Server::sendMsg( Channel const & chan, std::string const & origin, std::string const & msg ) const {
     return ( chan.sendMsg(*this, origin , msg) );
@@ -194,19 +199,19 @@ bool Server::sendMsg( Channel const & chan, std::string const & msg ) const {
 
     for ( std::vector<Client const *>::iterator it = clients.begin(); it != clients.end(); it++ ) {
         send( (*it)->getClientSocket(), msg.c_str(), msg.length(), 0x80 );
-        std::cout << "## RESPONSE: " << msg<< std::endl;
     }
     return ( true );
 }
 
 bool    Server::sendMsg( std::string const & numReply, Client const & client, std::string const & msg ) const {
-    std::string const finalMsg = ":"SERVER_NAME" "+ numReply + " " + client.getNick()
+    std::string const finalMsg = ":" + _ip_string + " "+ numReply + " " + client.getNick()
         + " :" + msg + "\r\n";
-    return ( send( client.getClientSocket(), finalMsg.c_str(), finalMsg.length(), 0x80 ) );
+    return ( sendMsg( client, finalMsg ) );
 }
 
 bool    Server::sendMsg( std::string const & numReply, Client const & client, std::string const & arg, std::string const & msg ) const {
-    std::string const finalMsg = ":"SERVER_NAME" "+ numReply + " " + client.getNick()
+    std::string const finalMsg = ":" + _ip_string + " "+ numReply + " " + client.getNick()
         + " " + arg + " :" + msg + "\r\n";
-    return ( send( client.getClientSocket(), finalMsg.c_str(), finalMsg.length(), 0x80 ) );
+    std::cout << "CLIENT MSG: [" << finalMsg.substr( 0, finalMsg.length() - 2 ) << "]" << std::endl;
+    return ( sendMsg( client, finalMsg ) );
 }

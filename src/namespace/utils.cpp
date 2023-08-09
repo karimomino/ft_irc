@@ -37,28 +37,14 @@ std::vector<std::string> utils::split( std::string str , string const & delim ) 
     return ( wordList );
 }
 
-std::vector<std::string const> utils::csplit( std::string const & str, std::string const & delm ) {
+std::vector<std::string> const utils::csplit( std::string const & str, std::string const & delm ) {
     std::string tmp;
     std::stringstream ss( str );
-    std::vector<std::string const> strList;
+    std::vector<std::string> strList;
 
     while ( getline(ss, tmp, delm[0] ) ) {
 	strList.push_back( tmp );
     }
-
- //    if ( str.empty() )
-	// return ( strList );
-	//
- //    size_t  start = 0;
- //    while ( true ) {
-	// size_t idx = str.find( delm, start );
-	// if ( idx == string::npos )
-	//     break ;
-	// size_t len = idx - start;
-	// strList.push_back( str.substr( start, len ) );
-	// start += len + delm.size();
- //    }
- //    strList.push_back( str.substr( start ) );
 
     return ( strList );
 }

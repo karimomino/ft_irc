@@ -12,6 +12,7 @@ SRCS		=	main.cpp					\
 				command_utils/pong.cpp		\
 				command_utils/kick.cpp		\
 				command_utils/mode.cpp		\
+				command_utils/invite.cpp	\
 
 SRCS_DIR    =   ./src/
 

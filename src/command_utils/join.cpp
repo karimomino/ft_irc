@@ -29,7 +29,7 @@ Client  *Server::_findClientByNick( std::map<int, Client> &clients , string nick
 }
 
 void    Server::_broadcastJoin( Client client , Channel chan , string name ) {
-    std::vector< std::string const> tmp_nicks = chan.getNicks();
+    std::vector<std::string> tmp_nicks = chan.getNicks();
     std::string msg = ":" + client.getNick() + "!" + client.getUser() + "@" + client.getIp() + " JOIN :" + name + "\r\n";
     std::string actual_nick;
     for (size_t i = 0; i < tmp_nicks.size(); i++) {

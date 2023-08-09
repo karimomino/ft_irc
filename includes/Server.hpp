@@ -87,6 +87,7 @@ private:
     void    _joinCommand( Client const & client, std::string const & msg );
     void    _kickCommand( Client const & client, std::string const & msg );
     void    _modeCommand( Client const & client, std::string const & msg );
+    void    _inviteCommand( Client const & client, std::string const & msg );
 
     void    _sendAMessage( std::string full_command );
 
@@ -98,6 +99,7 @@ public:
 
     bool    sendMsg( Client const &, std::string const & msg ) const ;
     bool    sendMsg( Channel const &, std::string const & msg ) const ;
+    bool    sendMsg( Client const &, std::string const & origin, std::string const & msg ) const;
     bool    sendMsg( Channel const &, std::string const & origin, std::string const & msg ) const;
 
     bool    sendMsg( std::string const & numReply, Client const & client, std::string const & msg ) const;
