@@ -1,5 +1,4 @@
 # nino
-.vscode
 compile_commands.json
 .cache
 ircserv
@@ -42,3 +41,4 @@ brain.md
 #karim
 changes this commit.txt
 *.log
+.gitignore

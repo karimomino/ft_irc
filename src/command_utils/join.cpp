@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 20:42:02 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/05 17:25:24 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/10 15:22:30 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void Server::_joinExistingChannel( Client const & client , string chan ) {
     send(client.getClientSocket(), msg.c_str() , msg.length()  , MSG_DONTWAIT);
     msg = ":" + _ip_string + " 332 " + client.getNick() + " " + chan + " :" + _channels.find( chan )->second.getTopic() + "\r\n";
     send(client.getClientSocket(), msg.c_str(), msg.length(), MSG_DONTWAIT);
-    msg = ":" + _ip_string + " 332 " + client.getNick() + " " + chan + "dan!~d@localhost 1547691506\r\n";
+    msg = ":" + _ip_string + " 332 " + client.getNick() + " " + chan + " dan!~d@localhost 1547691506\r\n";
     send(client.getClientSocket(), msg.c_str(), msg.length(), MSG_DONTWAIT);
             // :irc.example.com 333 alice #test dan!~d@localhost 1547691506
     _broadcastJoin(client, _channels.find( chan )->second, chan);

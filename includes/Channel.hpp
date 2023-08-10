@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 20:43:53 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/05 17:22:30 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/10 16:35:13 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,10 @@ class Server;
 
 class Channel {
     typedef std::vector<std::string>  _string_vec;
-    typedef std::vector<Client const *>    _clients_vec;
+    typedef std::vector<Client *>    _clients_vec;
 
-    typedef std::map< std::string const, Client const *>    _cclients_map;
-    typedef _cclients_map::const_iterator                   _cclients_const_it;
+    typedef std::map< std::string const, Client *>    _cclients_map;
+    typedef _cclients_map::iterator                   _cclients_const_it;
 
     typedef std::vector<std::string>            _invitations_vec;
     typedef _invitations_vec::const_iterator    _invitations_it;
@@ -60,7 +60,7 @@ public:
     void           addUser( std::string const & nick, Client const & client );
     bool           kickUser( std::string const & nick, std::string const & kickResponse );
     Client const & findClient( std::string const & name ) const;
-    bool           sendMsg( Server const & t , std::string const & origin , std::string const & msg ) const;
+    bool           sendMsg( Server const & t , std::string const & origin , std::string const & msg );
     bool           addInvitation( std::string const & nick );
     bool           removeInvitation( std::string const & nick );
 
@@ -68,9 +68,9 @@ public:
     const string  getName( void )     const;
     const string  getTopic( void )    const;
     const string  getMode( void )     const;
-    const string  getUsersStr( void ) const;
-    _string_vec   getNicks( void )    const;
-    _clients_vec  getClients( void )  const;
+    const string  getUsersStr( void );
+    _string_vec   getNicks( void );
+    _clients_vec  getClients( void ) ;
     bool          isInviteOnly( void ) const;
     bool          isTopicOpOnly( void ) const;
     std::string const & getKey( void ) const;

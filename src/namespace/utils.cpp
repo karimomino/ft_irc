@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
+/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 16:06:19 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/09 00:39:40 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/10 15:06:30 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,29 @@ std::vector<std::string> utils::split( std::string str , string const & delim ) 
 	size_t pos = 0;
 	while ((pos = str.find(delim)) != std::string::npos) {
 		word = str.substr(0, pos);
-		wordList.push_back(word);
+		wordList.push_back( word );
 		str.erase(0, pos + delim.length());
 	}
 	pos = str.find(delim);
 	word = str.substr(0, pos);
+	wordList.push_back(word);
+    return ( wordList );
+}
+
+std::vector<std::string> utils::splitTrim( std::string str , string const & delim ) {
+	std::string word;
+	std::vector<std::string> wordList;
+
+	size_t pos = 0;
+	while ((pos = str.find(delim)) != std::string::npos) {
+		word = str.substr(0, pos);
+		trim(word);
+		wordList.push_back( word );
+		str.erase(0, pos + delim.length());
+	}
+	pos = str.find(delim);
+	word = str.substr(0, pos);
+	trim(word);
 	wordList.push_back(word);
     return ( wordList );
 }
@@ -47,4 +65,16 @@ std::vector<std::string> const utils::csplit( std::string const & str, std::stri
     }
 
     return ( strList );
+}
+
+void utils::trim( std::string & str ) {
+	// std::string::iterator str_it = str.begin();
+
+	for (std::string::iterator i = str.begin(); i != str.end(); i++)
+	{
+		if ( std::isspace(*i) || !std::isprint(*i) ) {
+			str.erase(i);
+			i--;
+		}
+	}
 }

@@ -6,11 +6,12 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 20:01:27 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/05 17:23:23 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/10 16:56:54 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
+#include "namespace.hpp"
 #include <functional>
 #include <iostream>
 #include <netdb.h>
@@ -45,7 +46,9 @@ void    Client::incMsgSent( void ) {
 }
 
 void	Client::setPass( std::string pass) {
-	_pass =  pass.substr(0, pass.length());
+	_pass = pass;
+	utils::trim(_pass);
+	// _pass =  pass.substr(0, pass.length());
 	
 	if ( _pass.length() && _nick.length() && _user.length() ) {
 		_isRegistered = true;
@@ -54,8 +57,10 @@ void	Client::setPass( std::string pass) {
 	}
 }
 
-void	Client::setNick( std::string nick) {
-	_nick =  nick.substr(0, nick.length());
+void	Client:: setNick( std::string nick) {
+	_nick = nick;
+	utils::trim(_nick); 
+	// nick.substr(0, nick.length());
 
 	//TODO: check for BAD nick
 	if ( _pass.length() && _nick.length() && _user.length() ) {
@@ -66,7 +71,9 @@ void	Client::setNick( std::string nick) {
 }
 
 void	Client::setUser( std::string user) {
-	_user =  user.substr(0, user.length());
+	_user = user;
+	utils::trim(_user);
+	// _user =  user.substr(0, user.length());
 
     if ( _pass.length() && _nick.length() && _user.length() ) {
         _isRegistered = true;
@@ -98,6 +105,10 @@ void	Client::_welcomeClient( void ) {
 
 std::string Client::getIp( void ) const {
 	return ( _ip );
+}
+
+void	Client::addMsgToQueue( std::pair<int , const std::string> msg) {
+	_msgQueue.push( msg );
 }
 
 

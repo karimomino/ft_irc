@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
+/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 19:56:23 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/01 22:31:02 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/10 16:56:40 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,23 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <map>
+#include <queue>
 
 class Client
 {
 private:
-    int            _client_socket;
-    std::string    _nick;
-    std::string    _user;
-    std::string    _pass;
-    struct sockaddr_in* _pV4Addr;
-    std::string    _ip;
-    size_t        _msgSent;
-    struct addrinfo *_servinfo;
-    bool        _isRegistered;
-    bool        _isWelcomed;
+    int                     _client_socket;
+    std::string             _nick;
+    std::string             _user;
+    std::string             _pass;
+    struct sockaddr_in*     _pV4Addr;
+    std::string             _ip;
+    size_t                  _msgSent;
+    struct addrinfo         *_servinfo;
+    bool                    _isRegistered;
+    bool                    _isWelcomed;
+    // std::queue<const std::string> _msgQueue;
+    std::queue< std::pair<int , const std::string> > _msgQueue;
 
     void        _welcomeClient( void );
 
@@ -43,6 +46,7 @@ public:
         /* METHODS */
     void    incMsgSent( void );
     int     joinChannel( std::string chan );
+    void	addMsgToQueue( std::pair<int , const std::string> );
 
         /* GETTERS */
     int         getClientSocket( void )     const;

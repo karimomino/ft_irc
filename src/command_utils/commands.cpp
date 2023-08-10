@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/04 15:40:43 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/05 17:24:51 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/10 15:08:19 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,13 @@ void Server::_parseMessage(Client &client, char *buff) {
     for ( std::vector<std::string>::iterator cmd_it = cmd_list.begin() ; cmd_it != cmd_list.end() ; cmd_it++ ) {
         std::string comm = (*cmd_it);
         DEBUG_MSG("Client sent command: " << comm << std::endl);
-        std::vector<std::string> word_list = utils::split(comm , " " );
+        std::vector<std::string> word_list = utils::splitTrim(comm , " " );
         std::vector<std::string>::iterator word_it = word_list.begin();
         std::string command_prefix = *word_it;
-
-        if (!command_prefix.compare("PING")) {
+        
+        if (!command_prefix.compare("CAP") && !client.getRegisteredStatus()){
+            sendMsg( ERR_NOTREGISTERED , client , "*" , "Register first.");
+        } else if (!command_prefix.compare("PING")) {
             _pong( client );
         } else if (!command_prefix.compare("PASS") && !client.getRegisteredStatus()) {
             word_it++;
@@ -31,11 +33,15 @@ void Server::_parseMessage(Client &client, char *buff) {
         } else if (!command_prefix.compare("NICK") && !client.getRegisteredStatus()) {
             word_it++;
             Client *c = _findClientByNick( _clientMap , *word_it );
-            string err = ":127.0.0.1 433 * " + *word_it + " :Nickname is already in use.\r\n";
+            // string err = ":127.0.0.1 433 * " + *word_it + " :Nickname is already in use.\r\n";
             if ( c == NULL )
                 client.setNick(*word_it);
-            else
-                send( client.getClientSocket(), err.c_str(), err.length() , MSG_DONTWAIT );
+            else {
+                sendMsg(ERR_NICKNAMEINUSE , client , *word_it , "Nickname is already in use.");
+                close(client.getClientSocket());
+                _clientMap.erase( _clientMap.find(client.getClientSocket()) );
+            }
+                // send( client.getClientSocket(), err.c_str(), err.length() , MSG_DONTWAIT );
         } else if (!command_prefix.compare("USER") && !client.getRegisteredStatus()) {
             word_it++;
             client.setUser(*word_it);

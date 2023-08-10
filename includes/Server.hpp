@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
+/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 17:23:20 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/01 22:42:49 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/10 16:37:14 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,9 @@ private:
     void                                _privmsg( string full_command , Client client );
     void                                _sendNames( Client const & client , string chan);
     bool                                _allowedToJoin( Client client , Channel chan , string key ) const;
+    Channel                             *_findChanByName( string name );
+    void                                _privmsgChan( Client client , string target , string origin , string text );
+    void                                _privmsgClient( Client client , string target , string origin , string text );
 
     bool  _addCommandFunction( std::string const & keyValue, cmdFun );
     bool  _initCommandsFunctions( void );
@@ -98,12 +101,12 @@ public:
     size_t    getConnectionCount ( void ) const;
 
     bool    sendMsg( Client const &, std::string const & msg ) const ;
-    bool    sendMsg( Channel const &, std::string const & msg ) const ;
-    bool    sendMsg( Client const &, std::string const & origin, std::string const & msg ) const;
-    bool    sendMsg( Channel const &, std::string const & origin, std::string const & msg ) const;
+    bool    sendMsg( Channel &, std::string const & msg ) const ;
+    bool    sendMsg( Client &, std::string const & origin, std::string const & msg ) const;
+    bool    sendMsg( Channel &, std::string const & origin, std::string const & msg ) const;
 
-    bool    sendMsg( std::string const & numReply, Client const & client, std::string const & msg ) const;
-    bool    sendMsg( std::string const & numReply, Client const & client, std::string const & arg, std::string const & msg ) const;
+    bool    sendMsg( std::string const & numReply, Client & client, std::string const & msg ) const;
+    bool    sendMsg( std::string const & numReply, Client & client, std::string const & arg, std::string const & msg ) const;
     friend class Channel;
 };
 #endif

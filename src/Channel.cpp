@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/29 15:07:23 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/05 17:23:08 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/10 16:39:02 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void Channel::addUser( std::string const & nick, Client const & client ) {
     _clients.insert( std::pair<std::string, Client const *>( nick, &client ) );
 }
 
-const string  Channel::getUsersStr( void ) const {
+const string  Channel::getUsersStr( void ) {
     std::string  nicks;
 
     for ( _cclients_const_it it = _clients.begin(); it != _clients.end(); ++it ) {
@@ -90,7 +90,7 @@ const string  Channel::getUsersStr( void ) const {
     return ( nicks );
 }
 
-Channel::_string_vec Channel::getNicks( void ) const {
+Channel::_string_vec Channel::getNicks( void ) {
     _string_vec nicks;
 
     // TODO: fix it later to make it more efficient
@@ -112,24 +112,26 @@ bool Channel::kickUser( std::string const & nick, std::string const & kickRespon
     return ( true );
 }
 
-bool    Channel::sendMsg( Server const & t , std::string const & origin , std::string const & msg ) const {
+bool    Channel::sendMsg( Server const & t , std::string const & origin , std::string const & msg ) {
     bool sendRet = false;
     for (_cclients_const_it it = _clients.begin(); it != _clients.end(); it++)
     {
-        const Client *curr_client = it->second;
+        Client *curr_client = it->second;
         std::string finalMsg = origin + "PRIVMSG " + _name + " :" + msg;
         DEBUG_MSG(finalMsg << std::endl);
         DEBUG_MSG("CLIENT NAME: " << it->first << "\nCLIENT FD: " << curr_client->getClientSocket() << std::endl);
         // if (*split_string(origin , ":").begin() != curr_client.getNick())
-        sendRet =  t.sendMsg( *curr_client , finalMsg );
+        curr_client->addMsgToQueue(finalMsg);
+        // sendRet =  t.sendMsg( *curr_client , finalMsg );
     }
-    return ( sendRet );
+    return ( true );
+    // return ( sendRet );
 }
 
-std::vector<Client const *> Channel::getClients( void ) const {
-    std::vector<Client const *> clients;
+std::vector<Client *> Channel::getClients( void ) {
+    std::vector<Client *> clients;
 
-    for ( _cclients_const_it it = _clients.begin(); it != _clients.end(); it++ )
+    for ( _cclients_map::iterator it = _clients.begin(); it != _clients.end(); it++ )
         clients.push_back( it->second );
 
     return ( clients );

@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 18:41:14 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/05 17:24:11 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/10 16:58:22 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,11 @@ void Server::_runServer(void) {
             // TODO: loop to accept all incoming connections
             if (socket == _listen_socket) {
                 _acceptConnection();
+            } else if ( (_poll_fds.data())[i].revents & POLLOUT ) {
+                Client cli = _clientMap.find( socket )->second;
+                // TODO: add get message from queue and remove message from queue
+                // TODO: send message to target from client msg queue - needs to add target as pair in the queue
+
             } else {
                 std::map<int, Client>::iterator tmp = _getClient(socket);
 
@@ -156,7 +161,9 @@ int Server::_acceptConnection(void) {
         _connectionCount++;
     } else {
         std::cout << "Connection Refused, MAX clients Reached" << std::endl;
-        close(newClient.getClientSocket());
+        int clientSock = newClient.getClientSocket();
+        close(clientSock);
+        _clientMap.erase(_clientMap.find(clientSock));
     }
 
     return (0);
@@ -180,22 +187,24 @@ void Server::_executeCommand( Client const & client, std::string const & message
     ( this->*fun )( client, message );
 }
 
-bool Server::_sendMessage( Client const & client, std::string const & msg ) {
+bool Server::sendMsg( Client const & client, std::string const & msg ) const {
     ssize_t sendRet = send( client.getClientSocket(), msg.c_str(), msg.length(), MSG_DONTWAIT );
     return ( sendRet >= 0 ? true : false );
 }
-bool Server::sendMsg( Client const & client, std::string const & origin, std::string const & msg ) const {
+bool Server::sendMsg( Client & client, std::string const & origin, std::string const & msg ) const {
     std::string const finalMsg = origin + msg + "\r\n";
     std::cout << "USERR MSG: [" << finalMsg.substr( 0, finalMsg.length() - 2 ) << "]" << std::endl;
-    return ( send( client.getClientSocket(), finalMsg.c_str(), finalMsg.length(), 0x80 ) );
+    client.addMsgToQueue( (std::pair<int , const std::string>){client.getClientSocket(), finalMsg} );
+    return ( true );
+    // return ( send( client.getClientSocket(), finalMsg.c_str(), finalMsg.length(), 0x80 ) );
 }
 
-bool Server::sendMsg( Channel const & chan, std::string const & origin, std::string const & msg ) const {
+bool Server::sendMsg( Channel & chan, std::string const & origin, std::string const & msg ) const {
     return ( chan.sendMsg(*this, origin , msg) );
 }
 
-bool Server::sendMsg( Channel const & chan, std::string const & msg ) const {
-    std::vector<Client const *> clients = chan.getClients();
+bool Server::sendMsg( Channel & chan, std::string const & msg ) const {
+    std::vector<Client *> clients = chan.getClients();
 
     for ( std::vector<Client const *>::iterator it = clients.begin(); it != clients.end(); it++ ) {
         send( (*it)->getClientSocket(), msg.c_str(), msg.length(), 0x80 );
@@ -203,15 +212,19 @@ bool Server::sendMsg( Channel const & chan, std::string const & msg ) const {
     return ( true );
 }
 
-bool    Server::sendMsg( std::string const & numReply, Client const & client, std::string const & msg ) const {
+bool    Server::sendMsg( std::string const & numReply, Client & client, std::string const & msg ) const {
     std::string const finalMsg = ":" + _ip_string + " "+ numReply + " " + client.getNick()
         + " :" + msg + "\r\n";
-    return ( sendMsg( client, finalMsg ) );
+    client.addMsgToQueue( (std::pair<int , const std::string>){client.getClientSocket(), finalMsg} );
+    return ( true );
+    // return ( sendMsg( client, finalMsg ) );
 }
 
-bool    Server::sendMsg( std::string const & numReply, Client const & client, std::string const & arg, std::string const & msg ) const {
+bool    Server::sendMsg( std::string const & numReply, Client & client, std::string const & arg, std::string const & msg ) const {
     std::string const finalMsg = ":" + _ip_string + " "+ numReply + " " + client.getNick()
         + " " + arg + " :" + msg + "\r\n";
+    client.addMsgToQueue( (std::pair<int , const std::string>){client.getClientSocket(), finalMsg} );
     std::cout << "CLIENT MSG: [" << finalMsg.substr( 0, finalMsg.length() - 2 ) << "]" << std::endl;
-    return ( sendMsg( client, finalMsg ) );
+    return ( true );
+    // return ( sendMsg( client, finalMsg ) );
 }

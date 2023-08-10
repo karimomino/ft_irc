@@ -8,8 +8,10 @@ namespace server {}
 
 namespace utils {
 std::vector<std::string> split( std::string, std::string const & delm );
+std::vector<std::string> splitTrim( std::string, std::string const & delm );
 std::vector<std::string> const csplit( std::string const &, std::string const & delm );
 std::string ft_itoa( int num );
+void trim( std::string & str );
 }
 
 namespace message {
