@@ -82,4 +82,6 @@
 
 # define ERR_USERONCHANNEL      "443"
 # define RPL_INVITING           "341"
+# define ERR_INVALIDMODEPARAM   "696"
+
 #endif

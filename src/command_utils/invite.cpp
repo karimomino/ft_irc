@@ -33,8 +33,6 @@ static bool checkPermessions( Server const & serv, Client const & client, Client
 }
 
 void    Server::_inviteCommand( Client const & client, std::string const & msg ) {
-    std::cout << "IN BITCHH" << std::endl;
-    std::cout << "msg: [" << msg << "]" << std::endl;
     try {
         std::pair<std::string const, std::string const> args = getArgs( msg );
 
@@ -44,11 +42,12 @@ void    Server::_inviteCommand( Client const & client, std::string const & msg )
             return ;
         }
 
-        if ( _channels.find( args.second ) == _channels.end() ) {
+        chan_map::iterator chan_it = _channels.find( args.second );
+        if ( chan_it == _channels.end() ) {
             sendMsg( ERR_NOSUCHCHANNEL, client, args.second, "No such channel" );
             return ;
         }
-        Channel & chan = _channels.find( args.second )->second;
+        Channel & chan = chan_it->second;
 
         if ( !checkPermessions( *this, client, *user, chan ) )
             return ;

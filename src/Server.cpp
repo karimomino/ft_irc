@@ -185,7 +185,6 @@ bool Server::sendMsg( Client const & client, std::string const & msg ) const {
 }
 bool Server::sendMsg( Client const & client, std::string const & origin, std::string const & msg ) const {
     std::string const finalMsg = origin + msg + "\r\n";
-    std::cout << "USERR MSG: [" << finalMsg.substr( 0, finalMsg.length() - 2 ) << "]" << std::endl;
     return ( send( client.getClientSocket(), finalMsg.c_str(), finalMsg.length(), 0x80 ) );
 }
 

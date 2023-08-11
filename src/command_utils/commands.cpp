@@ -62,6 +62,8 @@ void Server::_parseMessage(Client &client, char *buff) {
             _kickCommand( client, buff );
         } else if (!command_prefix.compare("INVITE")) {
             _inviteCommand( client, buff );
+        } else if (!command_prefix.compare("MODE")) {
+            _modeCommand(client, buff);
         }
     }
 }

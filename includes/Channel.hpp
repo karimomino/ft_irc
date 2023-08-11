@@ -48,6 +48,7 @@ private:
     std::string        _key;
     bool               _isInviteOnly;
     bool               _topicOpOnly;
+    bool               _keyMode;
     _cclients_map      _clients;
     _invitations_vec   _invitations;
 
@@ -58,7 +59,7 @@ public:
 
     /* METHODS */
     void           addUser( std::string const & nick, Client const & client );
-    bool           kickUser( std::string const & nick, std::string const & kickResponse );
+    bool           removeUser( std::string const & nick );
     Client const & findClient( std::string const & name ) const;
     bool           sendMsg( Server const & t , std::string const & origin , std::string const & msg ) const;
     bool           addInvitation( std::string const & nick );
@@ -82,6 +83,7 @@ public:
     void        setName( string );
     void        setTopicMode( bool );
     void        setInviteMode( bool );
+    void        setKeyMode( bool );
 };
 
 #endif

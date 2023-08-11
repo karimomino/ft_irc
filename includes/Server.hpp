@@ -93,7 +93,6 @@ private:
 
 public:
     Server( const int port, const string pass );
-    // ~Server();
     int       getListenSocket( void ) const;
     size_t    getConnectionCount ( void ) const;
 

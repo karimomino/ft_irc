@@ -31,7 +31,14 @@ void	Channel::setTopicMode( bool mode ) {
 }
 
 void	Channel::setInviteMode( bool mode ) {
+    if ( mode == _isInviteOnly )
+        return ;
     _isInviteOnly = mode;
+    // sendMsg( *this, ":" + _ip_string + " 324 " + client.getNick() + " " + chan.getName() + " +i\r\n");
+}
+
+void    Channel::setKeyMode( bool mode ) {
+    _keyMode = mode;
 }
 
 const std::string Channel::getName( void ) const {
@@ -101,12 +108,11 @@ Channel::_string_vec Channel::getNicks( void ) const {
     return ( nicks );
 }
 
-bool Channel::kickUser( std::string const & nick, std::string const & kickResponse ) {
+bool Channel::removeUser( std::string const & nick ) {
     _cclients_const_it user = _clients.find( nick );
     if ( user == _clients.end() )
         return ( false );
 
-    send( user->second->getClientSocket(), kickResponse.c_str(), kickResponse.length(), 0x80 );
     _clients.erase( nick );
 
     return ( true );
@@ -120,7 +126,6 @@ bool    Channel::sendMsg( Server const & t , std::string const & origin , std::s
         std::string finalMsg = origin + "PRIVMSG " + _name + " :" + msg;
         DEBUG_MSG(finalMsg << std::endl);
         DEBUG_MSG("CLIENT NAME: " << it->first << "\nCLIENT FD: " << curr_client->getClientSocket() << std::endl);
-        // if (*split_string(origin , ":").begin() != curr_client.getNick())
         sendRet =  t.sendMsg( *curr_client , finalMsg );
     }
     return ( sendRet );
