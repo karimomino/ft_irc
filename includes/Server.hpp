@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 17:23:20 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/10 16:37:14 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/11 03:25:52 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,15 +63,15 @@ private:
 
     /* METHODS */
     int                                 _initServer( void );
-    int                                 _acceptConnection( void );
+    bool                                 _acceptConnection( void );
     void                                _runServer( void );
     void                                _parseMessage( Client &new_socket , char *buff );
     std::map<int, Client>::iterator     _getClient( const int fd );
     std::string                         _createMessage( Client client, string command );
-    void                                _joinChannel( Client const & client, string name); // ?
-    void                                _joinChannel( Client const & client, string chanList , string chanKeys ); // ?
-    void                                _joinCreate( Client const & client , string chan , string topic , string key , bool inv , bool top );
-    void                                _joinExistingChannel( Client const & client , string chan );
+    void                                _joinChannel( Client & client, string name); // ?
+    void                                _joinChannel( Client & client, string chanList , string chanKeys ); // ?
+    void                                _joinCreate( Client & client , string chan , string topic , string key , bool inv , bool top );
+    void                                _joinExistingChannel( Client & client , string chan );
     void                                _broadcastJoin( Client client , Channel chan , string name );
     Client                              *_findClientByNick( std::map<int, Client> &clients , string nick ) const;
     void                                _pong( Client client);
@@ -87,10 +87,10 @@ private:
     void  _executeCommand( Client const & client, std::string const & message );
 
     /**                   COMMANDS FUN                   **/
-    void    _joinCommand( Client const & client, std::string const & msg );
-    void    _kickCommand( Client const & client, std::string const & msg );
-    void    _modeCommand( Client const & client, std::string const & msg );
-    void    _inviteCommand( Client const & client, std::string const & msg );
+    void    _joinCommand( Client & client, std::string const & msg );
+    void    _kickCommand( Client & client, std::string const & msg );
+    void    _modeCommand( Client & client, std::string const & msg );
+    void    _inviteCommand( Client & client, std::string const & msg );
 
     void    _sendAMessage( std::string full_command );
 

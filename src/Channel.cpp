@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/29 15:07:23 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/10 16:39:02 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/11 00:07:04 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,8 @@ bool Channel::removeInvitation( std::string const & nick ) {
     return ( true );
 }
 
-void Channel::addUser( std::string const & nick, Client const & client ) {
-    _clients.insert( std::pair<std::string, Client const *>( nick, &client ) );
+void Channel::addUser( std::string const & nick, Client & client ) {
+    _clients.insert( std::pair<std::string, Client *>( nick, &client ) );
 }
 
 const string  Channel::getUsersStr( void ) {
@@ -113,7 +113,8 @@ bool Channel::kickUser( std::string const & nick, std::string const & kickRespon
 }
 
 bool    Channel::sendMsg( Server const & t , std::string const & origin , std::string const & msg ) {
-    bool sendRet = false;
+    bool sendRet = true;
+    (void)t;
     for (_cclients_const_it it = _clients.begin(); it != _clients.end(); it++)
     {
         Client *curr_client = it->second;
@@ -121,10 +122,10 @@ bool    Channel::sendMsg( Server const & t , std::string const & origin , std::s
         DEBUG_MSG(finalMsg << std::endl);
         DEBUG_MSG("CLIENT NAME: " << it->first << "\nCLIENT FD: " << curr_client->getClientSocket() << std::endl);
         // if (*split_string(origin , ":").begin() != curr_client.getNick())
-        curr_client->addMsgToQueue(finalMsg);
+        curr_client->addMsgToQueue(std::pair<Client & , const std::string>(*curr_client, finalMsg));
         // sendRet =  t.sendMsg( *curr_client , finalMsg );
     }
-    return ( true );
+    return ( sendRet );
     // return ( sendRet );
 }
 

@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 20:42:02 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/10 15:22:30 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/11 03:19:01 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ static void findKey( std::vector<std::string> &chanListKeys , std::vector<std::s
     }
 }
 
-void Server::_joinCreate( Client const & client , string chan, string topic , string key , bool inv , bool top ) {
+void Server::_joinCreate( Client & client , string chan, string topic , string key , bool inv , bool top ) {
     string msg;
     std::pair<chan_map::iterator , bool> channel = _channels.insert( std::pair< std::string, Channel>( chan, Channel( chan, topic , key , inv , top ) ) );
     if ( _allowedToJoin( client , channel.first->second , key) ) {
@@ -76,7 +76,7 @@ void Server::_joinCreate( Client const & client , string chan, string topic , st
 
 }
 
-void Server::_joinExistingChannel( Client const & client , string chan ) {
+void Server::_joinExistingChannel( Client & client , string chan ) {
     DEBUG_MSG("joining existing channel" << std::endl);
     string msg;
     _channels.find( chan )->second.addUser( client.getNick(), client );
@@ -120,10 +120,9 @@ bool Server::_allowedToJoin( Client client , Channel chan , string key ) const {
 
     return ( allowed );
 }
-void    Server::_joinChannel( Client const & client , string chans , string keys ) {
+void    Server::_joinChannel( Client & client , string chans , string keys ) {
 
     string msg;
-    // TODO: Check invite only and key
     std::vector<std::string> chanList = utils::split( chans , "," );
     std::vector<std::string> chanListKeysCandidates = utils::split( keys , "," );
     std::vector<string> chanListKeys(chanList.size() , "");

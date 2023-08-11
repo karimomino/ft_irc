@@ -15,7 +15,7 @@ static std::pair<std::string const, std::string const> getArgs( std::string cons
     return ( std::pair<std::string const, std::string const>( userNick, chanName ) );
 }
 
-static bool checkPermessions( Server const & serv, Client const & client, Client const & user, Channel const & chan ) {
+static bool checkPermessions( Server const & serv, Client & client, Client const & user, Channel const & chan ) {
     if ( chan.isInviteOnly() && !chan.isOperator( client.getNick() ) ) {
         serv.sendMsg( ERR_CHANOPRIVSNEEDED, client, chan.getName(), "You're not channel operator" );
         return ( false );
@@ -32,13 +32,13 @@ static bool checkPermessions( Server const & serv, Client const & client, Client
     return ( true );
 }
 
-void    Server::_inviteCommand( Client const & client, std::string const & msg ) {
+void    Server::_inviteCommand( Client & client, std::string const & msg ) {
     std::cout << "IN BITCHH" << std::endl;
     std::cout << "msg: [" << msg << "]" << std::endl;
     try {
         std::pair<std::string const, std::string const> args = getArgs( msg );
 
-        Client const * user = _findClientByNick( _clientMap, args.first );
+        Client * user = _findClientByNick( _clientMap, args.first );
         if ( !user ) {
             sendMsg( ERR_NOSUCHNICK, client, args.first, "No such nick" );
             return ;

@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 20:43:53 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/10 16:35:13 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/10 23:29:51 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ public:
     ~Channel( void );
 
     /* METHODS */
-    void           addUser( std::string const & nick, Client const & client );
+    void           addUser( std::string const & nick, Client & client );
     bool           kickUser( std::string const & nick, std::string const & kickResponse );
     Client const & findClient( std::string const & name ) const;
     bool           sendMsg( Server const & t , std::string const & origin , std::string const & msg );

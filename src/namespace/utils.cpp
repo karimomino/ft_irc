@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 16:06:19 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/10 15:06:30 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/11 03:21:16 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ std::vector<std::string> const utils::csplit( std::string const & str, std::stri
 }
 
 void utils::trim( std::string & str ) {
-	// std::string::iterator str_it = str.begin();
+	// TODO: if first element is trimmed this will crash
 
 	for (std::string::iterator i = str.begin(); i != str.end(); i++)
 	{

@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 20:01:27 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/10 16:56:54 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/11 03:48:12 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <netdb.h>
 #include <sys/socket.h>
 
-Client::Client( int listen_socket, struct sockaddr_in const &hint ) :   _pV4Addr((struct sockaddr_in*)&hint), _isRegistered(false), _isWelcomed(false)
+Client::Client( int listen_socket, struct sockaddr_in const &hint ) :   _nick("") , _pass(""), _pV4Addr((struct sockaddr_in*)&hint), _isRegistered(false), _isWelcomed(false), _terminate(false)
 {
 	int addrlen = sizeof(hint);
 	_client_socket = accept(listen_socket, (sockaddr *)&hint, (socklen_t*)&addrlen);
@@ -86,6 +86,18 @@ bool    Client::getRegisteredStatus( void ) const {
 	return ( _isRegistered );
 }
 
+std::pair<Client & , const std::string> & Client::getFirstQueuedMsg( void ) {
+    return ( _msgQueue.front() );
+}
+
+void    Client::popFirstMsg( void ) {
+	_msgQueue.pop();
+}
+
+size_t      Client::getQueueSize( void ) {
+	return (_msgQueue.size());
+}
+
 void	Client::setAddrInfo( void ) {
 	struct in_addr ipAddr = _pV4Addr->sin_addr;
 
@@ -107,8 +119,19 @@ std::string Client::getIp( void ) const {
 	return ( _ip );
 }
 
-void	Client::addMsgToQueue( std::pair<int , const std::string> msg) {
-	_msgQueue.push( msg );
+void	Client::addMsgToQueue( std::pair<Client & , const std::string> targetMsg) {
+	_msgQueue.push( targetMsg );
 }
 
 
+void	Client::setTerminate( bool terminate ) {
+	_terminate = terminate;
+}
+
+bool	Client::getTerminate( void ) const {
+	return _terminate;
+}
+
+std::string Client::getPass( void ) const {
+	return _pass;
+}

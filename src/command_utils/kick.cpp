@@ -14,8 +14,8 @@ static std::string const kickResponse( Channel const & chan, Client const & cmdU
     return ( msg );
 }
 
-static bool kickOperation( Server const & server, Client const & client, Channel & chan,
-        Client const & kickedUser, std::string const & reason  ) {
+static bool kickOperation( Server const & server, Client & client, Channel & chan,
+        Client & kickedUser, std::string const & reason  ) {
 
     if ( !chan.isOperator( client.getNick() ) ) {
         if ( !chan.isMember( client.getNick() ) )
@@ -41,7 +41,7 @@ static bool kickOperation( Server const & server, Client const & client, Channel
     return ( true );
 }
 
-void Server::_kickCommand( Client const & client, std::string const & msg ) {
+void Server::_kickCommand( Client & client, std::string const & msg ) {
     typedef const std::vector<std::string> string_vec;
 
     string_vec chanList = message::extractArgs( msg, "#" );
@@ -66,7 +66,7 @@ void Server::_kickCommand( Client const & client, std::string const & msg ) {
         }
         Channel & cur_chan = cur_chan_it->second;
         std::string const cleanedReason = reason_it->substr( 0, reason_it->length() - 2 );
-        Client const * user = _findClientByNick( _clientMap, *nick_it );
+        Client * user = _findClientByNick( _clientMap, *nick_it );
         if ( !user )
             sendMsg( ERR_NOSUCHNICK, client, *nick_it, "No such nick" );
         else
