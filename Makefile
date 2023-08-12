@@ -20,7 +20,7 @@ OBJS		=	$(addprefix $(SRCS_DIR), $(SRCS:.cpp=.o))
 
 CXX			=	c++
 
-CXXFLAGS	=	-Wall -Werror -Wextra -std=c++98 -Iincludes
+CXXFLAGS	=	-Wall -Werror -Wextra -std=c++98 -Iincludes -Iincludes/commands
 
 RM			=	rm -f
 

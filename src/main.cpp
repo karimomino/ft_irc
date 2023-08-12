@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 18:23:28 by kamin             #+#    #+#             */
-/*   Updated: 2023/05/27 17:20:55 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/12 20:14:51 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,23 @@ bool validParams( int ac, char **av ) {
     return ( valid_params );
 }
 
+bool IRCserver( int port, std::string const & pass ) {
+    Server ircserver = Server( port, pass );
+
+    try {
+        ircserver.init();
+    } catch ( std::exception const & e ) {
+        std::cerr << "[" << e.what() << "]" << std::endl;
+    }
+    ircserver.run();
+    ircserver.end();
+
+    return ( true );
+}
+
 int main( int ac, char **av ) {
     if ( validParams( ac, av )) {
-        Server ircserver = Server( atoi( av[1] ) , av[2] );
+        IRCserver( atoi( av[1] ) , av[2] );
     }
     return ( 0 );
 }

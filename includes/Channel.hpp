@@ -1,87 +1,40 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Channel.hpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/28 20:43:53 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/01 22:50:32 by ommohame         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 
-#ifndef CHANNEL_HPP
-# define CHANNEL_HPP
-#include <vector>
-#include <string>
-#include <algorithm>
-#include <map>
-// #include "Server.hpp"
-
-#ifdef DEBUG
-# define DEBUG_MSG(str) do { std::cout << str << std::endl; } while( false )
-#else
-# define DEBUG_MSG(str) do { } while ( false )
-#endif
-
-typedef std::string string;
-
-
-class Client;
-class Server;
+#include "Server.hpp"
 
 class Channel {
-    typedef std::vector<std::string>  _string_vec;
-    typedef std::vector<Client const *>    _clients_vec;
-
-    typedef std::map< std::string const, Client const *>    _cclients_map;
-    typedef _cclients_map::const_iterator                   _cclients_const_it;
-
-    typedef std::vector<std::string>            _invitations_vec;
-    typedef _invitations_vec::const_iterator    _invitations_it;
-
 private:
-    std::string        _name;
-    std::string        _topic;
-    std::string        _key;
-    bool               _isInviteOnly;
-    bool               _topicOpOnly;
-    _cclients_map      _clients;
-    _invitations_vec   _invitations;
-
+    std::string _name;
+    std::string _topic;
+    std::string _key;
+    bool        _isInviteOnly;
+    bool        _isTopicOnly;
+    std::vector<std::string>        _invitations;
+    std::map<std::string, Client*>  _clients;
 
 public:
-    Channel( string name , string topic , string key , bool inv , bool top );
-    ~Channel( void );
+    Channel( const std::string& name, const std::string& topic );
+    ~Channel();
 
-    /* METHODS */
-    void           addUser( std::string const & nick, Client const & client );
-    bool           kickUser( std::string const & nick, std::string const & kickResponse );
-    Client const & findClient( std::string const & name ) const;
-    bool           sendMsg( Server const & t , std::string const & origin , std::string const & msg ) const;
-    bool           addInvitation( std::string const & nick );
-    bool           removeInvitation( std::string const & nick );
+    /* Methods */
+    void addUser( const std::string& nick, Client& client );
+    void kickUser( const std::string& nick, const std::string& msg );
+    void addInvitation( const std::string& nick );
+    void removeInvitation( const std::string& nick );
+    void addMsg( const std::string& msg );
 
-    /* GETTERS */
-    const string  getName( void )     const;
-    const string  getTopic( void )    const;
-    const string  getMode( void )     const;
-    const string  getUsersStr( void ) const;
-    _string_vec   getNicks( void )    const;
-    _clients_vec  getClients( void )  const;
-    bool          isInviteOnly( void ) const;
-    bool          isTopicOpOnly( void ) const;
-    std::string const & getKey( void ) const;
-    bool          isInvited ( std::string const & nick ) const;
-    bool          isMember( std::string const & nick ) const;
-    bool          isOperator( std::string const & nick ) const;
+    /* Getters */
+    bool  isInvited( const std::string& nick ) const;
+    bool  isMember( const std::string& nick ) const;
+    bool  isOperator( const std::string& nick ) const;
+    bool  isInviteOnly( void ) const;
+    bool  isTopicOnly( void ) const;
+    const std::string& getName( void ) const;
+    const std::string& getTopic( void ) const;
+    const std::string& getKey( void ) const;
 
-    /* SETTERS */
-    void        setName( string );
-    void        setTopicMode( bool );
-    void        setInviteMode( bool );
+    /* Setters */
+    void setName( const std::string& );
+    void setInviteMode( bool );
+    void setTopicMode( bool );
 };
-
-#endif
