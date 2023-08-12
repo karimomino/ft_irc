@@ -79,4 +79,7 @@
 # define ERR_CHANOPRIVSNEEDED    "482"
 # define ERR_UMODEUNKNOWNFLAG    "501"
 # define ERR_USERSDONTMATCH      "502"
+
+# define ERR_USERONCHANNEL      "443"
+# define RPL_INVITING           "341"
 #endif

@@ -6,7 +6,7 @@
 /*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 19:56:23 by kamin             #+#    #+#             */
-/*   Updated: 2023/06/10 01:57:26 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/01 22:31:02 by ommohame         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,13 @@ private:
     size_t        _msgSent;
     struct addrinfo *_servinfo;
     bool        _isRegistered;
+    bool        _isWelcomed;
+
+    void        _welcomeClient( void );
 
 
 public:
-    Client( int listen_socket, struct sockaddr_in hint );
+    Client( int listen_socket, struct sockaddr_in const & hint );
     // ~Client( void );
 
         /* METHODS */

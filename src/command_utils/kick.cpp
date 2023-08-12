@@ -1,108 +1,77 @@
 #include "Server.hpp"
+#include "Replies.hpp"
 
-static bool findIndicies( std::string const & msg, size_t * firstHash, size_t * firstSpace, size_t * secondSpace ) {
-    *firstHash = msg.find( "#" );
-    *firstSpace = msg.find( " ", *firstHash );
-    *secondSpace = msg.find( " ", *firstSpace + 1 );
+// S <-   :dan!d@localhost KICK #test alice :dan
+static std::string const kickResponse( Channel const & chan, Client const & cmdUser, std::string const & kickedUser ) {
+    std::string const msg = message::getMsgOrigin( cmdUser ) + "KICK " + chan.getName()
+        + " " + kickedUser + " :" + cmdUser.getNick() + "\r\n";
+    return ( msg );
+}
 
-    if ( *firstHash == std::string::npos || *firstSpace == std::string::npos
-        || *secondSpace == std::string::npos ) {
-        std::cerr << "Error: executing kick command" << std::endl;
-        return false;
+static std::string const kickResponse( Channel const & chan, Client const & cmdUser, std::string const & kickedUser, std::string const & reason ) {
+    std::string const msg = message::getMsgOrigin( cmdUser )  + " KICK " + chan.getName()
+        + " " + kickedUser + " :" + reason + "\r\n";
+    return ( msg );
+}
+
+static bool kickOperation( Server const & server, Client const & client, Channel & chan,
+        Client const & kickedUser, std::string const & reason  ) {
+
+    if ( !chan.isOperator( client.getNick() ) ) {
+        if ( !chan.isMember( client.getNick() ) )
+            server.sendMsg( ERR_NOTONCHANNEL, client, chan.getName(), "You're not on that channel" );
+        else
+            server.sendMsg( ERR_CHANOPRIVSNEEDED, client, chan.getName(), "You're not channel operator" );
+        return ( false );
     }
+
+    std::string response;
+    if ( reason.length() )
+        response = kickResponse( chan, client, kickedUser.getNick(), reason );
+    else
+        response = kickResponse( chan, client, kickedUser.getNick());
+
+    if ( !chan.kickUser( kickedUser.getNick(), response ) ) {
+        server.sendMsg( ERR_USERNOTINCHANNEL, client, kickedUser.getNick() + NBSP + chan.getName(), "They aren't on that channel" );
+        return ( false );
+    }
+    server.sendMsg( chan, response );
+
 
     return ( true );
 }
 
-std::vector<std::string> split(std::string const & str, std::string const & delimiter) {
-    std::vector<std::string> v;
-    // (void)str;
-    // (void)delimiter;
-    if ( !str.empty() ) {
-        size_t start = 0;
-        do {
-            size_t idx = str.find(delimiter, start);
-            if (idx == string::npos) {
-                break;
-            }
- 
-            size_t length = idx - start;
-            string x = str;
-            v.push_back(x.substr(start, length));
-            start += ( length + delimiter.size() );
-        } while ( true );
-        v.push_back( str.substr( start ) );
-    }
-    return ( v );
-}
-
-// Parameters: <channel> <user> [<comment>]
-// command : KICK #channel user :comment
 void Server::_kickCommand( Client const & client, std::string const & msg ) {
-    (void)client;
-    // (void)msg;
-    typedef std::vector<std::string> cstring_vec;
+    typedef const std::vector<std::string> string_vec;
 
-    size_t firstHash, firstSpace, secondSpace;
-    if ( !findIndicies( msg, &firstHash, &firstSpace, &secondSpace ) )
+    string_vec chanList = message::extractArgs( msg, "#" );
+    string_vec nickList = message::extractNickList( msg );
+    string_vec reasonList = message::extractArgs( msg, ":" );
+
+    string_vec::const_iterator chan_it = chanList.begin();
+    string_vec::const_iterator nick_it = nickList.begin();
+    string_vec::const_iterator reason_it = reasonList.begin();
+
+    if ( chanList.size() != nickList.size() ) {
+        sendMsg( ERR_NEEDMOREPARAMS, client, "KICK", "Not enough parameters" );
+        DEBUG_MSG( "Error: KICK command" );
         return ;
+    }
 
-    std::string const channelName = msg.substr( firstHash, firstSpace - firstHash );
-    std::cout << "channelName: [" << channelName << "]" << std::endl;
-    std::string const username = msg.substr( firstSpace + 1, secondSpace - firstSpace  - 1 ); // user to be kicked
-    std::cout << "username: [" << username << "]" << std::endl;
-    std::string const kickComment = msg.substr( secondSpace + 1, msg.length() - secondSpace  - 1 );
-    std::cout << "kickComment: [" << kickComment << "]" << std::endl;
-
-
-    cstring_vec  channels_vec = split( channelName, "," );
-    cstring_vec  usernames_vec = split( username, "," );
-    cstring_vec  comments_vec = split( kickComment, "," );
-
-    // for ( cstring_vec::iterator chanName_it = channels_vec.begin();
-    // chanName_it != channels_vec.end(); chanName_it++ ) {
-    //     cstring_vec::iterator usernames_vec_it = usernames_vec.begin();
-    //     cstring_vec::iterator comments_vec_it = comments_vec.begin();
-    //     chan_map::iterator chan_it = _channels.find( *chanName_it );
-
-    //     // TODO: check if it reached the limit of users or comments
-    //     // TODO: Clean the code
-    //     if ( chan_it != _channels.end() ) {
-    //         Channel foundChannel = chan_it->second;
-    //         if ( !foundChannel.removeUser( *usernames_vec_it ) ) {
-    //             for ( std::map<int, Client>::iterator it = _clientMap.begin(); it != _clientMap.end(); it++ ) {
-    //                 std::cout << "----------> [" << it->second.getNick() << "] <-------------" << std::endl;
-    //                 if ( it->second.getNick() == *usernames_vec_it ) {
-    //                     // _sendMessage( it->second, "test msg test msg" );
-    //                     // S <-   :dan!d@localhost KICK #Melbourne alice :dan
-    //                     _sendMessage( it->second, ":" + client.getNick() + "!" + client.getUser()
-    //                         + "@localhost KICK " + *chanName_it + " " + it->second.getNick() + ":" + client.getNick() + "\r\n" );
-    //                     // _sendMessage( );
-    //                     break ;
-    //                 }
-    //             }
-    //         }
-    //         else {
-    //             std::cerr << "Error: Can't find user [" << *usernames_vec_it << "] in channel ["
-    //                 << *chanName_it << std::endl;
-    //         }
-
-    //     } else {
-    //         std::cerr << "Error: Can't find channel [" << *chanName_it << "]" << std::endl;
-    //     }
-    //     if ( usernames_vec_it != usernames_vec.end() )
-    //         usernames_vec_it++;
-    //     if ( comments_vec_it != comments_vec_it )
-    //         comments_vec_it++;
-    // }
+    for ( ; chan_it != chanList.end(); chan_it++ ) {
+        std::map<std::string, Channel>::iterator cur_chan_it = _channels.find( "#" + *chan_it );
+        if ( cur_chan_it == _channels.end() ) {
+            sendMsg( ERR_NOSUCHCHANNEL, client, "#" + *chan_it, "No such channel" );
+            continue;
+        }
+        Channel & cur_chan = cur_chan_it->second;
+        std::string const cleanedReason = reason_it->substr( 0, reason_it->length() - 2 );
+        Client const * user = _findClientByNick( _clientMap, *nick_it );
+        if ( !user )
+            sendMsg( ERR_NOSUCHNICK, client, *nick_it, "No such nick" );
+        else
+            kickOperation( *this, client, cur_chan, *user, cleanedReason );
+        nick_it++;
+        reason_it++;
+    }
 }
-
-// ChanVector::iterator it = _channels.begin();
-// for ( ; it != _channels.end(); it++ ) {
-//     if ( channelName == it->getName() )
-//         break ;
-// }
-// if ( it == _channels.end() ) {
-//     std::cerr << "Error: can't find channel" << std::endl;
-//     return ;
-// }

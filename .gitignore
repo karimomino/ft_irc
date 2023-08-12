@@ -1,4 +1,5 @@
 # nino
+.vscode
 compile_commands.json
 .cache
 ircserv
@@ -37,3 +38,6 @@ brain.md
 *.exe
 *.out
 *.app
+
+#karim
+changes this commit.txt

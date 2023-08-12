@@ -14,14 +14,16 @@
 #include <sstream>
 #include <string>
 
-std::vector<std::string> split_string( std::string str , string delim ) {
-    // std::stringstream buff(str);
+std::string utils::ft_itoa( int num ) {
+	std::stringstream ss;
+
+	ss << num;
+	return (ss.str());
+}
+
+std::vector<std::string> utils::split( std::string str , string const & delim ) {
 	std::string word;
 	std::vector<std::string> wordList;
-
-	// while( std::getline(buff, word, delim) )
-	// 	wordList.push_back(word);
-	// std::cout << "Splitting string: " << str << "\twith this delim >>" << delim << "<<" << std::endl;
 
 	size_t pos = 0;
 	while ((pos = str.find(delim)) != std::string::npos) {
@@ -35,9 +37,14 @@ std::vector<std::string> split_string( std::string str , string delim ) {
     return ( wordList );
 }
 
-std::string	ft_itoa( int num ) {
-	std::stringstream ss;
+std::vector<std::string> const utils::csplit( std::string const & str, std::string const & delm ) {
+    std::string tmp;
+    std::stringstream ss( str );
+    std::vector<std::string> strList;
 
-	ss << num;
-	return (ss.str());
+    while ( getline(ss, tmp, delm[0] ) ) {
+	strList.push_back( tmp );
+    }
+
+    return ( strList );
 }
