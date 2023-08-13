@@ -16,13 +16,17 @@ void Server::_initCmds( void ) {
     _cmds.insert( std::pair<const std::string, ICommand*>( "INVITE", new Invite() ) );
 }
 
-void Server::_addClient( void ) {}
+void Server::_addClient( Client* ) {}
 
-void Server::_addChannel( void ) {}
+void Server::_addChannel( Channel* ) {}
 
-void Server::_removeClient( void ) {}
+void Server::_removeClient( const std::string& name ) {
+    (void)name;
+}
 
-void Server::_removeChannel( void ) {}
+void Server::_removeChannel( const std::string& name ) {
+    (void)name;
+}
 
 void Server::init( void ) {
 	int sock_opt = 1;

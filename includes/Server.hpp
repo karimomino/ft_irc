@@ -12,12 +12,12 @@
 
 #include "PreClient.hpp"
 #include "Client.hpp"
-#include "ICommand.hpp"
-#include "Join.hpp"
-#include "Kick.hpp"
-#include "Mode.hpp"
-#include "Topic.hpp"
-#include "Invite.hpp"
+#include "Commands/ICommand.hpp"
+#include "Commands/Join.hpp"
+#include "Commands/Kick.hpp"
+#include "Commands/Mode.hpp"
+#include "Commands/Topic.hpp"
+#include "Commands/Invite.hpp"
 
 #ifndef MAX_CLIENTS
 # define MAX_CLIENTS 42
@@ -41,8 +41,8 @@ private:
 
     /* Methods */
     void _initCmds( void );
-    void _addClient( const std::string& name );
-    void _addChannel( const std::string& name );
+    void _addClient( Client* );
+    void _addChannel( Channel* );
     void _removeClient( const std::string& name );
     void _removeChannel( const std::string& name );
 
