@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 17:23:20 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/11 03:25:52 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/12 16:59:56 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ private:
 
     /* METHODS */
     int                                 _initServer( void );
-    bool                                 _acceptConnection( void );
+    int                                 _acceptConnection( void );
     void                                _runServer( void );
     void                                _parseMessage( Client &new_socket , char *buff );
     std::map<int, Client>::iterator     _getClient( const int fd );
@@ -81,6 +81,7 @@ private:
     Channel                             *_findChanByName( string name );
     void                                _privmsgChan( Client client , string target , string origin , string text );
     void                                _privmsgClient( Client client , string target , string origin , string text );
+    void                                _purgeClient( Client client );
 
     bool  _addCommandFunction( std::string const & keyValue, cmdFun );
     bool  _initCommandsFunctions( void );

@@ -6,7 +6,7 @@
 /*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/28 18:41:14 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/11 18:38:03 by kamin            ###   ########.fr       */
+/*   Updated: 2023/08/11 20:09:39 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,12 +129,13 @@ void Server::_runServer(void)
             // this is a new connection
             // TODO: loop to accept all incoming connections
             if (socket == _listen_socket) {
-                if (_acceptConnection()) {
-                    // Client &cli = _clientMap.find(socket)->second;
-                    // if (cli.getPass().compare(_pass)) {
-                    //     sendMsg(ERR_PASSWDMISMATCH , cli , "Wrong server password.");
-                    //     cli.setTerminate( true );
-                    // }
+                int fd = _acceptConnection();
+                if (fd) {
+                    Client &cli = _clientMap.find(fd)->second;
+                    if (cli.getPass().compare(_pass)) {
+                        sendMsg(ERR_PASSWDMISMATCH , cli , "Wrong server password.");
+                        cli.setTerminate( true );
+                    }
                 }
             }
 
@@ -193,9 +194,9 @@ std::map<int, Client>::iterator Server::_getClient(const int fd)
 }
 
 /* KEEEP*/
-bool Server::_acceptConnection(void)
+int Server::_acceptConnection(void)
 {
-    bool accepted = true;
+    int accepted = 0;
     Client newClient = Client(_listen_socket, _hint);
     _clientMap.insert(
         std::pair<int, Client>(newClient.getClientSocket(), newClient));
@@ -207,6 +208,7 @@ bool Server::_acceptConnection(void)
         tmp_fd.revents = 0;
         _poll_fds.push_back(tmp_fd);
         _connectionCount++;
+        accepted = newClient.getClientSocket();
     }
     else
     {
@@ -214,7 +216,6 @@ bool Server::_acceptConnection(void)
         int clientSock = newClient.getClientSocket();
         close(clientSock);
         _clientMap.erase(_clientMap.find(clientSock));
-        accepted = false;
     }
 
     return (accepted);
@@ -286,3 +287,9 @@ bool Server::sendMsg(std::string const &numReply, Client &client, std::string co
     return (true);
     // return ( sendMsg( client, finalMsg ) );
 }
+
+// void Server::_purgeClient( Client client ) {
+//     _poll_fds.erase(erase_pos);
+//                     _clientMap.erase(socket);
+//                     close(socket);
+// }
