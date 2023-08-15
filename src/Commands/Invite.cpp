@@ -1,5 +1,5 @@
 #include "Commands/Invite.hpp"
 
-Invite::Invite( Server& ircServ , std::string rawCommand , AClient& client ) : ICommand( ircServ , client , rawCommand ) {}
-void Invite::execute( void ){};
+Invite::Invite( Server& ircServ ) : ICommand( ircServ ) {}
+void Invite::execute( AClient & client, const std::string & rawCommand ){ (void)client; (void)rawCommand; };
 void Invite::clearCmd( void ){};

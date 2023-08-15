@@ -5,8 +5,8 @@
 class Kick : public ICommand {
 public:
     Kick();
-    Kick( Server& ircServ , std::string rawCommand , AClient& client);
+    Kick( Server& ircServ );
     ~Kick();
-    void execute( void );
+    void execute( AClient &, const std::string & rawCommand );
     void clearCmd( void );
 };

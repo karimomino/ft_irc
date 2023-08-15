@@ -5,8 +5,8 @@
 class Topic: public ICommand {
 public:
     Topic();
-    Topic( Server& ircServ , std::string rawCommand , AClient& client);
+    Topic( Server& ircServ );
     ~Topic();
-    void execute( void );
+    void execute( AClient &, const std::string & rawCommand );
     void clearCmd( void );
 };

@@ -1,4 +1,4 @@
 #include "Commands/ICommand.hpp"
 
-ICommand::ICommand( Server& ircServ , AClient& client, const std::string& rawCommand ) : _ircServ(ircServ) , _client(client) , _rawCommand(rawCommand) {
+ICommand::ICommand( Server& ircServ  ) : _ircServ(ircServ) {
 }

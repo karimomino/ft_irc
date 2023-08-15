@@ -1,5 +1,5 @@
 #include "Commands/Join.hpp"
 
-Join::Join( Server& ircServ , std::string rawCommand , AClient& client ) : ICommand( ircServ , client , rawCommand ) {}
-void Join::execute( void ){}
+Join::Join( Server& ircServ ) : ICommand( ircServ ) {}
+void Join::execute( AClient & client, const std::string & rawCommand ){ (void)client; (void)rawCommand; }
 void Join::clearCmd( void ){}

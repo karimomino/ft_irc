@@ -8,14 +8,12 @@ class AClient;
 class ICommand {
 protected:
     Server&             _ircServ;
-    AClient&             _client;
-    const std::string   _rawCommand;
 
 public:
-    ICommand( Server & ircServ , AClient &, const std::string & rawCommand );
+    ICommand( Server & ircServ );
 
     /* Methods */
-    virtual void execute( void ) = 0;
+    virtual void execute( AClient &, const std::string & rawCommand ) = 0;
     virtual void clearCmd( void ) = 0;
 
     class cmdError : std::exception {

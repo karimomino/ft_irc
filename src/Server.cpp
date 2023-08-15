@@ -12,12 +12,11 @@ Server::~Server( void ) {
 }
 
 void Server::_initCmds( void ) {
-	PreClient pre = PreClient( 42 , &_hint);
-    _cmds.insert( std::pair<const std::string, ICommand*>( "JOIN", new Join( *this , "" , pre ) ) );
-    _cmds.insert( std::pair<const std::string, ICommand*>( "KICK", new Kick( *this , "" , pre ) ) );
-    _cmds.insert( std::pair<const std::string, ICommand*>( "MODE", new Mode( *this , "" , pre ) ) );
-    _cmds.insert( std::pair<const std::string, ICommand*>( "TOPIC", new Topic( *this , "" , pre ) ) );
-    _cmds.insert( std::pair<const std::string, ICommand*>( "INVITE", new Invite( *this , "" , pre ) ) );
+    _cmds.insert( std::pair<const std::string, ICommand*>( "JOIN", new Join( *this ) ) );
+    _cmds.insert( std::pair<const std::string, ICommand*>( "KICK", new Kick( *this ) ) );
+    _cmds.insert( std::pair<const std::string, ICommand*>( "MODE", new Mode( *this ) ) );
+    _cmds.insert( std::pair<const std::string, ICommand*>( "TOPIC", new Topic( *this ) ) );
+    _cmds.insert( std::pair<const std::string, ICommand*>( "INVITE", new Invite( *this ) ) );
     // _cmds.insert( std::pair<const std::string, ICommand*>( "PASS", new Pass( *this ) ) );
 }
 
@@ -137,6 +136,7 @@ void Server::_handleClientRecv(const int& socket) {
 
 		std::cout << "[" << BLUE << "RECEIVED" << RESET << "]" <<std::endl << fullMsg << std::endl;
 		std::cout <<"[" << BLUE << "END RECEIVE" << RESET << "]" << std::endl;
+		
 		
 	} else if ( rcv == 0) {
 		//client closed connection

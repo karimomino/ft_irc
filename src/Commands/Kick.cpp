@@ -1,5 +1,5 @@
 #include "Commands/Kick.hpp"
 
-Kick::Kick( Server& ircServ , std::string rawCommand , AClient& client ) : ICommand( ircServ , client , rawCommand ) {}
-void Kick::execute( void ){};
+Kick::Kick( Server& ircServ ) : ICommand( ircServ ) {}
+void Kick::execute( AClient & client, const std::string & rawCommand ){ (void)client; (void)rawCommand; };
 void Kick::clearCmd( void ){};

@@ -5,8 +5,8 @@
 class Mode: public ICommand {
 public:
     Mode();
-    Mode( Server& ircServ , std::string rawCommand , AClient& client);
+    Mode( Server& ircServ );
     ~Mode();
-    void execute( void );
+    void execute( AClient &, const std::string & rawCommand );
     void clearCmd( void );
 };

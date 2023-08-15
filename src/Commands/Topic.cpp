@@ -1,5 +1,5 @@
 #include "Commands/Topic.hpp"
 
-Topic::Topic( Server& ircServ , std::string rawCommand , AClient& client ) : ICommand( ircServ , client , rawCommand ) {}
-void Topic::execute( void ){};
+Topic::Topic( Server& ircServ ) : ICommand( ircServ ) {}
+void Topic::execute( AClient & client, const std::string & rawCommand ){ (void)client; (void)rawCommand; };
 void Topic::clearCmd( void ){};

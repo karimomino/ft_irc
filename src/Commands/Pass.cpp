@@ -1,8 +1,8 @@
 #include "Commands/Pass.hpp"
 
-Pass::Pass( Server& ircServ , std::string rawCommand , AClient& client) : ICommand( ircServ , client , rawCommand) {
+Pass::Pass( Server& ircServ ) : ICommand( ircServ ) {
 
 }
 
-void Pass::execute( void ){};
+void Pass::execute( AClient & client, const std::string & rawCommand ){ (void)client; (void)rawCommand; };
 void Pass::clearCmd( void ){};

@@ -5,8 +5,8 @@
 class Invite : public ICommand {
 public:
     Invite();
-    Invite( Server& ircServ , std::string rawCommand , AClient& client);
+    Invite( Server& ircServ );
     ~Invite();
-    void execute( void );
+    void execute( AClient &, const std::string & rawCommand );
     void clearCmd( void );
 };
