@@ -1,7 +1,7 @@
 #include "Client.hpp"
 
 
-Client::Client( const PreClient& preClient ) : PreClient( preClient ) {
+Client::Client( const AClient& preClient ) : AClient( preClient ) {
     // TODO: send the welcome replies
 	std::string welcome_001 = ":" + _ip + " 001 " + getNick() + " :Welcome to FT_IRC " + getNick() + "!" + getUser() + "@" + getIp() + "\r\n";
 	std::string your_host = ":" + _ip + " 002 " + getNick() + " :Your host is 127.0.0.1, running version idk anymore\r\n";
@@ -10,6 +10,6 @@ Client::Client( const PreClient& preClient ) : PreClient( preClient ) {
 
 Client::~Client( void ) {
     close( getSocketFd() );
+    std::cout << "Client destructor called" << std::endl;
 }
 
-void Client::addMsg( const std::string & msg ) { _msgs.push( msg ); }

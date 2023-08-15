@@ -1,18 +1,26 @@
 NAME		=	ircserv
 
-SRCS		=	main.cpp					\
-				Server.cpp					\
-				Client.cpp					\
-				Channel.cpp					\
-				namespace/utils.cpp			\
-				namespace/messages.cpp		\
-				command_utils/join.cpp		\
-				command_utils/commands.cpp	\
-				command_utils/privmsg.cpp	\
-				command_utils/pong.cpp		\
-				command_utils/kick.cpp		\
-				command_utils/mode.cpp		\
-				command_utils/invite.cpp	\
+SRCS		=	Server.cpp \
+				AClient.cpp \
+				Channel.cpp \
+				Client.cpp \
+				main.cpp \
+				PreClient.cpp \
+				Commands/ICommand.cpp \
+				Commands/Kick.cpp \
+				Commands/Invite.cpp \
+				Commands/Join.cpp \
+				Commands/Mode.cpp \
+				Commands/Pass.cpp \
+				Commands/Topic.cpp 
+
+HEADERS		=		includes/Server.hpp \
+					includes/AClient.hpp \
+					includes/Channel.hpp \
+					includes/Client.hpp \
+					includes/PreClient.hpp \
+					includes/Commands/ICommand.hpp \
+					includes/Commands/Kick.hpp
 
 SRCS_DIR    =   ./src/
 
@@ -20,7 +28,7 @@ OBJS		=	$(addprefix $(SRCS_DIR), $(SRCS:.cpp=.o))
 
 CXX			=	c++
 
-CXXFLAGS	=	-Wall -Werror -Wextra -std=c++98 -Iincludes -Iincludes/commands
+CXXFLAGS	=	-Wall -Werror -Wextra -std=c++98 -Iincludes
 
 RM			=	rm -f
 
@@ -40,10 +48,10 @@ elliot:
 	@echo "      ░                                                                                                    "
 	@echo "\033[0m"
 
-$(NAME)		:	$(OBJS) elliot
+$(NAME)		:	$(OBJS) $(HEADERS) elliot
 				@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
 				
-debug		:	CXXFLAGS+= -DDEBUG
+debug		:	CXXFLAGS+= -DDEBUG -g3
 
 debug		:	fclean $(NAME)
 

@@ -1,16 +1,18 @@
 #pragma once
 
 #include <iostream>
-#include "Server.hpp"
+
+class Server;
+class AClient;
 
 class ICommand {
 protected:
-    const Client*       _client;
-    const std::string   _msg;
+    Server&             _ircServ;
+    AClient&             _client;
+    const std::string   _rawCommand;
 
 public:
-    ICommand( void );
-    ICommand( const Client &, const std::string & msg );
+    ICommand( Server & ircServ , AClient &, const std::string & rawCommand );
 
     /* Methods */
     virtual void execute( void ) = 0;
