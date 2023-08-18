@@ -4,13 +4,13 @@
 #include <map>
 #include <queue>
 #include <poll.h>
-#include <netinet/in.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <sstream>
 
-#include "utils.hpp"
+#include "AClient.hpp"
 #include "Client.hpp"
 #include "PreClient.hpp"
 #include "Commands/ICommand.hpp"
@@ -19,6 +19,10 @@
 #include "Commands/Mode.hpp"
 #include "Commands/Topic.hpp"
 #include "Commands/Invite.hpp"
+#include "Commands/Pass.hpp"
+#include "Commands/User.hpp"
+#include "Commands/Nick.hpp"
+#include "colors.hpp"
 
 #ifndef MAX_CLIENTS
 # define MAX_CLIENTS 42
@@ -26,8 +30,12 @@
 
 class Channel;
 
+void trim( std::string& str );
+std::vector<std::string> splitDelim( std::string str , std::string delim);
+
 class Server {
 private:
+    bool                            _serverEnd;
     const int                       _port;
     const std::string               _pass;
     int                             _socketFd;
@@ -35,18 +43,21 @@ private:
     size_t                          _connectionCount;
     std::vector<pollfd>             _pollFds;
     struct sockaddr_in              _hint;
-    std::queue<PreClient*>          _preClients;
-    std::map<std::string, Client*>  _clients;
+    std::deque<AClient*>          _preClients;
+    std::map<int, AClient*>  _clients;
     std::map<std::string, Channel*> _channels;
     std::map<const std::string, ICommand*> _cmds;
 
     /* Methods */
     void _initCmds( void );
-    void _addClient( const std::string& name );
+    void _addClient( const AClient* client );
     void _addChannel( const std::string& name );
     void _removeClient( const std::string& name );
     void _removeChannel( const std::string& name );
 
+    void _handlePreClientReg (void);
+    void _handleClientSend(const int& socket);
+    void _handleClientRecv(const int& socket);
 public:
     Server( int port, const std::string& pass );
     ~Server( void );
@@ -57,6 +68,7 @@ public:
     void exit( void );
 
     /* Getters */
+    const int& getSockFd(void) const;
     const std::string& getPass( void ) const;
     const std::string& getIp( void ) const;
     const struct sockaddr_in& getHint( void ) const;
@@ -68,6 +80,13 @@ public:
         ServerError( const char * msg );
     };
 
+<<<<<<< HEAD
     friend class Kick;
+=======
+    friend class Pass;
+    friend class User;
+    friend class Nick;
+    friend void execCommand( Server& ircServ , std::string clientMsg , AClient* cli );
+>>>>>>> main
 };
 
