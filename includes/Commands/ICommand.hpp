@@ -1,19 +1,21 @@
 #pragma once
 
 #include <iostream>
-#include "Server.hpp"
+
+class Server;
+class Client;
 
 class ICommand {
 protected:
-    const Client*       _client;
-    const std::string   _msg;
+    Server&     _serv;
+    Client*     _client;
+    std::string _raw;
 
 public:
-    ICommand( void );
-    ICommand( const Client &, const std::string & msg );
+    ICommand( Server& serv );
 
     /* Methods */
-    virtual void execute( void ) = 0;
+    virtual void execute( Client* client, const std::string& command ) = 0;
     virtual void clearCmd( void ) = 0;
 
     class cmdError : std::exception {

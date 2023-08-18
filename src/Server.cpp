@@ -10,7 +10,7 @@ Server::~Server( void ) {
 
 void Server::_initCmds( void ) {
     _cmds.insert( std::pair<const std::string, ICommand*>( "JOIN", new Join() ) );
-    _cmds.insert( std::pair<const std::string, ICommand*>( "KICK", new Kick() ) );
+    _cmds.insert( std::pair<const std::string, ICommand*>( "KICK", new Kick( *this ) ) );
     _cmds.insert( std::pair<const std::string, ICommand*>( "MODE", new Mode() ) );
     _cmds.insert( std::pair<const std::string, ICommand*>( "TOPIC", new Topic() ) );
     _cmds.insert( std::pair<const std::string, ICommand*>( "INVITE", new Invite() ) );

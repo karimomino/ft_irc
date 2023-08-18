@@ -10,14 +10,15 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 
-#include "PreClient.hpp"
+#include "utils.hpp"
 #include "Client.hpp"
-#include "ICommand.hpp"
-#include "Join.hpp"
-#include "Kick.hpp"
-#include "Mode.hpp"
-#include "Topic.hpp"
-#include "Invite.hpp"
+#include "PreClient.hpp"
+#include "Commands/ICommand.hpp"
+#include "Commands/Join.hpp"
+#include "Commands/Kick.hpp"
+#include "Commands/Mode.hpp"
+#include "Commands/Topic.hpp"
+#include "Commands/Invite.hpp"
 
 #ifndef MAX_CLIENTS
 # define MAX_CLIENTS 42
@@ -66,5 +67,7 @@ public:
     public:
         ServerError( const char * msg );
     };
+
+    friend class Kick;
 };
 

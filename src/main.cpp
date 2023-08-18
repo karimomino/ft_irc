@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+// #include "Server.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
@@ -27,24 +27,24 @@ bool validParams( int ac, char **av ) {
     // TODO: check valid port range
     return ( valid_params );
 }
-
-bool IRCserver( int port, std::string const & pass ) {
-    Server ircserver = Server( port, pass );
-
-    try {
-        ircserver.init();
-    } catch ( std::exception const & e ) {
-        std::cerr << "[" << e.what() << "]" << std::endl;
-    }
-    ircserver.run();
-    ircserver.end();
-
-    return ( true );
-}
-
+//
+// bool IRCserver( int port, std::string const & pass ) {
+//     Server ircserver = Server( port, pass );
+//
+//     try {
+//         ircserver.init();
+//     } catch ( std::exception const & e ) {
+//         std::cerr << "[" << e.what() << "]" << std::endl;
+//     }
+//     ircserver.run();
+//     ircserver.end();
+//
+//     return ( true );
+// }
+//
 int main( int ac, char **av ) {
     if ( validParams( ac, av )) {
-        IRCserver( atoi( av[1] ) , av[2] );
+        // IRCserver( atoi( av[1] ) , av[2] );
     }
     return ( 0 );
 }

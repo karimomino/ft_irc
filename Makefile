@@ -1,18 +1,7 @@
 NAME		=	ircserv
 
 SRCS		=	main.cpp					\
-				Server.cpp					\
-				Client.cpp					\
-				Channel.cpp					\
-				namespace/utils.cpp			\
-				namespace/messages.cpp		\
-				command_utils/join.cpp		\
-				command_utils/commands.cpp	\
-				command_utils/privmsg.cpp	\
-				command_utils/pong.cpp		\
-				command_utils/kick.cpp		\
-				command_utils/mode.cpp		\
-				command_utils/invite.cpp	\
+				utils.cpp					\
 
 SRCS_DIR    =   ./src/
 
@@ -20,7 +9,7 @@ OBJS		=	$(addprefix $(SRCS_DIR), $(SRCS:.cpp=.o))
 
 CXX			=	c++
 
-CXXFLAGS	=	-Wall -Werror -Wextra -std=c++98 -Iincludes -Iincludes/commands
+CXXFLAGS	=	-Wall -Werror -Wextra -std=c++98 -Iincludes
 
 RM			=	rm -f
 
