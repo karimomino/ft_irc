@@ -1,109 +1,79 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/12 17:23:20 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/01 22:42:49 by ommohame         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #pragma once
 
+#include <iostream>
+#include <map>
+#include <queue>
+#include <poll.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <poll.h>
-#include <fcntl.h>
-#include <string>
 #include <arpa/inet.h>
-#include <iostream>
-#include <unistd.h>
-#include <sstream>
-#include <map>
-#include <cstring>
-#include <vector>
-#include <ctime>
+#include <fcntl.h>
+
+#include "AClient.hpp"
 #include "Client.hpp"
-#include "Replies.hpp"
-#include "Channel.hpp"
-#include "namespace.hpp"
+#include "PreClient.hpp"
+#include "Commands/ICommand.hpp"
+#include "Commands/Join.hpp"
+#include "Commands/Kick.hpp"
+#include "Commands/Mode.hpp"
+#include "Commands/Topic.hpp"
+#include "Commands/Invite.hpp"
+#include "Commands/Pass.hpp"
+#include "colors.hpp"
 
 #ifndef MAX_CLIENTS
-#define MAX_CLIENTS 4
+# define MAX_CLIENTS 42
+#endif
 
 class Channel;
-typedef std::string string;
-typedef std::map< std::string, Channel> chan_map;
-typedef std::vector< pollfd > PollVector;
-typedef std::vector<std::string>::const_iterator vec_const_it;
-typedef std::vector<std::string>::iterator vec_it;
-
-# define SERVER_NAME "42IRCSERV"
-# define NBSP " "
 
 class Server {
 private:
-    /* TYPEDEFS */
-    typedef void ( Server::*cmdFun )( Client const &, std::string const & );
-    typedef std::map< std::string const, cmdFun > CmdMap;
+    bool                            _serverEnd;
+    const int                       _port;
+    const std::string               _pass;
+    int                             _socketFd;
+    std::string                     _ip;
+    size_t                          _connectionCount;
+    std::vector<pollfd>             _pollFds;
+    struct sockaddr_in              _hint;
+    std::deque<AClient*>          _preClients;
+    std::map<int, AClient*>  _clients;
+    std::map<std::string, Channel*> _channels;
+    std::map<const std::string, ICommand*> _cmds;
 
-    /* VARIABLES */
-    const int                            _port;
-    const std::string                    _pass;
-    int                                  _listen_socket;
-    std::string                          _ip_string;
-    size_t                               _connectionCount;
-    PollVector                           _poll_fds;
-    struct sockaddr_in                   _hint;
-    std::map<int, Client>                _clientMap;
-    chan_map                             _channels;
-    CmdMap                               _commands;
+    /* Methods */
+    void _initCmds( void );
+    void _addClient( const std::string& name );
+    void _addChannel( const std::string& name );
+    void _removeClient( const std::string& name );
+    void _removeChannel( const std::string& name );
 
-    /* METHODS */
-    int                                 _initServer( void );
-    int                                 _acceptConnection( void );
-    void                                _runServer( void );
-    void                                _parseMessage( Client &new_socket , char *buff );
-    std::map<int, Client>::iterator     _getClient( const int fd );
-    std::string                         _createMessage( Client client, string command );
-    void                                _joinChannel( Client const & client, string name); // ?
-    void                                _joinChannel( Client const & client, string chanList , string chanKeys ); // ?
-    void                                _joinCreate( Client const & client , string chan , string topic , string key , bool inv , bool top );
-    void                                _joinExistingChannel( Client const & client , string chan );
-    void                                _broadcastJoin( Client client , Channel chan , string name );
-    Client                              *_findClientByNick( std::map<int, Client> &clients , string nick ) const;
-    void                                _pong( Client client);
-    void                                _privmsg( string full_command , Client client );
-    void                                _sendNames( Client const & client , string chan);
-    bool                                _allowedToJoin( Client client , Channel chan , string key ) const;
-
-    bool  _addCommandFunction( std::string const & keyValue, cmdFun );
-    bool  _initCommandsFunctions( void );
-    void  _executeCommand( Client const & client, std::string const & message );
-
-    /**                   COMMANDS FUN                   **/
-    void    _joinCommand( Client const & client, std::string const & msg );
-    void    _kickCommand( Client const & client, std::string const & msg );
-    void    _modeCommand( Client const & client, std::string const & msg );
-    void    _inviteCommand( Client const & client, std::string const & msg );
-
-    void    _sendAMessage( std::string full_command );
-
+    void _handlePreClientReg (void);
+    void _handleClientSend(const int& socket);
+    void _handleClientRecv(const int& socket);
 public:
-    Server( const int port, const string pass );
-    // ~Server();
-    int       getListenSocket( void ) const;
-    size_t    getConnectionCount ( void ) const;
+    Server( int port, const std::string& pass );
+    ~Server( void );
 
-    bool    sendMsg( Client const &, std::string const & msg ) const ;
-    bool    sendMsg( Channel const &, std::string const & msg ) const ;
-    bool    sendMsg( Client const &, std::string const & origin, std::string const & msg ) const;
-    bool    sendMsg( Channel const &, std::string const & origin, std::string const & msg ) const;
+    /* Methods */
+    void init( void );
+    void run( void );
+    void exit( void );
 
-    bool    sendMsg( std::string const & numReply, Client const & client, std::string const & msg ) const;
-    bool    sendMsg( std::string const & numReply, Client const & client, std::string const & arg, std::string const & msg ) const;
-    friend class Channel;
+    /* Getters */
+    const int& getSockFd(void) const;
+    const std::string& getPass( void ) const;
+    const std::string& getIp( void ) const;
+    const struct sockaddr_in& getHint( void ) const;
+
+    /* Setters */
+
+    class ServerError : public std::runtime_error {
+    public:
+        ServerError( const char * msg );
+    };
+
+    friend class Pass;
 };
-#endif
+

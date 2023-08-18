@@ -5,11 +5,11 @@
 #include <queue>
 #include <unistd.h>
 
-class Client : public AClient {
+class PreClient : public AClient {
 
 public:
-    Client( const AClient& );
-    ~Client( void );
+    PreClient( int socketFd, struct sockaddr_in* hint );
+    ~PreClient( void );
 
     /* Methods */
 
