@@ -4,11 +4,10 @@
 #include "../AClient.hpp"
 #include "../Server.hpp"
 
-class Invite : public ICommand {
+class Nick: public ICommand {
 public:
-    Invite();
-    Invite( Server& ircServ );
-    ~Invite();
+    Nick( Server& ircServ );
+    ~Nick( void );
     void execute( AClient *, const std::string & rawCommand );
     void clearCmd( void );
 };

@@ -4,11 +4,12 @@
 #include "../AClient.hpp"
 #include "../Server.hpp"
 
-class Invite : public ICommand {
+void trim( std::string& str );
+std::vector<std::string> splitDelim( std::string str , std::string delim);
+class User: public ICommand {
 public:
-    Invite();
-    Invite( Server& ircServ );
-    ~Invite();
+    User( Server& ircServ );
+    ~User( void );
     void execute( AClient *, const std::string & rawCommand );
     void clearCmd( void );
 };

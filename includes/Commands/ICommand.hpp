@@ -11,9 +11,10 @@ protected:
 
 public:
     ICommand( Server & ircServ );
+    virtual ~ICommand();
 
     /* Methods */
-    virtual void execute( AClient &, const std::string & rawCommand ) = 0;
+    virtual void execute( AClient *, const std::string & rawCommand ) = 0;
     virtual void clearCmd( void ) = 0;
 
     class cmdError : std::exception {

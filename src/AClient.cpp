@@ -1,8 +1,14 @@
 #include "AClient.hpp"
 
 AClient::AClient( int socketFd, struct sockaddr_in* hint ) : _socketFd( socketFd ), _nick("") , _purge(false), _ip( inet_ntoa( (struct in_addr)hint->sin_addr ) ) {
-    int addrlen = sizeof(hint);
-    _socketFd = accept( socketFd , (sockaddr *)&hint , (socklen_t*)&addrlen);
+}
+
+AClient::AClient( const AClient& original ) {
+    _socketFd = original.getSocketFd();
+    _nick = original.getNick();
+    _user = original.getUser();
+    _pass = original.getPass();
+    _ip = original.getIp();
 }
 
 AClient::~AClient() {}
