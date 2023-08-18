@@ -8,6 +8,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <sstream>
 
 #include "AClient.hpp"
 #include "Client.hpp"
@@ -19,6 +20,8 @@
 #include "Commands/Topic.hpp"
 #include "Commands/Invite.hpp"
 #include "Commands/Pass.hpp"
+#include "Commands/User.hpp"
+#include "Commands/Nick.hpp"
 #include "colors.hpp"
 
 #ifndef MAX_CLIENTS
@@ -26,6 +29,9 @@
 #endif
 
 class Channel;
+
+void trim( std::string& str );
+std::vector<std::string> splitDelim( std::string str , std::string delim);
 
 class Server {
 private:
@@ -44,7 +50,7 @@ private:
 
     /* Methods */
     void _initCmds( void );
-    void _addClient( const std::string& name );
+    void _addClient( const AClient* client );
     void _addChannel( const std::string& name );
     void _removeClient( const std::string& name );
     void _removeChannel( const std::string& name );
@@ -75,5 +81,8 @@ public:
     };
 
     friend class Pass;
+    friend class User;
+    friend class Nick;
+    friend void execCommand( Server& ircServ , std::string clientMsg , AClient* cli );
 };
 

@@ -19,6 +19,7 @@ protected:
 
 public:
     AClient( int socketFd, struct sockaddr_in* hint );
+    AClient( const AClient& original );
     virtual ~AClient() = 0;
     /* Methods */
     void addMsg( const std::string& );

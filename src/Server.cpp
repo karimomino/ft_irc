@@ -17,16 +17,10 @@ void Server::_initCmds( void ) {
     _cmds.insert( std::pair<const std::string, ICommand*>( "MODE", new Mode( *this ) ) );
     _cmds.insert( std::pair<const std::string, ICommand*>( "TOPIC", new Topic( *this ) ) );
     _cmds.insert( std::pair<const std::string, ICommand*>( "INVITE", new Invite( *this ) ) );
-    // _cmds.insert( std::pair<const std::string, ICommand*>( "PASS", new Pass( *this ) ) );
+    _cmds.insert( std::pair<const std::string, ICommand*>( "PASS", new Pass( *this ) ) );
+    _cmds.insert( std::pair<const std::string, ICommand*>( "USER", new User( *this ) ) );
+    _cmds.insert( std::pair<const std::string, ICommand*>( "NICK", new Nick( *this ) ) );
 }
-
-// void Server::_addClient( void ) {}
-
-// void Server::_addChannel( void ) {}
-
-// void Server::_removeClient( void ) {}
-
-// void Server::_removeChannel( void ) {}
 
 /**
  * @brief Creating a listening non-blocking socket for the server to listen on.
@@ -137,11 +131,57 @@ void Server::_handleClientRecv(const int& socket) {
 		std::cout << "[" << BLUE << "RECEIVED" << RESET << "]" <<std::endl << fullMsg << std::endl;
 		std::cout <<"[" << BLUE << "END RECEIVE" << RESET << "]" << std::endl;
 		
-		
+		execCommand( *this , fullMsg , _clients[socket]);
 	} else if ( rcv == 0) {
 		//client closed connection
 	}
 }
+
+static std::pair<std::string const , std::string> extractCommand( std::string rawCommand ) {
+	std::stringstream ss(rawCommand);
+	std::string command;
+	std::string commandArgs;
+
+	getline(ss , command , ' ');
+	// commandArgs = ss.str();
+	getline(ss , commandArgs);
+	return (std::make_pair(command , commandArgs));
+}
+
+static bool isValidCommand( std::string cmd ) {
+	bool isValid = false;
+	std::string cmdList[] = {"JOIN" , "INVITE" , "KICK" , "MODE" , "PASS", "TOPIC", "USER" , "PRIVMSG" , "NOTICE" , "NICK"};
+	for (size_t i = 0; i < sizeof(cmdList)/sizeof(cmdList[0]); i++)
+	{
+		if ( !cmdList[i].compare(cmd) ) {
+			isValid = true;
+			break;
+		}
+	}
+	return ( isValid );
+}
+
+void execCommand( Server& ircServ , std::string clientMsg , AClient* cli) {
+	std::vector<std::string> commands = splitDelim(clientMsg , "\r\n");
+
+	for (std::vector<std::string>::iterator it = commands.begin(); it != commands.end(); it++) {
+		std::pair<std::string , std::string> cmdParts = extractCommand(*it);
+
+		if ( isValidCommand(cmdParts.first) )
+			ircServ._cmds[cmdParts.first]->execute( cli , cmdParts.second);
+	}
+}
+
+void Server::_addClient( const AClient* client ) {
+	Client *newClient = new Client(*client);
+	_clients.insert(std::make_pair(client->getSocketFd() , newClient));
+}
+
+// void Server::_addChannel( void ) {}
+
+// void Server::_removeClient( void ) {}
+
+// void Server::_removeChannel( void ) {}
 
 void Server::exit( void ) {
     // TODO: clean up before the destructor is called
