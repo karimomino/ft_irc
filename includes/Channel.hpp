@@ -17,7 +17,7 @@ public:
     ~Channel();
 
     /* Methods */
-    void addUser( const std::string& nick, Client& client );
+    void addUser( const std::string& nick, Client* client );
     void kickUser( const std::string& nick, const std::string& msg );
     void addInvitation( const std::string& nick );
     void removeInvitation( const std::string& nick );

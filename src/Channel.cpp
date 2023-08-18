@@ -6,14 +6,22 @@ Channel::Channel( const std::string& name, const std::string& topic ) :
 Channel::~Channel() {}
 
 /* Methods */
-void Channel::addUser( const std::string& nick, Client& client ) {
-    (void)nick;
-    (void)client;
+void Channel::addUser( const std::string& nick, Client* client ) {
+    if ( !isMember( nick ) ) {
+	_clients.insert( std::pair<std::string, Client*>( nick, client ) );
+    }
 }
 
 void Channel::kickUser( const std::string& nick, const std::string& msg ) {
-    (void)nick;
-    (void)msg;
+    std::map<std::string, Client*>::iterator it;
+
+    it = _clients.find( nick );
+    if ( it == _clients.end() )
+	it = _clients.find( "@" + nick );
+    if ( it != _clients.end() ) {
+	it->second->addMsg( msg );
+	_clients.erase( it );
+    }
 }
 
 void Channel::addInvitation( const std::string& nick ) {
