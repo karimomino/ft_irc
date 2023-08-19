@@ -29,6 +29,7 @@ public:
     const std::string& getPass( void ) const;
     const std::string& getUser( void ) const;
     const std::string& getIp( void ) const;
+    const std::string  getOrigin( void ) const;
     const int& getSocketFd( void ) const;
     const int& getQueueSize( void ) const;
 

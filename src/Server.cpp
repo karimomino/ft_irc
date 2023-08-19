@@ -1,7 +1,7 @@
 #include "Server.hpp"
 
 Server::Server( int port, const std::string& pass ) : _serverEnd(false), _port(  port ), _pass( pass ) {
-	_hint.sin_family = AF_INET;
+    _hint.sin_family = AF_INET;
     _hint.sin_port = htons(port);
     _hint.sin_addr.s_addr = INADDR_ANY;
     _initCmds();
@@ -36,145 +36,154 @@ void Server::_initCmds( void ) {
  * 
  */
 void Server::init( void ) {
-	int sock_opt = 1;
+    int sock_opt = 1;
 
-	if ( ( _socketFd = socket( AF_INET, SOCK_STREAM, 0 ) ) < 0 )
-		throw ( ServerError( "Error creating the server socket") );
-	if ( setsockopt( _socketFd, SOL_SOCKET, SO_REUSEADDR, &sock_opt, sizeof( sock_opt ) ) )
-		throw ( ServerError( "Error setting socket options" ) );
-	if ( fcntl( _socketFd, F_SETFL, O_NONBLOCK ) == -1 )
-		throw ( ServerError( "Error setting socket to non-blocking" ) );
+    if ( ( _socketFd = socket( AF_INET, SOCK_STREAM, 0 ) ) < 0 )
+        throw ( ServerError( "Error creating the server socket") );
+    if ( setsockopt( _socketFd, SOL_SOCKET, SO_REUSEADDR, &sock_opt, sizeof( sock_opt ) ) )
+        throw ( ServerError( "Error setting socket options" ) );
+    if ( fcntl( _socketFd, F_SETFL, O_NONBLOCK ) == -1 )
+        throw ( ServerError( "Error setting socket to non-blocking" ) );
     if ( bind( _socketFd, ( sockaddr* )&_hint, sizeof( _hint) ) < 0 )
-		throw ( ServerError( "Error binding" ) );
+        throw ( ServerError( "Error binding" ) );
     if (listen( _socketFd, MAX_CLIENTS))
-		throw ( ServerError( "Failed to listen" ) );
+        throw ( ServerError( "Failed to listen" ) );
 
     pollfd tmp_fd;
-	tmp_fd.fd = _socketFd;
-	tmp_fd.events = POLLIN | POLL_OUT;
-	tmp_fd.revents = 0;
-	_pollFds.push_back(tmp_fd);
+    tmp_fd.fd = _socketFd;
+    tmp_fd.events = POLLIN | POLL_OUT;
+    tmp_fd.revents = 0;
+    _pollFds.push_back(tmp_fd);
 
-	_connectionCount = 1;
+    _connectionCount = 1;
 
-	_ip = inet_ntoa(_hint.sin_addr);
-	std::cout << BOLDGREEN << "Successfuly created listening socket!" << RESET << std::endl;
+    _ip = inet_ntoa(_hint.sin_addr);
+    std::cout << BOLDGREEN << "Successfuly created listening socket!" << RESET << std::endl;
 }
 
 void Server::run( void ) {
-	pollfd* pFdsData;
-	while (!_serverEnd) {
-		pFdsData = _pollFds.data();
+    pollfd* pFdsData;
+    while (!_serverEnd) {
+        pFdsData = _pollFds.data();
 
-		poll(pFdsData, _pollFds.size(), -1);
+        poll(pFdsData, _pollFds.size(), -1);
 
-		for (size_t i = 0; i < _pollFds.size(); i++) {
-			if (pFdsData[i].revents == 0)
-				continue;
-			
-			int fd = pFdsData[i].fd;
+        for (size_t i = 0; i < _pollFds.size(); i++) {
+            if (pFdsData[i].revents == 0)
+                continue;
 
-			if ( fd == _socketFd)
-				_handlePreClientReg();
+            int fd = pFdsData[i].fd;
 
-			if (pFdsData[i].revents & POLLOUT && fd != _socketFd)
-				_handleClientSend( fd );
+            if ( fd == _socketFd)
+                _handlePreClientReg();
 
-			if (pFdsData[i].revents & POLLIN && fd != _socketFd)
-				_handleClientRecv( fd );
-			
-			pFdsData[i].revents = 0;
-		}
-		
-	}	
+            if (pFdsData[i].revents & POLLOUT && fd != _socketFd)
+                _handleClientSend( fd );
+
+            if (pFdsData[i].revents & POLLIN && fd != _socketFd)
+                _handleClientRecv( fd );
+
+            pFdsData[i].revents = 0;
+        }
+
+    }
 }
 
 void Server::_handlePreClientReg() {
-	PreClient* newClient = new PreClient(_socketFd , &_hint);
-	_clients[newClient->getSocketFd()] = newClient;
-	if (_connectionCount < MAX_CLIENTS) {
-		pollfd tmp_fd;
-		tmp_fd.fd = newClient->getSocketFd();
-		tmp_fd.events = POLLIN | POLLOUT;
-		tmp_fd.revents = 0;
-		_pollFds.push_back(tmp_fd);
+    PreClient* newClient = new PreClient(_socketFd , &_hint);
+    _clients[newClient->getSocketFd()] = newClient;
+    if (_connectionCount < MAX_CLIENTS) {
+        pollfd tmp_fd;
+        tmp_fd.fd = newClient->getSocketFd();
+        tmp_fd.events = POLLIN | POLLOUT;
+        tmp_fd.revents = 0;
+        _pollFds.push_back(tmp_fd);
 
-	} else {
-		std::cout << "[" << BOLDRED << "CONNECTION REFUSED" << RESET << "] " << "@" << newClient->getIp() << " Max Clients Reached!" << std::endl;
-		close(newClient->getSocketFd());
-		_preClients.pop_back();
-	}
+    } else {
+        std::cout << "[" << BOLDRED << "CONNECTION REFUSED" << RESET << "] " << "@" << newClient->getIp() << " Max Clients Reached!" << std::endl;
+        close(newClient->getSocketFd());
+        _preClients.pop_back();
+    }
 }
 
 void Server::_handleClientSend(const int& socket) {
-	AClient &cli= *_clients[socket];
-	cli.sendMSg();
+    AClient &cli= *_clients[socket];
+    cli.sendMSg();
 }
 
 void Server::_handleClientRecv(const int& socket) {
-	std::string fullMsg;
-	char buff[1024];
+    std::string fullMsg;
+    char buff[1024];
 
-	memset(buff, 0, 1024);
-	int rcv = recv(socket, buff, 1024, MSG_DONTWAIT);
+    memset(buff, 0, 1024);
+    int rcv = recv(socket, buff, 1024, MSG_DONTWAIT);
 
-	if (rcv > 0 ) {
-		fullMsg += buff;
-		memset(buff, 0, 1024);
-		do
-		{
-			rcv = recv(socket, buff, 1024, MSG_DONTWAIT);
-			fullMsg += buff;
-			memset(buff, 0, 1024);
-		} while (rcv > 0);
+    if (rcv > 0 ) {
+        fullMsg += buff;
+        memset(buff, 0, 1024);
+        do
+        {
+            rcv = recv(socket, buff, 1024, MSG_DONTWAIT);
+            fullMsg += buff;
+            memset(buff, 0, 1024);
+        } while (rcv > 0);
 
-		std::cout << "[" << BLUE << "RECEIVED" << RESET << "]" <<std::endl << fullMsg << std::endl;
-		std::cout <<"[" << BLUE << "END RECEIVE" << RESET << "]" << std::endl;
-		
-		execCommand( *this , fullMsg , _clients[socket]);
-	} else if ( rcv == 0) {
-		//client closed connection
-	}
+        std::cout << "[" << BLUE << "RECEIVED" << RESET << "]" <<std::endl << fullMsg << std::endl;
+        std::cout <<"[" << BLUE << "END RECEIVE" << RESET << "]" << std::endl;
+
+        execCommand( *this , fullMsg , _clients[socket]);
+    } else if ( rcv == 0) {
+        //client closed connection
+    }
+}
+
+AClient* Server::_findClientByNick( const std::string& nick ) const {
+    std::map<int, AClient*>::iterator it;
+    for ( ; it != _clients.end(); it++ ) {
+        if ( it->second->getNick() == nick )
+            return ( it->second );
+    }
+    return ( NULL );
 }
 
 static std::pair<std::string const , std::string> extractCommand( std::string rawCommand ) {
-	std::stringstream ss(rawCommand);
-	std::string command;
-	std::string commandArgs;
+    std::stringstream ss(rawCommand);
+    std::string command;
+    std::string commandArgs;
 
-	getline(ss , command , ' ');
-	// commandArgs = ss.str();
-	getline(ss , commandArgs);
-	return (std::make_pair(command , commandArgs));
+    getline(ss , command , ' ');
+    // commandArgs = ss.str();
+    getline(ss , commandArgs);
+    return (std::make_pair(command , commandArgs));
 }
 
 static bool isValidCommand( std::string cmd ) {
-	bool isValid = false;
-	std::string cmdList[] = {"JOIN" , "INVITE" , "KICK" , "MODE" , "PASS", "TOPIC", "USER" , "PRIVMSG" , "NOTICE" , "NICK"};
-	for (size_t i = 0; i < sizeof(cmdList)/sizeof(cmdList[0]); i++)
-	{
-		if ( !cmdList[i].compare(cmd) ) {
-			isValid = true;
-			break;
-		}
-	}
-	return ( isValid );
+    bool isValid = false;
+    std::string cmdList[] = {"JOIN" , "INVITE" , "KICK" , "MODE" , "PASS", "TOPIC", "USER" , "PRIVMSG" , "NOTICE" , "NICK"};
+    for (size_t i = 0; i < sizeof(cmdList)/sizeof(cmdList[0]); i++)
+    {
+        if ( !cmdList[i].compare(cmd) ) {
+            isValid = true;
+            break;
+        }
+    }
+    return ( isValid );
 }
 
 void execCommand( Server& ircServ , std::string clientMsg , AClient* cli) {
-	std::vector<std::string> commands = splitDelim(clientMsg , "\r\n");
+    std::vector<std::string> commands = utils::split(clientMsg , "\r\n");
 
-	for (std::vector<std::string>::iterator it = commands.begin(); it != commands.end(); it++) {
-		std::pair<std::string , std::string> cmdParts = extractCommand(*it);
+    for (std::vector<std::string>::iterator it = commands.begin(); it != commands.end(); it++) {
+        std::pair<std::string , std::string> cmdParts = extractCommand(*it);
 
-		if ( isValidCommand(cmdParts.first) )
-			ircServ._cmds[cmdParts.first]->execute( cli , cmdParts.second);
-	}
+        if ( isValidCommand(cmdParts.first) )
+            ircServ._cmds[cmdParts.first]->execute( cli , cmdParts.second);
+    }
 }
 
 void Server::_addClient( const AClient* client ) {
-	Client *newClient = new Client(*client);
-	_clients.insert(std::make_pair(client->getSocketFd() , newClient));
+    Client *newClient = new Client(*client);
+    _clients.insert(std::make_pair(client->getSocketFd() , newClient));
 }
 
 // void Server::_addChannel( void ) {}

@@ -10,7 +10,7 @@ private:
     bool        _isInviteOnly;
     bool        _isTopicOnly;
     std::vector<std::string>        _invitations;
-    std::map<std::string, Client*>  _clients;
+    std::map<std::string, AClient*>  _clients;
 
 public:
     Channel( const std::string& name, const std::string& topic );

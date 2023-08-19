@@ -17,8 +17,8 @@ public:
     virtual void execute( AClient *, const std::string & rawCommand ) = 0;
     virtual void clearCmd( void ) = 0;
 
-    class cmdError : std::exception {
+    class CmdError : public std::runtime_error {
     public:
-        const char* what( void ) const throw();
+        CmdError( const char * msg ) : std::runtime_error( msg ) {}
     };
 };

@@ -13,7 +13,7 @@ void Channel::addUser( const std::string& nick, Client* client ) {
 }
 
 void Channel::kickUser( const std::string& nick, const std::string& msg ) {
-    std::map<std::string, Client*>::iterator it;
+    std::map<std::string, AClient*>::iterator it;
 
     it = _clients.find( nick );
     if ( it == _clients.end() )
@@ -34,7 +34,7 @@ void Channel::removeInvitation( const std::string& nick ) {
 }
 
 void Channel::addMsg( const std::string& msg ) {
-    std::map<std::string, Client*>::iterator it;
+    std::map<std::string, AClient*>::iterator it;
 
     for ( it = _clients.begin(); it != _clients.end(); it++ )
 	it->second->addMsg( msg );
