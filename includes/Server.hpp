@@ -87,6 +87,7 @@ public:
     friend class Pass;
     friend class User;
     friend class Nick;
+    friend class Invite;
     friend void execCommand( Server& ircServ , std::string clientMsg , AClient* cli );
 };
 
