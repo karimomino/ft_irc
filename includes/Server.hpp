@@ -24,7 +24,7 @@
 #include "Commands/Nick.hpp"
 #include "utils.hpp"
 #include "colors.hpp"
-#include "replies.hpp"
+#include "Replies.hpp"
 
 
 #ifndef MAX_CLIENTS

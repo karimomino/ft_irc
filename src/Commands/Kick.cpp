@@ -37,7 +37,7 @@ void Kick::initArgs( void ) {
 
 void Kick::validateArgs( void ) const {
     if ( _rawCommand.find( "," ) != std::string::npos ) {
-        _client->addMsg( ERR_MULITPLEPARAMS( _ircServ.getIp(), _client->getNick() + " KICK " ) );
+        _client->addMsg( ERR_MULTIPLEPARAMS( _ircServ.getIp(), _client->getNick() + " KICK " ) );
         throw ( Kick::CmdError( "Error: [Kick found multiple names]" ) );
     }
 
