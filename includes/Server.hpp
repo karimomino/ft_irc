@@ -12,6 +12,7 @@
 
 #include "AClient.hpp"
 #include "Client.hpp"
+#include "Channel.hpp"
 #include "PreClient.hpp"
 #include "Commands/ICommand.hpp"
 #include "Commands/Join.hpp"
@@ -23,6 +24,7 @@
 #include "Commands/User.hpp"
 #include "Commands/Nick.hpp"
 #include "colors.hpp"
+#include "replies.hpp"
 
 #ifndef MAX_CLIENTS
 # define MAX_CLIENTS 42
@@ -45,13 +47,13 @@ private:
     struct sockaddr_in              _hint;
     std::deque<AClient*>          _preClients;
     std::map<int, AClient*>  _clients;
-    std::map<std::string, Channel*> _channels;
+    std::map<const std::string, Channel*> _channels;
     std::map<const std::string, ICommand*> _cmds;
 
     /* Methods */
     void _initCmds( void );
     void _addClient( const AClient* client );
-    void _addChannel( const std::string& name );
+    void _addChannel( const std::string& name , const std::string& topic );
     void _removeClient( const std::string& name );
     void _removeChannel( const std::string& name );
 
@@ -83,6 +85,7 @@ public:
     friend class Pass;
     friend class User;
     friend class Nick;
+    friend class Join;
     friend void execCommand( Server& ircServ , std::string clientMsg , AClient* cli );
 };
 

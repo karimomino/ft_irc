@@ -14,7 +14,7 @@ void Pass::execute( AClient* const client, const std::string & rawCommand ){
     if ( target && !client->getPass().empty() && !client->getNick().empty() && !client->getUser().empty() ) {
         _ircServ._addClient(client);
         _ircServ._clients.erase(client->getSocketFd());
-        delete this;
+        delete client;
 	}
 }
 
