@@ -22,10 +22,10 @@ static std::string extractUser( const std::string& rawCommand) {
 void User::execute( AClient* const client, const std::string & rawCommand ){
     PreClient *target = dynamic_cast<PreClient *>(client);
     client->setUser(extractUser(rawCommand));
-    if ( target && !client->getUser().empty() && !client->getNick().empty() && !client->getUser().empty() ) {
+    if ( target && !client->getUser().empty() && !client->getNick().empty() && !client->getPass().empty() ) {
         _ircServ._clients.erase(client->getSocketFd());
         _ircServ._addClient(client);
-        delete this;
+        delete client;
 	}
 }
 
