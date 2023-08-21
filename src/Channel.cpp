@@ -39,8 +39,15 @@ void Channel::addUser( AClient* client ) {
 }
 
 void Channel::kickUser( const std::string& nick, const std::string& msg ) {
-    (void)nick;
-    (void)msg;
+    std::map<std::string, Client*>::iterator it;
+
+    it = _clients.find( nick );
+    if ( it == _clients.end() )
+	it = _clients.find( "@" + nick );
+    if ( it != _clients.end() ) {
+	it->second->addMsg( msg );
+	_clients.erase( it );
+    }
 }
 
 void Channel::addInvitation( const std::string& nick ) {
