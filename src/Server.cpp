@@ -185,7 +185,10 @@ void Server::_addClient( const AClient* client ) {
     _clients.insert(std::make_pair(client->getSocketFd() , newClient));
 }
 
-// void Server::_addChannel( void ) {}
+void Server::_addChannel( const std::string& name , const std::string& topic ) {
+	Channel *newChan = new Channel( name , topic );
+	_channels.insert( std::make_pair( name , newChan ) );
+}
 
 // void Server::_removeClient( void ) {}
 

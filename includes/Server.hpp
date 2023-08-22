@@ -12,6 +12,7 @@
 
 #include "AClient.hpp"
 #include "Client.hpp"
+#include "Channel.hpp"
 #include "PreClient.hpp"
 #include "Commands/ICommand.hpp"
 #include "Commands/Join.hpp"
@@ -25,7 +26,6 @@
 #include "utils.hpp"
 #include "colors.hpp"
 #include "replies.hpp"
-
 
 #ifndef MAX_CLIENTS
 # define MAX_CLIENTS 42
@@ -51,7 +51,7 @@ private:
     /* Methods */
     void _initCmds( void );
     void _addClient( const AClient* client );
-    void _addChannel( const std::string& name );
+    void _addChannel( const std::string& name , const std::string& topic );
     void _removeClient( const std::string& name );
     void _removeChannel( const std::string& name );
 
@@ -87,6 +87,7 @@ public:
     friend class Pass;
     friend class User;
     friend class Nick;
+    friend class Join;
     friend void execCommand( Server& ircServ , std::string clientMsg , AClient* cli );
 };
 

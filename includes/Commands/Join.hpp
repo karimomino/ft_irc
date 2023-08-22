@@ -4,6 +4,8 @@
 #include "../AClient.hpp"
 #include "../Server.hpp"
 
+typedef std::pair<std::string , std::string> strPair;
+
 class Join : public ICommand {
 public:
     Join();
