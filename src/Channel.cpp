@@ -62,6 +62,8 @@ bool  Channel::isInviteOnly( void ) const { return ( _isInviteOnly ); }
 
 bool  Channel::isTopicOnly( void ) const { return ( _isTopicOnly ); }
 
+bool  Channel::isKeyOnly( void ) const { return ( _isKeyOnly ); }
+
 const std::string& Channel::getName( void ) const { return ( _name ); }
 
 const std::string& Channel::getTopic( void ) const { return ( _topic ); }
@@ -73,3 +75,5 @@ void Channel::setName( const std::string& name ) { _name = name; }
 void Channel::setInviteMode( bool mode ) { _isInviteOnly = mode; }
 
 void Channel::setTopicMode( bool mode ) { _isTopicOnly = mode; }
+
+void Channel::setKeyMode( bool mode ) { _isKeyOnly = mode; }
