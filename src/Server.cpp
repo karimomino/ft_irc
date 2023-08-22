@@ -138,8 +138,7 @@ void Server::_handleClientRecv(const int& socket) {
 }
 
 AClient* Server::_findClientByNick( const std::string& nick ) const {
-    std::map<int, AClient*>::iterator it;
-    for ( ; it != _clients.end(); it++ ) {
+    for ( std::map<int, AClient*>::const_iterator it; it != _clients.end(); it++ ) {
         if ( it->second->getNick() == nick )
             return ( it->second );
     }

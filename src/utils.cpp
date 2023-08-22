@@ -28,7 +28,8 @@ std::vector<std::string> utils::split( std::string str , std::string delm) {
     std::vector<std::string> list;
     while ( ( pos = str.find( delm ) ) != std::string::npos ) {
         token = str.substr(0, pos);
-        list.push_back( token );
+        if ( !token.empty() )
+            list.push_back( token );
         str.erase(0, pos + delm.length());
     }
     return ( list );

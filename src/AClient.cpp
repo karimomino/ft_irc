@@ -32,7 +32,7 @@ const std::string& AClient::getUser( void ) const { return( _user ); }
 const std::string& AClient::getIp( void ) const { return ( _ip ); }
 
 const std::string AClient::getOrigin( void ) const {
-    std::string const origin = ":" + getNick() + "!" + getUser() + "@" + getIp() + " ";
+    std::string const origin = ":" + getNick() + "!" + getUser() + "@" + getIp();
     return ( origin );
 }
 
