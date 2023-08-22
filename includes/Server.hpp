@@ -9,6 +9,8 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <sstream>
+#include <cstring>
+#include <vector>
 
 #include "AClient.hpp"
 #include "Client.hpp"
@@ -43,9 +45,9 @@ private:
     size_t                          _connectionCount;
     std::vector<pollfd>             _pollFds;
     struct sockaddr_in              _hint;
-    std::deque<AClient*>            _preClients;
+    // std::deque<AClient*>            _preClients;
     std::map<int, AClient*>         _clients;
-    std::map<std::string, Channel*> _channels;
+    std::map<const std::string, Channel*> _channels;
     std::map<const std::string, ICommand*> _cmds;
 
     /* Methods */

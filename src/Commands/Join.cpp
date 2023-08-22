@@ -39,7 +39,7 @@ static bool allowedToJoin( Channel *chan , AClient* client , strPair keyPair ) {
 }
 
 void Join::execute( AClient* client, const std::string & rawCommand ){
-    std::vector<std::string> tokens = splitDelim(rawCommand , " ");
+    std::vector<std::string> tokens = utils::split(rawCommand , " ");
 
     if ( expectedArgs( tokens.size() )) {
         strPair keyPair = findChanKey( tokens );

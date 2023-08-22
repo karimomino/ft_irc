@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 namespace utils {
 void trim( std::string& str );

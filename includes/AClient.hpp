@@ -15,7 +15,7 @@ protected:
     std::string _pass;
     bool        _purge;
     std::string _ip;
-    std::queue<const std::string> _msgs;
+    std::queue<std::string> _msgs;
 
 public:
     AClient( int socketFd, struct sockaddr_in* hint );

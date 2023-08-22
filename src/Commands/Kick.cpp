@@ -14,7 +14,7 @@ void Kick::initArgs( void ) {
     else if ( args.size() > 3 )
         throw ( ERR_MULTIPLEPARAMS( _ircServ.getIp(), _client->getNick() + " KICK " ) );
 
-    std::map<std::string, Channel*>::iterator chan_it = _ircServ._channels.find( args[0] );
+    std::map<const std::string, Channel*>::iterator chan_it = _ircServ._channels.find( args[0] );
     if ( chan_it == _ircServ._channels.end() ) {
         _client->addMsg( ERR_NOSUCHCHANNEL( _ircServ.getIp(),
             _client->getNick() + " " +  args[0] ) );

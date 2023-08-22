@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Server.hpp"
+#include <deque>
 
 class Channel {
     friend std::string names(const Channel& chan);
@@ -13,6 +14,10 @@ private:
     bool        _isKeyOnly;
     std::vector<std::string>        _invitations;
     std::map<std::string, AClient*>  _clients;
+
+    /* PRIVATE Methods */
+    void _broadcastJoin( const std::string& nick , const std::string& joinMsg );
+    void _sendNames( AClient* client );
 
 public:
     Channel( const std::string& name, const std::string& topic );

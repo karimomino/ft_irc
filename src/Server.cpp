@@ -51,7 +51,7 @@ void Server::init( void ) {
 
     pollfd tmp_fd;
     tmp_fd.fd = _socketFd;
-    tmp_fd.events = POLLIN | POLL_OUT;
+    tmp_fd.events = POLLIN | POLLOUT;
     tmp_fd.revents = 0;
     _pollFds.push_back(tmp_fd);
 
@@ -102,7 +102,6 @@ void Server::_handlePreClientReg() {
     } else {
         std::cout << "[" << BOLDRED << "CONNECTION REFUSED" << RESET << "] " << "@" << newClient->getIp() << " Max Clients Reached!" << std::endl;
         close(newClient->getSocketFd());
-        _preClients.pop_back();
     }
 }
 
