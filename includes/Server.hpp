@@ -9,6 +9,8 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <sstream>
+#include <cstring>
+#include <vector>
 
 #include "AClient.hpp"
 #include "Client.hpp"
@@ -23,6 +25,7 @@
 #include "Commands/Pass.hpp"
 #include "Commands/User.hpp"
 #include "Commands/Nick.hpp"
+#include "utils.hpp"
 #include "colors.hpp"
 #include "replies.hpp"
 
@@ -31,9 +34,6 @@
 #endif
 
 class Channel;
-
-void trim( std::string& str );
-std::vector<std::string> splitDelim( std::string str , std::string delim);
 
 class Server {
 private:
@@ -45,8 +45,8 @@ private:
     size_t                          _connectionCount;
     std::vector<pollfd>             _pollFds;
     struct sockaddr_in              _hint;
-    std::deque<AClient*>          _preClients;
-    std::map<int, AClient*>  _clients;
+    // std::deque<AClient*>            _preClients;
+    std::map<int, AClient*>         _clients;
     std::map<const std::string, Channel*> _channels;
     std::map<const std::string, ICommand*> _cmds;
 
@@ -60,6 +60,9 @@ private:
     void _handlePreClientReg (void);
     void _handleClientSend(const int& socket);
     void _handleClientRecv(const int& socket);
+
+    AClient* _findClientByNick( const std::string& nick  ) const;
+
 public:
     Server( int port, const std::string& pass );
     ~Server( void );
@@ -82,6 +85,7 @@ public:
         ServerError( const char * msg );
     };
 
+    friend class Kick;
     friend class Pass;
     friend class User;
     friend class Nick;

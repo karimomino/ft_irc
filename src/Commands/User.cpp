@@ -9,7 +9,7 @@ User::~User( void ) {
 }
 
 static std::string extractUser( const std::string& rawCommand) {
-    std::vector<std::string> tokens = splitDelim(rawCommand , ":");
+    std::vector<std::string> tokens = utils::split(rawCommand , ":");
     std::vector<std::string>::iterator it = tokens.begin();
     std::string user;
     if (tokens.size() < 2 )

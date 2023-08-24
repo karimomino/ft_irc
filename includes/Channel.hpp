@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Server.hpp"
+#include <deque>
 
 class Channel {
     friend std::string names(const Channel& chan);

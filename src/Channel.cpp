@@ -39,7 +39,7 @@ void Channel::addUser( AClient* client ) {
 }
 
 void Channel::kickUser( const std::string& nick, const std::string& msg ) {
-    std::map<std::string, Client*>::iterator it;
+    std::map<std::string, AClient*>::iterator it;
 
     it = _clients.find( nick );
     if ( it == _clients.end() )
@@ -56,7 +56,11 @@ void Channel::addInvitation( const std::string& nick ) {
 }
 
 void Channel::removeInvitation( const std::string& nick ) {
-    _invitations.erase( std::find(_invitations.begin(), _invitations.end(), nick ) );
+    std::vector<std::string>::iterator begin = _invitations.begin();
+    std::vector<std::string>::iterator end = _invitations.end();
+    for ( std::vector<std::string>::iterator it = begin; it != end; it++ )
+        if ( *it == nick )
+            _invitations.erase( it );
 }
 
 void Channel::addMsg( const std::string& msg ) {
@@ -67,9 +71,12 @@ void Channel::addMsg( const std::string& msg ) {
 }
 
 bool  Channel::isInvited( const std::string& nick ) const {
-    if ( std::find( _invitations.begin(), _invitations.end(), nick ) == _invitations.end() )
-	return ( false );
-    return ( true );
+    std::vector<std::string>::const_iterator begin = _invitations.begin();
+    std::vector<std::string>::const_iterator end = _invitations.end();
+    for ( std::vector<std::string>::const_iterator it = begin; it != end; it++ )
+        if ( *it == nick )
+            return ( true );
+    return ( false );
 }
 
 bool  Channel::isMember( const std::string& nick ) const {
@@ -104,9 +111,9 @@ void Channel::setTopicMode( bool mode ) { _isTopicOnly = mode; }
 
 std::string names(const Channel& chan) {
     std::string aggNames;
-    
+
     for (std::map<std::string , AClient*>::const_iterator i = chan._clients.begin(); i !=chan._clients.end(); i++)
         aggNames += i->first + ",";
-    aggNames.pop_back();
+    aggNames.erase(aggNames.end() - 1);
     return( aggNames );
 }
