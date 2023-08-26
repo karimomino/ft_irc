@@ -25,6 +25,7 @@
 #include "Commands/Pass.hpp"
 #include "Commands/User.hpp"
 #include "Commands/Nick.hpp"
+#include "Commands/PrivMsg.hpp"
 #include "utils.hpp"
 #include "colors.hpp"
 #include "replies.hpp"
@@ -90,6 +91,7 @@ public:
     friend class User;
     friend class Nick;
     friend class Join;
+    friend class PrivMsg;
     friend void execCommand( Server& ircServ , std::string clientMsg , AClient* cli );
 };
 

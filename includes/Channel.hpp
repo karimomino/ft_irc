@@ -16,7 +16,6 @@ private:
     std::map<std::string, AClient*>  _clients;
 
     /* PRIVATE Methods */
-    void _broadcastJoin( const std::string& nick , const std::string& joinMsg );
     void _sendNames( AClient* client );
 
 public:
@@ -28,7 +27,7 @@ public:
     void kickUser( const std::string& nick, const std::string& msg );
     void addInvitation( const std::string& nick );
     void removeInvitation( const std::string& nick );
-    void addMsg( const std::string& msg );
+    void addMsg( const std::string& cli , const std::string& msg );
 
     /* Getters */
     bool  isInvited( const std::string& nick ) const;

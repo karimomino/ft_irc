@@ -32,5 +32,7 @@ std::vector<std::string> utils::split( std::string str , std::string delm) {
             list.push_back( token );
         str.erase(0, pos + delm.length());
     }
+    if (!str.empty())
+        list.push_back(str);
     return ( list );
 }

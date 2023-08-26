@@ -20,6 +20,7 @@ void Server::_initCmds( void ) {
     _cmds.insert( std::pair<const std::string, ICommand*>( "PASS", new Pass( *this ) ) );
     _cmds.insert( std::pair<const std::string, ICommand*>( "USER", new User( *this ) ) );
     _cmds.insert( std::pair<const std::string, ICommand*>( "NICK", new Nick( *this ) ) );
+    _cmds.insert( std::pair<const std::string, ICommand*>( "PRIVMSG", new PrivMsg( *this ) ) );
 }
 
 /**
@@ -107,6 +108,11 @@ void Server::_handlePreClientReg() {
 
 void Server::_handleClientSend(const int& socket) {
     AClient &cli= *_clients[socket];
+    if (cli.getQueueSize()) {
+        std::cout << "[ " << GREEN << "ATTEMPTING TO SEND - " << cli.getNick() << " " << RESET << "]" << std::endl;
+        std::cout << cli.getFirstMsg() << std::endl;
+        std::cout << "[ " << GREEN << "END ATTEMPT SEND " << RESET << "]\n" << std::endl;
+    }
     cli.sendMSg();
 }
 
@@ -128,7 +134,7 @@ void Server::_handleClientRecv(const int& socket) {
         } while (rcv > 0);
 
         std::cout << "[" << BLUE << "RECEIVED" << RESET << "]" <<std::endl << fullMsg << std::endl;
-        std::cout <<"[" << BLUE << "END RECEIVE" << RESET << "]" << std::endl;
+        std::cout <<"[" << BLUE << "END RECEIVE" << RESET << "]\n" << std::endl;
 
         execCommand( *this , fullMsg , _clients[socket]);
     } else if ( rcv == 0) {
@@ -174,7 +180,7 @@ void execCommand( Server& ircServ , std::string clientMsg , AClient* cli) {
     for (std::vector<std::string>::iterator it = commands.begin(); it != commands.end(); it++) {
         std::pair<std::string , std::string> cmdParts = extractCommand(*it);
 
-        if ( isValidCommand(cmdParts.first) )
+        if ( isValidCommand(cmdParts.first) && !cli->getPurge() )
             ircServ._cmds[cmdParts.first]->execute( cli , cmdParts.second);
     }
 }
