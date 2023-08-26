@@ -26,6 +26,7 @@
 #include "Commands/User.hpp"
 #include "Commands/Nick.hpp"
 #include "Commands/PrivMsg.hpp"
+#include "Commands/Ping.hpp"
 #include "utils.hpp"
 #include "colors.hpp"
 #include "replies.hpp"
@@ -71,6 +72,7 @@ public:
     /* Methods */
     void init( void );
     void run( void );
+    bool nickInUse ( const std::string& nick ) const;
     void exit( void );
 
     /* Getters */
@@ -92,6 +94,7 @@ public:
     friend class Nick;
     friend class Join;
     friend class PrivMsg;
+    friend class Ping;
     friend void execCommand( Server& ircServ , std::string clientMsg , AClient* cli );
 };
 

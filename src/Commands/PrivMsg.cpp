@@ -21,12 +21,12 @@ static std::string  findContent( const std::string& full_command ) {
     std::string content;
     std::vector< std::string > split_command = utils::split( full_command , " ");
     std::vector< std::string >::iterator split_it = split_command.begin();
+    
+    content = *(++split_it);
+    content.erase(content.begin());
+    while ( ++split_it  != split_command.end())
+        content += " " + *split_it;
 
-    content = *(*(++split_it)).erase((*split_it).begin()) + " ";
-    while ( split_it  != split_command.end()) {
-        content += *split_it + " ";
-        split_it++;
-    }
     return ( content );
 }
 

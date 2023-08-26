@@ -16,7 +16,8 @@ SRCS		=	Server.cpp \
 				Commands/User.cpp \
 				Commands/Nick.cpp \
 				Commands/Topic.cpp \
-				Commands/PrivMsg.cpp 
+				Commands/PrivMsg.cpp \
+				Commands/Ping.cpp 
 
 HEADERS		=	includes/Server.hpp \
 				includes/AClient.hpp \
@@ -28,7 +29,9 @@ HEADERS		=	includes/Server.hpp \
 				includes/Commands/Pass.hpp \
 				includes/Commands/User.hpp \
 				includes/Commands/Nick.hpp \
-				includes/Commands/PrivMsg.hpp
+				includes/Commands/PrivMsg.hpp \
+				includes/Commands/Ping.hpp \
+				includes/replies.hpp
 
 SRCS_DIR    =   ./src/
 

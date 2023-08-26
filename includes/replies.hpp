@@ -13,6 +13,7 @@
 
 # define ERR_INVITEONLYCHAN( arg ) std::string(":0.0.0.0 473 ") + arg + std::string(" :Cannot join channel (+i) - invite only\r\n")
 # define ERR_BADCHANNELKEY( arg ) std::string(":0.0.0.0 475 ") + arg + std::string(" :Cannot join channel (+k) - bad key\r\n")
+# define ERR_NICKNAMEINUSE( arg ) std::string(":0.0.0.0 433 nick ") + arg + std::string(" :Nickname is already in use\r\n")
 
 # define ERR_ERRONEUSNICKNAME( arg ) std::string(":0.0.0.0 432 ") + arg + std::string(" :Erroneous Nickname\r\n")
 # define RPL_TOPIC( arg , topic ) std::string(":0.0.0.0 332 ") + arg + std::string(" :") + topic + std::string("\r\n")
