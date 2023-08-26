@@ -13,8 +13,6 @@ static strPair findChanKey( std::vector<std::string> tokens ) {
 
     if (tokens.size() == 2)
         keyPair.second = *(++it);
-    else
-        keyPair.second = "";
     return ( keyPair );
 }
 

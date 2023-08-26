@@ -1,17 +1,11 @@
 #include "Channel.hpp"
 
 Channel::Channel( const std::string& name, const std::string& topic ) :
-    _name( name ), _topic( topic ), _key( "" ), _isInviteOnly( false ), _isTopicOnly( false ), _isKeyOnly( false ) {}
+    _name( name ), _topic( topic ), _key( "" ), _isInviteOnly( false ), _isTopicOnly( true ), _isKeyOnly( false ) {}
 
 Channel::~Channel() {}
 
 /* PRIVATE Methods */
-void Channel::_broadcastJoin( const std::string& nick , const std::string& joinMsg ) {
-   for (std::map<std::string, AClient*>::iterator i = _clients.begin(); i != _clients.end(); i++) {
-        if (i->second->getNick().compare(nick))
-            i->second->addMsg( joinMsg );
-   }
-}
 
 void Channel::_sendNames( AClient* client ) {
     client->addMsg( RPL_NAMREPLY( client->getNick() + " = " + _name , names(*this)) );
@@ -22,17 +16,16 @@ void Channel::_sendNames( AClient* client ) {
 void Channel::addUser( AClient* client ) {
     std::string nick = client->getNick();
     // TODO: get origin from client member function created by @niño
-    std::string joinMsg( ":" + client->getNick() + "!" + client->getUser() + "@" + client->getIp() + " JOIN :" + _name + "\r\n" );
+    std::string joinMsg( client->getOrigin() + " JOIN " + _name + "\r\n" );
     client->addMsg( joinMsg );
     if ( !_clients.size() ) {
         nick.insert(0 , "@");
-        nick = "@" + client->getNick();
         client->addMsg( ":0.0.0.0 MODE " + _name + " +t\r\n" );
     }
     else {
         client->addMsg( RPL_TOPIC( client->getNick() + " " + _name , _topic ) );
         client->addMsg( RPL_TOPICWHOTIME( client->getNick() + " " + _name + " dan!~d@localhost 1547691506" ) ); // TODO: use time and get origin and stor in the channel at creation time
-        _broadcastJoin( client->getNick() , joinMsg );
+        addMsg( client->getNick() , joinMsg);
     }
     _clients.insert( std::make_pair( nick , client ) );
     _sendNames( client );
@@ -63,11 +56,12 @@ void Channel::removeInvitation( const std::string& nick ) {
             _invitations.erase( it );
 }
 
-void Channel::addMsg( const std::string& msg ) {
+void Channel::addMsg( const std::string& cli , const std::string& msg ) {
     std::map<std::string, AClient*>::iterator it;
 
     for ( it = _clients.begin(); it != _clients.end(); it++ )
-	it->second->addMsg( msg );
+        if (cli != it->second->getNick())
+	        it->second->addMsg( msg );
 }
 
 bool  Channel::isInvited( const std::string& nick ) const {

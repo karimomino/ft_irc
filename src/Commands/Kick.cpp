@@ -52,7 +52,7 @@ void Kick::execute( AClient* client, const std::string& rawCommand ) {
         + " " + _kickedNick + " :";
         kickResponse += _reason.empty() ? "No Reason\r\n" : _reason + "\r\n";
         _channel->kickUser( _kickedNick, kickResponse );
-        _channel->addMsg( kickResponse );
+        _channel->addMsg( _kickedNick , kickResponse );
     } catch ( const std::exception& e ) {
         _client->addMsg( e.what() );
     }
