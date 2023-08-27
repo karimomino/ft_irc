@@ -21,6 +21,7 @@ void Server::_initCmds( void ) {
     _cmds.insert( std::pair<const std::string, ICommand*>( "USER", new User( *this ) ) );
     _cmds.insert( std::pair<const std::string, ICommand*>( "NICK", new Nick( *this ) ) );
     _cmds.insert( std::pair<const std::string, ICommand*>( "PRIVMSG", new PrivMsg( *this ) ) );
+    _cmds.insert( std::pair<const std::string, ICommand*>( "PING", new Ping( *this ) ) );
 }
 
 /**
@@ -143,7 +144,7 @@ void Server::_handleClientRecv(const int& socket) {
 }
 
 AClient* Server::_findClientByNick( const std::string& nick ) const {
-    for ( std::map<int, AClient*>::const_iterator it; it != _clients.end(); it++ ) {
+    for ( std::map<int, AClient*>::const_iterator it = _clients.begin(); it != _clients.end(); it++ ) {
         if ( it->second->getNick() == nick )
             return ( it->second );
     }
@@ -163,7 +164,7 @@ static std::pair<std::string const , std::string> extractCommand( std::string ra
 
 static bool isValidCommand( std::string cmd ) {
     bool isValid = false;
-    std::string cmdList[] = {"JOIN" , "INVITE" , "KICK" , "MODE" , "PASS", "TOPIC", "USER" , "PRIVMSG" , "NOTICE" , "NICK"};
+    std::string cmdList[] = {"JOIN" , "INVITE" , "KICK" , "MODE" , "PASS", "TOPIC", "USER" , "PRIVMSG" , "NOTICE" , "NICK" , "PING" };
     for (size_t i = 0; i < sizeof(cmdList)/sizeof(cmdList[0]); i++)
     {
         if ( !cmdList[i].compare(cmd) ) {
@@ -193,6 +194,16 @@ void Server::_addClient( const AClient* client ) {
 void Server::_addChannel( const std::string& name , const std::string& topic ) {
 	Channel *newChan = new Channel( name , topic );
 	_channels.insert( std::make_pair( name , newChan ) );
+}
+
+bool Server::nickInUse ( const std::string& nick ) const {
+    bool nickInUse = false;
+
+    for (std::map<int, AClient*>::const_iterator it = _clients.begin(); it != _clients.end(); it++) {
+        if (!(*it).second->getNick().compare(nick))
+            nickInUse = true;
+    }
+    return (nickInUse);
 }
 
 // void Server::_removeClient( void ) {}
