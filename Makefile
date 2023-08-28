@@ -17,6 +17,7 @@ SRCS		=	Server.cpp \
 				Commands/Nick.cpp \
 				Commands/Topic.cpp \
 				Commands/PrivMsg.cpp \
+				Commands/Notice.cpp \
 				Commands/Ping.cpp 
 
 HEADERS		=	includes/Server.hpp \
@@ -30,6 +31,7 @@ HEADERS		=	includes/Server.hpp \
 				includes/Commands/User.hpp \
 				includes/Commands/Nick.hpp \
 				includes/Commands/PrivMsg.hpp \
+				includes/Commands/Notice.hpp \
 				includes/Commands/Ping.hpp \
 				includes/replies.hpp
 

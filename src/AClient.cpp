@@ -1,6 +1,6 @@
 #include "AClient.hpp"
 
-AClient::AClient( int socketFd, struct sockaddr_in* hint ) : _socketFd( socketFd ), _nick("") , _purge(false), _ip( inet_ntoa( (struct in_addr)hint->sin_addr ) ) {
+AClient::AClient( int socketFd, struct sockaddr_in* hint ) : _socketFd( socketFd ) , _purge(false), _ip( inet_ntoa( (struct in_addr)hint->sin_addr ) ) {
 }
 
 AClient::AClient( const AClient& original ) {
@@ -11,7 +11,8 @@ AClient::AClient( const AClient& original ) {
     _ip = original.getIp();
 }
 
-AClient::~AClient() {}
+AClient::~AClient() {
+}
 
 void AClient::addMsg( const std::string& msg) { _msgs.push( msg ); }
 
