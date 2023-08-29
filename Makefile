@@ -25,6 +25,7 @@ HEADERS		=	includes/Server.hpp \
 				includes/Channel.hpp \
 				includes/Client.hpp \
 				includes/PreClient.hpp \
+				includes/utils.hpp \
 				includes/Commands/ICommand.hpp \
 				includes/Commands/Kick.hpp \
 				includes/Commands/Pass.hpp \
@@ -64,7 +65,7 @@ elliot:
 $(NAME)		:	$(OBJS) $(HEADERS) elliot
 				@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
 				
-debug		:	CXXFLAGS+= -DDEBUG -g3
+debug		:	CXXFLAGS+= -DDEBUG -g3 -fsanitize=address
 
 debug		:	fclean $(NAME)
 

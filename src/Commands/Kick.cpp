@@ -15,11 +15,9 @@ void Kick::initArgs( void ) {
         throw ( ERR_MULTIPLEPARAMS( _ircServ.getIp(), _client->getNick() + " KICK " ) );
 
     std::map<const std::string, Channel*>::iterator chan_it = _ircServ._channels.find( args[0] );
-    if ( chan_it == _ircServ._channels.end() ) {
-        _client->addMsg( ERR_NOSUCHCHANNEL( _ircServ.getIp(),
+    if ( chan_it == _ircServ._channels.end() )
+        throw ( ERR_NOSUCHCHANNEL( _ircServ.getIp(),
             _client->getNick() + " " +  args[0] ) );
-        throw ( Kick::CmdError( "Error: [Channel doesn't exist" ) );
-    }
 
     _channel = chan_it->second;
     _kickedNick = args[1];
@@ -52,7 +50,7 @@ void Kick::execute( AClient* client, const std::string& rawCommand ) {
         + " " + _kickedNick + " :";
         kickResponse += _reason.empty() ? "No Reason\r\n" : _reason + "\r\n";
         _channel->kickUser( _kickedNick, kickResponse );
-        _channel->addMsg( _kickedNick , kickResponse );
+        _channel->addMsg( _kickedNick, kickResponse );
     } catch ( const std::exception& e ) {
         _client->addMsg( e.what() );
     }
