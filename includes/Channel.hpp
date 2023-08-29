@@ -16,6 +16,7 @@ private:
     bool        _isKeyOnly;
     std::vector<std::string>        _invitations;
     std::map<std::string, AClient*>  _clients;
+    std::map<std::string, AClient*>  _operators;
 
     /* PRIVATE Methods */
     void _sendNames( AClient* client );
@@ -26,6 +27,8 @@ public:
 
     /* PUBLIC Methods */
     void addUser( AClient* client );
+    void promoteClient( std::string& nick );
+    void demoteClient( std::string& nick );
     void kickUser( const std::string& nick, const std::string& msg );
     void addInvitation( const std::string& nick );
     void removeInvitation( const std::string& nick );
@@ -47,8 +50,9 @@ public:
 
     /* Setters */
     void setName( const std::string& );
+    void setKey( const std::string& );
     void setInviteMode( bool );
     void setTopicMode( bool );
     void setTopic( AClient* client, const std::string& topic );
-
+    void setKeyMode( bool );
 };

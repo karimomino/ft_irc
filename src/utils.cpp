@@ -1,6 +1,6 @@
 #include "utils.hpp"
 
-void trim( std::string& str ) {
+void utils::trim( std::string& str ) {
     for (std::string::iterator i = str.begin(); i != str.end(); i++)
     {
         if ( std::isspace(*i) || !std::isprint(*i) ) {

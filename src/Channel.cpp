@@ -17,26 +17,46 @@ void Channel::addUser( AClient* client ) {
     std::string nick = client->getNick();
     std::string joinMsg( client->getOrigin() + " JOIN " + _name + "\r\n" );
     client->addMsg( joinMsg );
-    if ( !_clients.size() ) {
-        nick.insert(0 , "@");
+    if ( !_operators.size() ) {
+        _operators.insert( std::make_pair( "@" + nick, client ) );
         client->addMsg( ":0.0.0.0 MODE " + _name + " +t\r\n" );
     }
     else {
         client->addMsg( RPL_TOPIC( client->getNick() + " " + _name , _topic ) );
         client->addMsg( RPL_TOPICWHOTIME( client->getNick() + " " + _name + " " + _topicAuthor + " " + utils::numToA((long)_topicSetTime) ) );
         addMsg( client->getNick() , joinMsg);
+        _clients.insert( std::make_pair( nick , client ) );
     }
-    _clients.insert( std::make_pair( nick , client ) );
     _sendNames( client );
+}
+
+void Channel::promoteClient( std::string& nick ) {
+     std::map<std::string, AClient*>::iterator it = _clients.find( nick );
+    if ( it != _clients.end() ) {
+        _operators.insert( std::make_pair( "@" + it->second->getNick(), it->second ) );
+        _clients.erase( it );
+    }
+}
+
+void Channel::demoteClient( std::string& nick ) {
+     std::map<std::string, AClient*>::iterator it = _operators.find( nick);
+    if ( it != _operators.end() ) {
+        _clients.insert( std::make_pair( it->second->getNick(), it->second ) );
+        _operators.erase( it );
+    }
 }
 
 void Channel::kickUser( const std::string& nick, const std::string& msg ) {
     std::map<std::string, AClient*>::iterator it;
 
     it = _clients.find( nick );
-    if ( it == _clients.end() )
-	it = _clients.find( "@" + nick );
     if ( it != _clients.end() ) {
+	it->second->addMsg( msg );
+	_clients.erase( it );
+    }
+
+    it = _operators.find( "@" + nick );
+    if ( it != _operators.end() ) {
 	it->second->addMsg( msg );
 	_clients.erase( it );
     }
@@ -58,6 +78,9 @@ void Channel::removeInvitation( const std::string& nick ) {
 void Channel::addMsg( const std::string& cli , const std::string& msg ) {
     std::map<std::string, AClient*>::iterator it;
 
+    for ( it = _operators.begin(); it != _operators.end(); it++ )
+        if ( "@" + cli != it->first )
+            it->second->addMsg( msg );
     for ( it = _clients.begin(); it != _clients.end(); it++ )
         if (cli != it->second->getNick())
 	        it->second->addMsg( msg );
@@ -73,13 +96,13 @@ bool  Channel::isInvited( const std::string& nick ) const {
 }
 
 bool  Channel::isMember( const std::string& nick ) const {
-    if ( _clients.find( nick ) == _clients.end() && !isOperator( nick ) )
+    if ( _clients.find( nick ) == _clients.end() )
 	return( false );
     return ( true );
 }
 
 bool  Channel::isOperator( const std::string& nick ) const {
-    if ( _clients.find( "@" + nick ) == _clients.end() )
+    if ( _operators.find( "@" + nick ) == _operators.end() )
 	return ( false );
     return ( true );
 }
@@ -102,9 +125,13 @@ time_t Channel::getTopicTime( void ) const { return this->_topicSetTime; }
 
 void Channel::setName( const std::string& name ) { _name = name; }
 
-void Channel::setInviteMode( bool mode ) { _isInviteOnly = mode; }
+void Channel::setKey( const std::string& key ) { _key = key; }
 
-void Channel::setTopicMode( bool mode ) { _isTopicOnly = mode; }
+void Channel::setInviteMode( bool state ) { _isInviteOnly = state; }
+
+void Channel::setTopicMode( bool state ) { _isTopicOnly = state; }
+
+void Channel::setKeyMode( bool state ) { _isKeyOnly = state; }
 
 void Channel::setTopic( AClient* client, const std::string& topic ) {
     this->_topic = topic;
@@ -118,8 +145,12 @@ void Channel::setTopic( AClient* client, const std::string& topic ) {
 std::string names(const Channel& chan) {
     std::string aggNames;
 
-    for (std::map<std::string , AClient*>::const_iterator i = chan._clients.begin(); i !=chan._clients.end(); i++)
-        aggNames += i->first + ",";
+    for (std::map<std::string , AClient*>::const_iterator it = chan._operators.begin(); it != chan._operators.end(); it++) {
+        aggNames += it->first + " ";
+        std::cout << "NICKKKKK [" << it->first << "]" << std::endl;
+    }
+    for (std::map<std::string , AClient*>::const_iterator it = chan._clients.begin(); it != chan._clients.end(); it++)
+        aggNames += it->first + " ";
     aggNames.erase(aggNames.end() - 1);
     return( aggNames );
 }

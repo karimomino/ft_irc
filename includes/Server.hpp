@@ -96,6 +96,7 @@ public:
     friend class Nick;
     friend class Join;
     friend class PrivMsg;
+    friend class Mode;
     friend class Notice;
     friend class Ping;
     friend class Topic;
