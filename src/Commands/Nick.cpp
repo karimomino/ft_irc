@@ -19,16 +19,23 @@ static bool nickAuthorizedChars(const std::string& nick) {
 
 void Nick::execute( AClient* const client, const std::string & rawCommand ){
     PreClient *target = dynamic_cast<PreClient *>(client);
-    if (nickAuthorizedChars(rawCommand))
-        client->setNick(rawCommand);
+    if (nickAuthorizedChars(rawCommand)) {
+        if (!_ircServ.nickInUse(rawCommand)) {
+            if (!target)
+                client->addMsg( client->getOrigin() + " NICK :" + rawCommand + "\r\n" );
+            client->setNick(rawCommand);
+        }
+        else
+            client->addMsg(ERR_NICKNAMEINUSE( rawCommand ));
+    }
     else {
         client->addMsg(ERR_ERRONEUSNICKNAME(client->getNick() + " " + rawCommand));
         if (target)
             client->setPurge(true);
     }
     if ( target && !client->getNick().empty() && !client->getUser().empty() && !client->getPass().empty() ) {
-        _ircServ._addClient(client);
         _ircServ._clients.erase(client->getSocketFd());
+        _ircServ._addClient(client);
         delete client;
 	}
 }

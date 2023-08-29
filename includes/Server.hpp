@@ -26,6 +26,8 @@
 #include "Commands/User.hpp"
 #include "Commands/Nick.hpp"
 #include "Commands/PrivMsg.hpp"
+#include "Commands/Notice.hpp"
+#include "Commands/Ping.hpp"
 #include "utils.hpp"
 #include "colors.hpp"
 #include "replies.hpp"
@@ -53,9 +55,10 @@ private:
 
     /* Methods */
     void _initCmds( void );
+    void _removeCmd( const std::string& name );
     void _addClient( const AClient* client );
+    void _purgeClient(const int& fd);
     void _addChannel( const std::string& name , const std::string& topic );
-    void _removeClient( const std::string& name );
     void _removeChannel( const std::string& name );
 
     void _handlePreClientReg (void);
@@ -71,6 +74,7 @@ public:
     /* Methods */
     void init( void );
     void run( void );
+    bool nickInUse ( const std::string& nick ) const;
     void exit( void );
 
     /* Getters */
@@ -93,6 +97,8 @@ public:
     friend class Join;
     friend class PrivMsg;
     friend class Mode;
+    friend class Notice;
+    friend class Ping;
     friend void execCommand( Server& ircServ , std::string clientMsg , AClient* cli );
 };
 
