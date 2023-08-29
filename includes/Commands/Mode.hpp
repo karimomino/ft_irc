@@ -1,32 +1,38 @@
 # pragma once
 
 #include "ICommand.hpp"
+#include <utility>
+#include <vector>
+#include <map>
 
+
+class Mode;
 class Server;
 class Channel;
 class Client;
 
+typedef bool ( Mode::*modePtr )( bool, std::string& );
+typedef std::pair<std::string, std::string> pSS;
+typedef std::vector< std::pair<char, std::string> > vec_pCS;
+
 class Mode: public ICommand {
 private:
-    AClient*          _client;
-    Channel*          _channel;
-    std::string       _rawCommand;
-    const std::string _types;
-    bool              _mode;
-    std::vector<std::string>           _args;
-    std::vector<std::string>::iterator _args_it;
-    void ( Mode::*_channel_funPtr[4] )( void );
+    Channel* _chan;
+    AClient* _client;
+    std::map<char, bool>    _isExecuted;
+    std::map<char, modePtr> _mPtr;
 
-    void inviteMode( void );
-    void topicMode( void );
-    void keyMode( void );
-    void opMode( void );
-    void getArgs( void );
+    bool inviteMode( bool, std::string& arg );
+    bool topicMode( bool, std::string& arg );
+    bool keyMode( bool, std::string& arg );
+    bool opMode( bool, std::string& arg );
+    std::vector<std::string> validateArgs( AClient*, const std::string& );
+    pSS executeMode( vec_pCS modes );
 
 public:
     Mode();
     Mode( Server& ircServ );
     ~Mode();
-    void execute( AClient *, const std::string & rawCommand );
+    void execute( AClient*, const std::string & rawCommand );
     void clearCmd( void );
 };

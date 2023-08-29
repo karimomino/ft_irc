@@ -15,18 +15,21 @@ SRCS		=	Server.cpp \
 				Commands/Pass.cpp \
 				Commands/User.cpp \
 				Commands/Nick.cpp \
-				Commands/Topic.cpp 
+				Commands/Topic.cpp \
+				Commands/PrivMsg.cpp
 
 HEADERS		=	includes/Server.hpp \
 				includes/AClient.hpp \
 				includes/Channel.hpp \
 				includes/Client.hpp \
 				includes/PreClient.hpp \
+				includes/utils.hpp \
 				includes/Commands/ICommand.hpp \
 				includes/Commands/Kick.hpp \
 				includes/Commands/Pass.hpp \
 				includes/Commands/User.hpp \
-				includes/Commands/Nick.hpp
+				includes/Commands/Nick.hpp \
+				includes/Commands/PrivMsg.hpp
 
 SRCS_DIR    =   ./src/
 
@@ -57,7 +60,7 @@ elliot:
 $(NAME)		:	$(OBJS) $(HEADERS) elliot
 				@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
 				
-debug		:	CXXFLAGS+= -DDEBUG -g3
+debug		:	CXXFLAGS+= -DDEBUG -g3 -fsanitize=address
 
 debug		:	fclean $(NAME)
 
