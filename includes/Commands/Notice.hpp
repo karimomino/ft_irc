@@ -4,13 +4,10 @@
 #include "../AClient.hpp"
 #include "../Server.hpp"
 
-typedef std::pair<std::string , std::string> strPair;
-
-class Join : public ICommand {
+class Notice: public ICommand {
 public:
-    Join();
-    Join( Server& ircServ );
-    ~Join();
+    Notice( Server& ircServ );
+    ~Notice( void );
     void execute( AClient *, const std::string & rawCommand );
     void clearCmd( void );
 };

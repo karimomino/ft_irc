@@ -9,9 +9,12 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <sstream>
+#include <cstring>
+#include <vector>
 
 #include "AClient.hpp"
 #include "Client.hpp"
+#include "Channel.hpp"
 #include "PreClient.hpp"
 #include "Commands/ICommand.hpp"
 #include "Commands/Join.hpp"
@@ -22,10 +25,12 @@
 #include "Commands/Pass.hpp"
 #include "Commands/User.hpp"
 #include "Commands/Nick.hpp"
+#include "Commands/PrivMsg.hpp"
+#include "Commands/Notice.hpp"
+#include "Commands/Ping.hpp"
 #include "utils.hpp"
 #include "colors.hpp"
 #include "replies.hpp"
-
 
 #ifndef MAX_CLIENTS
 # define MAX_CLIENTS 42
@@ -43,16 +48,17 @@ private:
     size_t                          _connectionCount;
     std::vector<pollfd>             _pollFds;
     struct sockaddr_in              _hint;
-    std::deque<AClient*>            _preClients;
+    // std::deque<AClient*>            _preClients;
     std::map<int, AClient*>         _clients;
-    std::map<std::string, Channel*> _channels;
+    std::map<const std::string, Channel*> _channels;
     std::map<const std::string, ICommand*> _cmds;
 
     /* Methods */
     void _initCmds( void );
+    void _removeCmd( const std::string& name );
     void _addClient( const AClient* client );
-    void _addChannel( const std::string& name );
-    void _removeClient( const std::string& name );
+    void _purgeClient(const int& fd);
+    void _addChannel( const std::string& name , const std::string& topic );
     void _removeChannel( const std::string& name );
 
     void _handlePreClientReg (void);
@@ -68,6 +74,7 @@ public:
     /* Methods */
     void init( void );
     void run( void );
+    bool nickInUse ( const std::string& nick ) const;
     void exit( void );
 
     /* Getters */
@@ -88,6 +95,10 @@ public:
     friend class User;
     friend class Nick;
     friend class Invite;
+    friend class Join;
+    friend class PrivMsg;
+    friend class Notice;
+    friend class Ping;
     friend void execCommand( Server& ircServ , std::string clientMsg , AClient* cli );
 };
 

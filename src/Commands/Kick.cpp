@@ -7,62 +7,38 @@ Kick::Kick( Server & serv ) : ICommand( serv ) {}
 
 Kick::~Kick( void ) {}
 
-static const std::vector<std::string> getArgs( const std::string& rawCmd ) {
-    std::string tmp;
-    std::vector<std::string> list;
-    std::stringstream ss( rawCmd );
-
-    for ( int i = 0; i < 3; i++ ) {
-        getline(ss, tmp, ' ');
-        list.push_back( tmp );
-        tmp.clear();
-    }
-    return ( list );
-}
-
 void Kick::initArgs( void ) {
-    const std::vector<std::string>& args = getArgs( _rawCommand );
-    std::vector<std::string>::const_iterator it = args.begin();
+    const std::vector<std::string>& args = utils::split( _rawCommand, " " );
+    if ( args.size() < 2 )
+        throw ( ERR_NEEDMOREPARAMS( _ircServ.getIp(), _client->getNick() + " KICK" ) );
+    else if ( args.size() > 3 )
+        throw ( ERR_MULTIPLEPARAMS( _ircServ.getIp(), _client->getNick() + " KICK " ) );
 
-    std::map<std::string, Channel*>::iterator chan_it = _ircServ._channels.find( *it );
+    std::map<const std::string, Channel*>::iterator chan_it = _ircServ._channels.find( args[0] );
     if ( chan_it == _ircServ._channels.end() ) {
         _client->addMsg( ERR_NOSUCHCHANNEL( _ircServ.getIp(),
-            _client->getNick() + " " +  *it ) );
+            _client->getNick() + " " +  args[0] ) );
         throw ( Kick::CmdError( "Error: [Channel doesn't exist" ) );
     }
+
     _channel = chan_it->second;
-    _kickedNick = *( ++it );
-    _reason = *( ++it );
+    _kickedNick = args[1];
+    _reason = args[2];
 }
 
 void Kick::validateArgs( void ) const {
-    if ( _rawCommand.find( "," ) != std::string::npos ) {
-        _client->addMsg( ERR_MULITPLEPARAMS( _ircServ.getIp(), _client->getNick() + " KICK " ) );
-        throw ( Kick::CmdError( "Error: [Kick found multiple names]" ) );
-    }
-
-    if ( _kickedNick.empty() ) {
-        _client->addMsg( ERR_NEEDMOREPARAMS( _ircServ.getIp(), _client->getNick() + " KICK" ) );
-        throw ( Kick::CmdError( "Error: [Kick can't find the client" ) );
-    }
-
     if ( !_channel->isOperator( _client->getNick() ) ) {
         if ( !_channel->isMember( _client->getNick() ) )
-            _client->addMsg( ERR_NOTONCHANNEL( _ircServ.getIp(),
-                _client->getNick() + " " +_channel->getName() ) );
+            throw ( ERR_NOTONCHANNEL( _ircServ.getIp(), _client->getNick() + " " +_channel->getName() ) );
         else
-            _client->addMsg( ERR_CHANOPRIVSNEEDED( _ircServ.getIp(),
-                _client->getNick() + " " + _channel->getName() ) );
-        throw ( Kick::CmdError( "Error: [User isn't a channel operator]" ) );
+            throw ( ERR_CHANOPRIVSNEEDED( _ircServ.getIp(), _client->getNick() + " " + _channel->getName() ) );
     }
 
     if ( !_channel->isMember( _kickedNick ) ) {
         if ( !_ircServ._findClientByNick( _kickedNick ) )
-            _client->addMsg( ERR_NOSUCHNICK( _ircServ.getIp(), _kickedNick ) ) ;
+            throw ( ERR_NOSUCHNICK( _ircServ.getIp(), _kickedNick ) );
         else
-            _client->addMsg( ERR_USERNOTINCHANNEL( _ircServ.getIp(),
-                _kickedNick + " " +_channel->getName() ) );
-        throw ( Kick::CmdError( "Error: [Kick can't find the client" ) );
+            throw ( ERR_USERNOTINCHANNEL( _ircServ.getIp(), _kickedNick + " " +_channel->getName() ) );
     }
 }
 
@@ -76,8 +52,10 @@ void Kick::execute( AClient* client, const std::string& rawCommand ) {
         + " " + _kickedNick + " :";
         kickResponse += _reason.empty() ? "No Reason\r\n" : _reason + "\r\n";
         _channel->kickUser( _kickedNick, kickResponse );
-        _channel->addMsg( kickResponse );
-    } catch ( const std::exception& e ) { /* TODO: print the error msg  */ }
+        _channel->addMsg( _kickedNick , kickResponse );
+    } catch ( const std::exception& e ) {
+        _client->addMsg( e.what() );
+    }
 
     clearCmd();
 }

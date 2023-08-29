@@ -43,7 +43,7 @@ bool IRCserver( int port, std::string const & pass ) {
 
 int main( int ac, char **av ) {
     if ( validParams( ac, av )) {
-        // IRCserver( atoi( av[1] ) , av[2] );
+        IRCserver( atoi( av[1] ) , av[2] );
     }
     return ( 0 );
 }
