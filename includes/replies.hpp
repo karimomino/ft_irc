@@ -18,6 +18,7 @@
 # define ERR_ERRONEUSNICKNAME( arg ) std::string(":0.0.0.0 432 ") + arg + std::string(" :Erroneous Nickname\r\n")
 # define ERR_ALREADYREGISTERED( arg ) std::string(":0.0.0.0 462 ") + arg + std::string(" :You may not reregister\r\n")
 # define ERR_PASSWDMISMATCH( arg ) std::string(":0.0.0.0 464 ") + arg + std::string(" :Password incorrect\r\n")
+# define RPL_NOTOPIC( ip ,arg ) std::string(":" + ip + " 331 ") + arg + std::string(" :No topic is set\r\n")
 # define RPL_TOPIC( arg , topic ) std::string(":0.0.0.0 332 ") + arg + std::string(" :") + topic + std::string("\r\n")
 # define RPL_TOPICWHOTIME( arg ) std::string(":0.0.0.0 333 ") + arg + std::string("\r\n")
 # define RPL_NAMREPLY( arg , users ) std::string(":0.0.0.0 353 ") + arg + std::string( " :" ) + users + std::string("\r\n")

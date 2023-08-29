@@ -15,7 +15,6 @@ void Channel::_sendNames( AClient* client ) {
 /* PUBLIC Methods */
 void Channel::addUser( AClient* client ) {
     std::string nick = client->getNick();
-    // TODO: get origin from client member function created by @niño
     std::string joinMsg( client->getOrigin() + " JOIN " + _name + "\r\n" );
     client->addMsg( joinMsg );
     if ( !_clients.size() ) {
@@ -24,7 +23,7 @@ void Channel::addUser( AClient* client ) {
     }
     else {
         client->addMsg( RPL_TOPIC( client->getNick() + " " + _name , _topic ) );
-        client->addMsg( RPL_TOPICWHOTIME( client->getNick() + " " + _name + " dan!~d@localhost 1547691506" ) ); // TODO: use time and get origin and stor in the channel at creation time
+        client->addMsg( RPL_TOPICWHOTIME( client->getNick() + " " + _name + " " + _topicAuthor + " " + utils::numToA((long)_topicSetTime) ) );
         addMsg( client->getNick() , joinMsg);
     }
     _clients.insert( std::make_pair( nick , client ) );
@@ -97,11 +96,24 @@ const std::string& Channel::getTopic( void ) const { return ( _topic ); }
 
 const std::string& Channel::getKey( void ) const { return ( _key ); }
 
+const std::string Channel::getTopicAuthor( void ) const { return this->_topicAuthor; }
+
+time_t Channel::getTopicTime( void ) const { return this->_topicSetTime; }
+
 void Channel::setName( const std::string& name ) { _name = name; }
 
 void Channel::setInviteMode( bool mode ) { _isInviteOnly = mode; }
 
 void Channel::setTopicMode( bool mode ) { _isTopicOnly = mode; }
+
+void Channel::setTopic( AClient* client, const std::string& topic ) {
+    this->_topic = topic;
+    _topicAuthor = client->getOrigin();
+    time(&_topicSetTime);
+    std::string msg = client->getOrigin() + " TOPIC " + _name + " :" + topic + "\r\n";
+    addMsg(" " , msg);
+}
+
 
 std::string names(const Channel& chan) {
     std::string aggNames;
