@@ -120,23 +120,12 @@ void Server::run( void ) {
 
             int fd = pFdsData[i].fd;
 
-            if ( fd == _socketFd) {
+            if ( fd == _socketFd)
                 _handlePreClientReg();
-                pFdsData[i].revents = 0;
-                continue;
-            }
-
-            if (pFdsData[i].revents & POLLOUT && fd != _socketFd && _clients[fd]->getQueueSize() ) {
+            else if (pFdsData[i].revents & POLLOUT && fd != _socketFd && _clients[fd]->getQueueSize() )
                 _handleClientSend( fd );
-                pFdsData[i].revents = 0;
-                continue;
-            }
-
-            if (pFdsData[i].revents & POLLIN && fd != _socketFd) {
+            else if (pFdsData[i].revents & POLLIN && fd != _socketFd)
                 _handleClientRecv( fd );
-                pFdsData[i].revents = 0;
-                continue;
-            }
 
             pFdsData[i].revents = 0;
         }

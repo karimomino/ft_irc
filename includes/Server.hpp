@@ -97,8 +97,10 @@ public:
     friend class Invite;
     friend class Join;
     friend class PrivMsg;
+    friend class Mode;
     friend class Notice;
     friend class Ping;
+    friend class Topic;
     friend void execCommand( Server& ircServ , std::string clientMsg , AClient* cli );
 };
 
