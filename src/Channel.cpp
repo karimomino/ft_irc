@@ -96,7 +96,7 @@ bool  Channel::isInvited( const std::string& nick ) const {
 }
 
 bool  Channel::isMember( const std::string& nick ) const {
-    if ( _clients.find( nick ) == _clients.end() )
+    if ( _clients.find( nick ) == _clients.end() && !isOperator( nick ) )
 	return( false );
     return ( true );
 }
@@ -145,10 +145,8 @@ void Channel::setTopic( AClient* client, const std::string& topic ) {
 std::string names(const Channel& chan) {
     std::string aggNames;
 
-    for (std::map<std::string , AClient*>::const_iterator it = chan._operators.begin(); it != chan._operators.end(); it++) {
+    for (std::map<std::string , AClient*>::const_iterator it = chan._operators.begin(); it != chan._operators.end(); it++)
         aggNames += it->first + " ";
-        std::cout << "NICKKKKK [" << it->first << "]" << std::endl;
-    }
     for (std::map<std::string , AClient*>::const_iterator it = chan._clients.begin(); it != chan._clients.end(); it++)
         aggNames += it->first + " ";
     aggNames.erase(aggNames.end() - 1);

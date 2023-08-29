@@ -23,7 +23,7 @@
 # define ERR_PASSWDMISMATCH( arg ) std::string(":0.0.0.0 464 ") + arg + std::string(" :Password incorrect\r\n")
 # define ERR_INVITEONLYCHAN( arg ) std::string(":0.0.0.0 473 ") + arg + std::string(" :Cannot join channel (+i) - invite only\r\n")
 # define ERR_BADCHANNELKEY( arg ) std::string(":0.0.0.0 475 ") + arg + std::string(" :Cannot join channel (+k) - bad key\r\n")
-# define ERR_CHANOPRIVSNEEDED( ip, arg ) ( ":" + ip + " 482 " + (std::string)arg + ":You're not a channel operator\r\n")
+# define ERR_CHANOPRIVSNEEDED( ip, arg ) ( ":" + ip + " 482 " + (std::string)arg + " :You're not a channel operator\r\n")
 
 # define ERR_UMODEUNKNOWNFLAG( ip, arg ) ( ":" + ip + " 501 " + (std::string)arg + ":Unknown MODE flag\r\n")
 # define ERR_INVALIDKEY( ip, arg ) ( ":" + ip + " 525 " + (std::string)arg + ":Key is not well-formed\r\n")
