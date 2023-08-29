@@ -83,7 +83,6 @@ bool Mode::keyMode( bool state, std::string& arg ) {
     if ( state == true && arg.empty() && arg.find( " " ) != std::string::npos ) {
         _client->addMsg( ERR_INVALIDKEY( _ircServ.getIp(),
             _client->getNick() + " " + _chan->getName() ) );
-        std::cout << "KEY MODE FIRST FALSE" << std::endl;
         return ( false );
     }
 
@@ -91,26 +90,22 @@ bool Mode::keyMode( bool state, std::string& arg ) {
         _chan->setKey( arg );
     else if ( arg.empty() )
         arg = _chan->getKey();
-    else if ( arg != _chan->getKey() ) {
-        std::cout << "KEY MODE SECOND FALSE" << std::endl;
+    else if ( arg != _chan->getKey() )
         return ( false );
-    }
 
     _chan->setKeyMode( state );
     return ( true );
 }
 
 bool Mode::opMode( bool state, std::string& arg ) {
-    if ( state && arg.empty() ) {
-        std::cout << "OP MODE FIRST FALSE" << std::endl;
+    if ( state && arg.empty() )
         return ( false );
-    } else if ( !state && !_chan->isOperator( arg ) )
+    else if ( !state && !_chan->isOperator( arg ) )
         return ( false );
 
     if ( !_chan->isMember( arg ) && !_chan->isOperator( arg ) ) {
         _client->addMsg( ERR_USERNOTINCHANNEL( _ircServ.getIp(),
             _client->getNick() + " " + arg + " " + _chan->getName() ) );
-        std::cout << "OP MODE SECOND FALSE" << std::endl;
         return ( false );
     }
     if ( state )
