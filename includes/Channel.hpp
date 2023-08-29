@@ -9,6 +9,8 @@ private:
     std::string _name;
     std::string _topic;
     std::string _key;
+    std::string _topicAuthor;
+    time_t      _topicSetTime;
     bool        _isInviteOnly;
     bool        _isTopicOnly;
     bool        _isKeyOnly;
@@ -42,11 +44,15 @@ public:
     const std::string& getName( void ) const;
     const std::string& getTopic( void ) const;
     const std::string& getKey( void ) const;
+    const std::string getTopicAuthor( void ) const;
+    time_t getTopicTime( void ) const;
+    const std::string getTopicReply() const;
 
     /* Setters */
     void setName( const std::string& );
     void setKey( const std::string& );
     void setInviteMode( bool );
     void setTopicMode( bool );
+    void setTopic( AClient* client, const std::string& topic );
     void setKeyMode( bool );
 };

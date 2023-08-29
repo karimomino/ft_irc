@@ -99,6 +99,7 @@ public:
     friend class Mode;
     friend class Notice;
     friend class Ping;
+    friend class Topic;
     friend void execCommand( Server& ircServ , std::string clientMsg , AClient* cli );
 };
 
