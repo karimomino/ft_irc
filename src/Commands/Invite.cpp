@@ -23,13 +23,6 @@ void Invite::validateArgs( void ) const {
     if ( _rawCommand.find( "," ) != std::string::npos )
         throw ( std::runtime_error( ERR_MULTIPLEPARAMS( _ircServ.getIp(), _client->getNick() + " INVITE " ) ) );
 
-    if ( !_channel->isMember( _client->getNick() ) )
-        throw ( std::runtime_error( ERR_NOTONCHANNEL( _ircServ.getIp(),
-            _client->getNick() + " " + _channel->getName() ) ) );
-    else if ( !_channel->isOperator( _client->getNick() ) && _channel->isInviteOnly() )
-        throw ( std::runtime_error( ERR_CHANOPRIVSNEEDED( _ircServ.getIp(),
-            _client->getNick() + " " + _channel->getName() ) ) );
-
     if ( _invitedNick.empty() )
         throw ( std::runtime_error( ERR_NEEDMOREPARAMS( _ircServ.getIp(), _client->getNick() + " INVITE " ) ) );
     else if ( _channel->isMember( _invitedNick ) )
@@ -37,6 +30,13 @@ void Invite::validateArgs( void ) const {
             _client->getNick() + " " + _invitedNick + " " + _channel->getName() ) ) );
     else if ( !_invitedClient )
         throw ( std::runtime_error( ERR_NOSUCHNICK( _ircServ.getIp(), _invitedNick ) ) );
+
+    if ( !_channel->isMember( _client->getNick() ) )
+        throw ( std::runtime_error( ERR_NOTONCHANNEL( _ircServ.getIp(),
+            _client->getNick() + " " + _channel->getName() ) ) );
+    else if ( _channel->isInviteOnly() && !_channel->isOperator( _client->getNick() ) )
+        throw ( std::runtime_error( ERR_CHANOPRIVSNEEDED( _ircServ.getIp(),
+            _client->getNick() + " " + _channel->getName() ) ) );
 }
 
 void Invite::execute( AClient* client, const std::string & rawCommand ){

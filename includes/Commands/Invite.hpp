@@ -23,6 +23,4 @@ public:
 
     void execute( AClient *, const std::string & rawCommand );
     void clearCmd( void );
-
-    friend class Server;
 };
