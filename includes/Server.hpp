@@ -94,6 +94,7 @@ public:
     friend class Pass;
     friend class User;
     friend class Nick;
+    friend class Invite;
     friend class Join;
     friend class PrivMsg;
     friend class Mode;
