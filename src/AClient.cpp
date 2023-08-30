@@ -53,4 +53,6 @@ void AClient::setUser( const std::string& user ) { _user = user; }
 
 void AClient::setPurge( const bool& purge ) { _purge = purge; }
 
+std::vector<std::string> AClient::getChannels( void ) const { return ( _channels ); }
 
+void AClient::addChannel( const std::string& chanName ) { _channels.push_back( chanName ); }

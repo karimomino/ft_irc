@@ -50,8 +50,8 @@ void Join::execute( AClient* client, const std::string & rawCommand ){
         if ( allowedToJoin(chan, client , keyPair) ) {
             chan->addUser( client );
         }
+        client->addChannel( keyPair.first );
     }
 }
-void Join::clearCmd( void ) {
 
-}
+void Join::clearCmd( void ) {}

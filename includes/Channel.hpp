@@ -27,6 +27,7 @@ public:
 
     /* PUBLIC Methods */
     void addUser( AClient* client );
+    void removeUser( const std::string& nick );
     void promoteClient( std::string& nick );
     void demoteClient( std::string& nick );
     void kickUser( const std::string& nick, const std::string& msg );
@@ -46,7 +47,8 @@ public:
     const std::string& getKey( void ) const;
     const std::string getTopicAuthor( void ) const;
     time_t getTopicTime( void ) const;
-    const std::string getTopicReply() const;
+    const std::string getTopicReply( void ) const;
+    size_t getUsersCount( void ) const;
 
     /* Setters */
     void setName( const std::string& );

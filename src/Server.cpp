@@ -195,9 +195,19 @@ void Server::_handleClientSend(const int& socket) {
  */
 void Server::_purgeClient(const int& fd) {
     std::vector<pollfd>::iterator poll_it;
+    const std::string clientNick = _clients[fd]->getNick();
+    const std::vector<std::string> chanList = _clients[fd]->getChannels();
     delete _clients[fd];
     _clients.erase(fd);
-    
+    for ( std::vector<std::string>::const_iterator it = chanList.begin(); it != chanList.end(); it++ ) {
+        _channels[*it]->removeUser( clientNick );
+        std::cout << "count: [" << _channels[*it]->getUsersCount() << "]" << std::endl;
+        if ( !_channels[*it]->getUsersCount() ) {
+            delete _channels[*it];
+            _channels.erase( *it );
+        }
+    }
+
     for (poll_it = _pollFds.begin(); poll_it != _pollFds.end(); poll_it++) {
         if (poll_it->fd == fd ) {
             _pollFds.erase(poll_it);
@@ -387,10 +397,10 @@ void Server::exit( void ) {
 
     for (client_it = _clients.begin() ; client_it != _clients.end() ; client_it++)
         delete _clients[client_it->first];
-    
+
     for (chan_it = _channels.begin() ; chan_it != _channels.end() ; chan_it++)
         delete _channels[chan_it->first];
-    
+
     for (cmd_it = _cmds.begin() ; cmd_it != _cmds.end() ; cmd_it++)
         delete _cmds[cmd_it->first];
 }

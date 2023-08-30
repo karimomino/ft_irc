@@ -37,4 +37,3 @@ Client::~Client( void ) {
     close( getSocketFd() );
     std::cout << "Client destructor called" << std::endl;
 }
-

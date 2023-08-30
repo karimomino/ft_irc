@@ -30,6 +30,16 @@ void Channel::addUser( AClient* client ) {
     _sendNames( client );
 }
 
+void Channel::removeUser( const std::string& nick ) {
+    std::map<std::string, AClient*>::iterator it;
+    it = _clients.find( nick );
+    if ( it != _clients.end() )
+        _clients.erase( it );
+    it = _operators.find( "@" + nick );
+    if ( it != _operators.end() )
+        _operators.erase( it );
+}
+
 void Channel::promoteClient( std::string& nick ) {
      std::map<std::string, AClient*>::iterator it = _clients.find( nick );
     if ( it != _clients.end() ) {
@@ -122,6 +132,8 @@ const std::string& Channel::getKey( void ) const { return ( _key ); }
 const std::string Channel::getTopicAuthor( void ) const { return this->_topicAuthor; }
 
 time_t Channel::getTopicTime( void ) const { return this->_topicSetTime; }
+
+size_t Channel::getUsersCount( void ) const { return ( _clients.size() + _operators.size() ); }
 
 void Channel::setName( const std::string& name ) { _name = name; }
 
