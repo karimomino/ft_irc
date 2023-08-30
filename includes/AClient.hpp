@@ -19,6 +19,7 @@ protected:
     std::queue<std::string> _msgs;
 
 public:
+    std::string partialCmd;
     AClient( int socketFd, struct sockaddr_in* hint );
     AClient( const AClient& original );
     virtual ~AClient() = 0;
