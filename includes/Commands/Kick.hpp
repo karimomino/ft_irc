@@ -11,17 +11,16 @@ private:
     AClient*    _client;
     Channel*    _channel;
     std::string _kickedNick;
-    std::string _rawCommand;
     std::string _reason;
 
-    void initArgs( void ) ;
+    void initArgs( const std::string& ) ;
     void validateArgs( void ) const;
 
 public:
     Kick( Server& ircServ );
     ~Kick();
 
-    void execute( AClient *, const std::string & rawCommand );
+    void execute( AClient*, const std::string & rawCommand );
     void clearCmd( void );
 
     friend class Server;
