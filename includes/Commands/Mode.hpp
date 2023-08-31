@@ -19,7 +19,6 @@ class Mode: public ICommand {
 private:
     Channel* _chan;
     AClient* _client;
-    std::map<char, bool>    _isExecuted;
     std::map<char, modePtr> _mPtr;
 
     bool inviteMode( bool, std::string& arg );

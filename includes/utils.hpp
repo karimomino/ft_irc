@@ -5,7 +5,7 @@
 #include <sstream>
 
 namespace utils {
-void trim( std::string& str );
+void trim( std::string& str, const std::string& delm );
 std::vector<std::string> split( std::string str , std::string delm);
 template <typename T> std::string numToA(T num){
     std::stringstream ss;

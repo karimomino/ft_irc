@@ -5,10 +5,6 @@
 #include "utils.hpp"
 
 Mode::Mode( Server& ircServ ) : ICommand( ircServ ), _chan( NULL ), _client( NULL ) {
-    _isExecuted['i'] = false;
-    _isExecuted['t'] = false;
-    _isExecuted['k'] = false;
-    _isExecuted['o'] = false;
     _mPtr.insert( std::make_pair( 'i', &Mode::inviteMode ) );
     _mPtr.insert( std::make_pair( 't', &Mode::topicMode ) );
     _mPtr.insert( std::make_pair( 'k', &Mode::keyMode ) );
@@ -130,16 +126,15 @@ pSS Mode::executeMode( vec_pCS modes ) {
             std::map<char, modePtr>::iterator fun = _mPtr.find( modes_it->first );
             if ( fun == _mPtr.end() )
                 _client->addMsg( ERR_UMODEUNKNOWNFLAG( _ircServ.getIp(), _client->getNick() ) );
-            else if ( !_isExecuted[modes_it->first] && (this->*fun->second)( state, modes_it->second ) ) {
+            else if ( (this->*fun->second)( state, modes_it->second ) ) {
                 response.first += modes_it->first;
                 response.second += modes_it->second + " ";
-                _isExecuted[modes_it->first] = true;
             }
         }
     }
-    utils::trim( response.second );
+    utils::trim( response.second, " " );
     if ( !response.first.empty() && std::string( "+-" ).find(
-        response.first[ response.first.length() - 1] ) != std::string::npos )
+            response.first[ response.first.length() - 1] ) != std::string::npos )
         response.first.erase(response.first.end() - 1);
     return ( response );
 }
@@ -153,7 +148,7 @@ void Mode::execute( AClient* client, const std::string & rawCommand ) {
         _chan = _ircServ._channels.find( getChanName( rawCommand ) )->second;
         vec_pCS  modes = getModes( rawCommand );
         pSS response = executeMode( modes );
-        if ( response.first.find_last_not_of( "+-" ) != std::string::npos ) {
+        if ( !response.first.empty() ) {
             std::string msg = client->getOrigin() + " MODE " + _chan->getName() + " " + response.first;
             msg += response.second.empty() ? "\r\n" : " " + response.second + "\r\n";
             _chan->addMsg( "", msg );
@@ -167,8 +162,4 @@ void Mode::execute( AClient* client, const std::string & rawCommand ) {
 void Mode::clearCmd( void ) {
     _chan = NULL;
     _client = NULL;
-    _isExecuted['i'] = false;
-    _isExecuted['t'] = false;
-    _isExecuted['k'] = false;
-    _isExecuted['o'] = false;
 }
