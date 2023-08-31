@@ -108,24 +108,23 @@ void Server::init( void ) {
  * 
  */
 void Server::run( void ) {
-    pollfd* pFdsData;
+
     while (!_serverEnd) {
-        pFdsData = _pollFds.data();
-        poll(pFdsData, _pollFds.size(), -1);
+        poll(_pollFds.data(), _pollFds.size(), -1);
 
         for (size_t i = 0; i < _pollFds.size(); i++) {
-            if (pFdsData[i].revents == 0)
+            if (_pollFds[i].revents == 0)
                 continue;
 
-            int fd = pFdsData[i].fd;
+            int fd = _pollFds[i].fd;
             if ( fd == _socketFd)
                 _handlePreClientReg();
-            else if (pFdsData[i].revents & POLLOUT && fd != _socketFd && _clients[fd]->getQueueSize() )
+            else if (_pollFds[i].revents & POLLOUT && fd != _socketFd && _clients[fd]->getQueueSize() )
                 _handleClientSend( fd );
-            else if (pFdsData[i].revents & POLLIN && fd != _socketFd)
+            else if (_pollFds[i].revents & POLLIN && fd != _socketFd)
                 _handleClientRecv( fd );
 
-            pFdsData[i].revents = 0;
+            _pollFds[i].revents = 0;
         }
     }
 }
@@ -167,7 +166,7 @@ void Server::_handlePreClientReg( void ) {
  * @note     - purge the client from the server
  * 
  */
-void Server::_handleClientSend(const int& socket) {
+void Server::_handleClientSend(int socket) {
     AClient &cli= *_clients[socket];
 
     std::cout << "[ " << GREEN << "ATTEMPTING TO SEND - " << cli.getNick() << " " << RESET << "]" << std::endl;
@@ -261,8 +260,8 @@ void Server::_handleClientRecv(const int& socket) {
             memset(buff, 0, 1024);
         } while (rcv > 0);
 
-        // std::cout << "[" << BLUE << "RECEIVED" << RESET << "]" <<std::endl << partialMsg << std::endl;
-        // std::cout <<"[" << BLUE << "END RECEIVE" << RESET << "]\n" << std::endl;
+        std::cout << "[" << BLUE << "RECEIVED" << RESET << "]" <<std::endl << _clients[socket]->partialCmd << std::endl;
+        std::cout <<"[" << BLUE << "END RECEIVE" << RESET << "]\n" << std::endl;
 
         _clients[socket]->partialCmd = findCommands(fullMsg ,_clients[socket]->partialCmd);
         execCommand( *this , fullMsg , _clients[socket]);
@@ -345,7 +344,7 @@ void Server::_addClient( const AClient* client ) {
  * @param topic > topic of the channel to create
  */
 void Server::_addChannel( const std::string& name , const std::string& topic ) {
-	Channel *newChan = new Channel( name , topic );
+	Channel *newChan = new Channel( *this, name , topic );
 	_channels.insert( std::make_pair( name , newChan ) );
 }
 

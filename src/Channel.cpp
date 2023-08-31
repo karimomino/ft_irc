@@ -1,7 +1,7 @@
 #include "Channel.hpp"
 
-Channel::Channel( const std::string& name, const std::string& topic ) :
-    _name( name ), _topic( topic ), _key( "" ), _isInviteOnly( false ), _isTopicOnly( true ), _isKeyOnly( false ) {}
+Channel::Channel( Server& ircServ, const std::string& name, const std::string& topic ):
+    _name( name ), _topic( topic ), _key( "" ),_ircServ(ircServ), _isInviteOnly( false ), _isTopicOnly( true ), _isKeyOnly( false )  {}
 
 Channel::~Channel() {}
 
@@ -22,8 +22,12 @@ void Channel::addUser( AClient* client ) {
         client->addMsg( ":0.0.0.0 MODE " + _name + " +t\r\n" );
     }
     else {
-        client->addMsg( RPL_TOPIC( client->getNick() + " " + _name , _topic ) );
-        client->addMsg( RPL_TOPICWHOTIME( client->getNick() + " " + _name + " " + _topicAuthor + " " + utils::numToA((long)_topicSetTime) ) );
+        if (_topic.empty())
+            client->addMsg( RPL_NOTOPIC(_ircServ.getIp() , client->getNick() + " " + getName()) );
+        else {
+            client->addMsg( RPL_TOPIC( client->getNick() + " " + _name , _topic ) );
+            client->addMsg( RPL_TOPICWHOTIME( client->getNick() + " " + _name + " " + _topicAuthor + " " + utils::numToA((long)_topicSetTime) ) );
+        }
         addMsg( client->getNick() , joinMsg);
         _clients.insert( std::make_pair( nick , client ) );
     }

@@ -34,7 +34,7 @@ public:
     const std::string& getIp( void ) const;
     const std::string  getOrigin( void ) const;
     const int& getSocketFd( void ) const;
-    const bool& getPurge( void ) const;
+    bool getPurge( void ) const;
     int getQueueSize( void ) const;
     const std::string& getFirstMsg( void) const;
     std::vector<std::string> getChannels( void ) const;

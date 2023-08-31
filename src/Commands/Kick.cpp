@@ -21,6 +21,7 @@ void Kick::initArgs( const std::string& rawCommand ) {
 
     _channel = chan_it->second;
     _kickedNick = args[1];
+    if ( !args[2].empty() )
     _reason = args[2].substr( 1, args[2].length() - 1 );
 }
 
