@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ommohame < ommohame@student.42abudhabi.ae> +#+  +:+       +#+        */
+/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 18:23:28 by kamin             #+#    #+#             */
-/*   Updated: 2023/08/18 17:52:35 by ommohame         ###   ########.fr       */
+/*   Updated: 2023/08/30 19:03:53 by kamin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,20 +28,36 @@ bool validParams( int ac, char **av ) {
     return ( valid_params );
 }
 
+
+Server* serv;
+
+static void sigHandler(int sigNum) {
+    serv->exit(sigNum);
+}
+
 bool IRCserver( int port, std::string const & pass ) {
     Server ircserver = Server( port, pass );
+    serv = &ircserver;
     try {
         ircserver.init();
     } catch ( std::exception const & e ) {
         std::cerr << "[" << e.what() << "]" << std::endl;
     }
     ircserver.run();
-    // ircserver.end();
 
     return ( true );
 }
 
 int main( int ac, char **av ) {
+    struct sigaction sigIntHandler;
+
+   sigIntHandler.sa_handler = sigHandler;
+   sigemptyset(&sigIntHandler.sa_mask);
+   sigIntHandler.sa_flags = 0;
+
+    if (sigaction(SIGINT, &sigIntHandler, NULL) == -1)
+        std::cout << "problem with handler" << std::endl; 
+        
     if ( validParams( ac, av )) {
         IRCserver( atoi( av[1] ) , av[2] );
     }
