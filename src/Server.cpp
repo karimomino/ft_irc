@@ -195,9 +195,19 @@ void Server::_handleClientSend(const int& socket) {
  */
 void Server::_purgeClient(const int& fd) {
     std::vector<pollfd>::iterator poll_it;
+    const std::string clientNick = _clients[fd]->getNick();
+    const std::vector<std::string> chanList = _clients[fd]->getChannels();
     delete _clients[fd];
     _clients.erase(fd);
-    
+    for ( std::vector<std::string>::const_iterator it = chanList.begin(); it != chanList.end(); it++ ) {
+        _channels[*it]->removeUser( clientNick );
+        std::cout << "count: [" << _channels[*it]->getUsersCount() << "]" << std::endl;
+        if ( !_channels[*it]->getUsersCount() ) {
+            delete _channels[*it];
+            _channels.erase( *it );
+        }
+    }
+
     for (poll_it = _pollFds.begin(); poll_it != _pollFds.end(); poll_it++) {
         if (poll_it->fd == fd ) {
             _pollFds.erase(poll_it);
@@ -206,6 +216,24 @@ void Server::_purgeClient(const int& fd) {
     }
 }
 
+static std::string findCommands(std::string& fullMsg , std::string input) {
+    size_t firstNL = input.find("\n");
+    size_t firstRNL = input.find("\r\n");
+    // size_t lastPos;
+
+    while ( firstNL != std::string::npos || firstRNL != std::string::npos ) {
+        if ( firstNL < firstRNL ) {
+            fullMsg += input.substr(0 , firstNL) + "\r\n";
+            input.erase(0 , firstNL + 1);
+        } else {
+            fullMsg += input.substr(0 , firstRNL + 2);
+            input.erase(0 , firstRNL + 2);
+        }
+        firstRNL = input.find("\r\n", 1);
+        firstNL = input.find("\n", 1);
+    }
+    return (input);
+}
 
 /**
  * @brief This function is triggered when poll detects that the client is 
@@ -230,20 +258,22 @@ void Server::_handleClientRecv(const int& socket) {
     int rcv = recv(socket, buff, 1024, MSG_DONTWAIT);
 
     if (rcv > 0 ) {
-        fullMsg += buff;
+        _clients[socket]->partialCmd += buff;
         memset(buff, 0, 1024);
         do
         {
             rcv = recv(socket, buff, 1024, MSG_DONTWAIT);
-            fullMsg += buff;
+            _clients[socket]->partialCmd += buff;
             memset(buff, 0, 1024);
         } while (rcv > 0);
 
-        std::cout << "[" << BLUE << "RECEIVED" << RESET << "]" <<std::endl << fullMsg << std::endl;
-        std::cout <<"[" << BLUE << "END RECEIVE" << RESET << "]\n" << std::endl;
+        // std::cout << "[" << BLUE << "RECEIVED" << RESET << "]" <<std::endl << partialMsg << std::endl;
+        // std::cout <<"[" << BLUE << "END RECEIVE" << RESET << "]\n" << std::endl;
 
+        _clients[socket]->partialCmd = findCommands(fullMsg ,_clients[socket]->partialCmd);
         execCommand( *this , fullMsg , _clients[socket]);
     } else if ( rcv == 0) {
+        std::cout << "sending purge" << std::endl;
         _purgeClient(socket);
     }
 }
@@ -383,18 +413,6 @@ void Server::_removeChannel( const std::string& name ) {
 void Server::exit( int sigNum ) {
     if (sigNum == SIGINT)
         _serverEnd = true;
-    // std::map<int, AClient*>::iterator client_it;
-    // std::map<const std::string, Channel*>::iterator chan_it;
-    // std::map<const std::string, ICommand*>::iterator cmd_it;
-
-    // for (client_it = _clients.begin() ; client_it != _clients.end() ; client_it++)
-    //     delete _clients[client_it->first];
-    
-    // for (chan_it = _channels.begin() ; chan_it != _channels.end() ; chan_it++)
-    //     delete _channels[chan_it->first];
-    
-    // for (cmd_it = _cmds.begin() ; cmd_it != _cmds.end() ; cmd_it++)
-    //     delete _cmds[cmd_it->first];
 }
 
 /**

@@ -65,7 +65,7 @@ elliot:
 $(NAME)		:	$(OBJS) $(HEADERS) elliot
 				@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
 				
-debug		:	CXXFLAGS+= -DDEBUG -g3 -fsanitize=address
+debug		:	CXXFLAGS+= -DDEBUG -g3
 
 debug		:	fclean $(NAME)
 

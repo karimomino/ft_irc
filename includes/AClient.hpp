@@ -16,9 +16,11 @@ protected:
     std::string _pass;
     bool        _purge;
     std::string _ip;
-    std::queue<std::string> _msgs;
+    std::queue<std::string>  _msgs;
+    std::vector<std::string> _channels;
 
 public:
+    std::string partialCmd;
     AClient( int socketFd, struct sockaddr_in* hint );
     AClient( const AClient& original );
     virtual ~AClient() = 0;
@@ -35,11 +37,13 @@ public:
     const bool& getPurge( void ) const;
     int getQueueSize( void ) const;
     const std::string& getFirstMsg( void) const;
+    std::vector<std::string> getChannels( void ) const;
 
     /* Setters */
     void setNick( const std::string& );
     void setPass( const std::string& );
     void setUser( const std::string& );
     void setPurge( const bool& purge );
+    void addChannel( const std::string& );
 };
 
