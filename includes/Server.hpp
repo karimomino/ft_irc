@@ -76,6 +76,7 @@ public:
     void init( void );
     void run( void );
     bool nickInUse ( const std::string& nick ) const;
+    void removeChannel( const std::string& );
     void exit( int sigNum );
 
     /* Getters */

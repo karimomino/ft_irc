@@ -24,10 +24,10 @@ Server::~Server( void ) {
 
     for (client_it = _clients.begin() ; client_it != _clients.end() ; client_it++)
         delete _clients[client_it->first];
-    
+
     for (chan_it = _channels.begin() ; chan_it != _channels.end() ; chan_it++)
         delete _channels[chan_it->first];
-    
+
     for (cmd_it = _cmds.begin() ; cmd_it != _cmds.end() ; cmd_it++)
         delete _cmds[cmd_it->first];
 }
@@ -111,7 +111,6 @@ void Server::run( void ) {
     pollfd* pFdsData;
     while (!_serverEnd) {
         pFdsData = _pollFds.data();
-
         poll(pFdsData, _pollFds.size(), -1);
 
         for (size_t i = 0; i < _pollFds.size(); i++) {
@@ -119,7 +118,6 @@ void Server::run( void ) {
                 continue;
 
             int fd = pFdsData[i].fd;
-
             if ( fd == _socketFd)
                 _handlePreClientReg();
             else if (pFdsData[i].revents & POLLOUT && fd != _socketFd && _clients[fd]->getQueueSize() )
@@ -129,7 +127,6 @@ void Server::run( void ) {
 
             pFdsData[i].revents = 0;
         }
-
     }
 }
 
@@ -200,12 +197,10 @@ void Server::_purgeClient(const int& fd) {
     delete _clients[fd];
     _clients.erase(fd);
     for ( std::vector<std::string>::const_iterator it = chanList.begin(); it != chanList.end(); it++ ) {
-        _channels[*it]->removeUser( clientNick );
-        std::cout << "count: [" << _channels[*it]->getUsersCount() << "]" << std::endl;
-        if ( !_channels[*it]->getUsersCount() ) {
-            delete _channels[*it];
-            _channels.erase( *it );
-        }
+        std::map<const std::string, Channel*>::iterator chan_it = _channels.find( *it );
+        chan_it->second->removeUser( clientNick );
+        if ( !chan_it->second->getUsersCount() )
+            removeChannel( *it );
     }
 
     for (poll_it = _pollFds.begin(); poll_it != _pollFds.end(); poll_it++) {
@@ -219,7 +214,6 @@ void Server::_purgeClient(const int& fd) {
 static std::string findCommands(std::string& fullMsg , std::string input) {
     size_t firstNL = input.find("\n");
     size_t firstRNL = input.find("\r\n");
-    // size_t lastPos;
 
     while ( firstNL != std::string::npos || firstRNL != std::string::npos ) {
         if ( firstNL < firstRNL ) {
@@ -295,7 +289,7 @@ AClient* Server::_findClientByNick( const std::string& nick ) const {
 
 /**
  * @brief This function is used in `_execCommand` function as a helper to find the command name to execute & its args.
- * 
+ *
  * @param rawCommand > full command message recieved from the client
  * @return std::pair<std::string const , std::string>
  * @note `pair.first` = command name | `pair.second` = command arguments
@@ -308,26 +302,6 @@ static std::pair<std::string const , std::string> extractCommand( std::string ra
     getline(ss , command , ' ');
     getline(ss , commandArgs);
     return (std::make_pair(command , commandArgs));
-}
-
-/**
- * @brief This function will check the command name to see if its in the allowed commands by the server.
- * 
- * @param cmd > command name
- * @return `true` if command is allowed by server | 
- * @return `false` if command is not allowed by server
- */
-static bool isValidCommand( std::string cmd ) {
-    bool isValid = false;
-    std::string cmdList[] = {"JOIN" , "INVITE" , "KICK" , "MODE" , "PASS", "TOPIC", "USER" , "PRIVMSG" , "NOTICE" , "NICK" , "PING" , "NOTICE" };
-    for (size_t i = 0; i < sizeof(cmdList)/sizeof(cmdList[0]); i++)
-    {
-        if ( !cmdList[i].compare(cmd) ) {
-            isValid = true;
-            break;
-        }
-    }
-    return ( isValid );
 }
 
 /**
@@ -346,7 +320,8 @@ void execCommand( Server& ircServ , std::string clientMsg , AClient* cli) {
     for (std::vector<std::string>::iterator it = commands.begin(); it != commands.end(); it++) {
         std::pair<std::string , std::string> cmdParts = extractCommand(*it);
 
-        if ( isValidCommand(cmdParts.first) && !cli->getPurge() )
+        std::map<const std::string, ICommand*>::iterator cmd_it = ircServ._cmds.find( cmdParts.first );
+        if ( cmd_it != ircServ._cmds.end() )
             ircServ._cmds[cmdParts.first]->execute( cli , cmdParts.second);
     }
 }
@@ -413,6 +388,14 @@ void Server::_removeChannel( const std::string& name ) {
 void Server::exit( int sigNum ) {
     if (sigNum == SIGINT)
         _serverEnd = true;
+}
+
+void Server::removeChannel( const std::string& chanName ) {
+    std::map<const std::string, Channel*>::iterator chan_it;
+    if ( ( chan_it = _channels.find( chanName ) ) != _channels.end() ) {
+        delete chan_it->second;
+        _channels.erase( chan_it );
+    }
 }
 
 /**

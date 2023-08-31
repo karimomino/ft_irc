@@ -56,22 +56,6 @@ void Channel::demoteClient( std::string& nick ) {
     }
 }
 
-void Channel::kickUser( const std::string& nick, const std::string& msg ) {
-    std::map<std::string, AClient*>::iterator it;
-
-    it = _clients.find( nick );
-    if ( it != _clients.end() ) {
-	it->second->addMsg( msg );
-	_clients.erase( it );
-    }
-
-    it = _operators.find( "@" + nick );
-    if ( it != _operators.end() ) {
-	it->second->addMsg( msg );
-	_clients.erase( it );
-    }
-}
-
 void Channel::addInvitation( const std::string& nick ) {
     if ( !isInvited( nick ) )
 	_invitations.push_back( nick );
