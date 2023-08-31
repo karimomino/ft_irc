@@ -140,7 +140,7 @@ pSS Mode::executeMode( vec_pCS modes ) {
     utils::trim( response.second );
     if ( !response.first.empty() && std::string( "+-" ).find(
         response.first[ response.first.length() - 1] ) != std::string::npos )
-        response.first.pop_back();
+        response.first.erase(response.first.end() - 1);
     return ( response );
 }
 

@@ -111,7 +111,6 @@ void Server::run( void ) {
     pollfd* pFdsData;
     while (!_serverEnd) {
         pFdsData = _pollFds.data();
-
         poll(pFdsData, _pollFds.size(), -1);
 
         for (size_t i = 0; i < _pollFds.size(); i++) {
@@ -119,7 +118,6 @@ void Server::run( void ) {
                 continue;
 
             int fd = pFdsData[i].fd;
-
             if ( fd == _socketFd)
                 _handlePreClientReg();
             else if (pFdsData[i].revents & POLLOUT && fd != _socketFd && _clients[fd]->getQueueSize() )
@@ -129,7 +127,6 @@ void Server::run( void ) {
 
             pFdsData[i].revents = 0;
         }
-
     }
 }
 
@@ -199,11 +196,12 @@ void Server::_purgeClient(const int& fd) {
     const std::vector<std::string> chanList = _clients[fd]->getChannels();
     delete _clients[fd];
     _clients.erase(fd);
-    for ( std::vector<std::string>::const_iterator it = chanList.begin(); it != chanList.end(); it++ ) {
-        _channels[*it]->removeUser( clientNick );
-        if ( !_channels[*it]->getUsersCount() ) {
-            delete _channels[*it];
-            _channels.erase( *it );
+    for ( std::vector<std::string>::const_iterator names_it = chanList.begin(); names_it != chanList.end(); names_it++ ) {
+        std::map<const std::string, Channel*>::iterator chan_it = _channels.find( *names_it );
+        chan_it->second->removeUser( clientNick );
+        if ( !_channels[*names_it]->getUsersCount() ) {
+            delete chan_it->second;
+            _channels.erase( chan_it );
         }
     }
 
@@ -218,7 +216,6 @@ void Server::_purgeClient(const int& fd) {
 static std::string findCommands(std::string& fullMsg , std::string input) {
     size_t firstNL = input.find("\n");
     size_t firstRNL = input.find("\r\n");
-    // size_t lastPos;
 
     while ( firstNL != std::string::npos || firstRNL != std::string::npos ) {
         if ( firstNL < firstRNL ) {
@@ -294,7 +291,7 @@ AClient* Server::_findClientByNick( const std::string& nick ) const {
 
 /**
  * @brief This function is used in `_execCommand` function as a helper to find the command name to execute & its args.
- * 
+ *
  * @param rawCommand > full command message recieved from the client
  * @return std::pair<std::string const , std::string>
  * @note `pair.first` = command name | `pair.second` = command arguments
