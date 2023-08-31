@@ -11,6 +11,7 @@
 #include <sstream>
 #include <cstring>
 #include <vector>
+#include <csignal>
 
 #include "AClient.hpp"
 #include "Client.hpp"
@@ -75,8 +76,8 @@ public:
     void init( void );
     void run( void );
     bool nickInUse ( const std::string& nick ) const;
-    void exit( void );
     void removeChannel( const std::string& );
+    void exit( int sigNum );
 
     /* Getters */
     const int& getSockFd(void) const;
