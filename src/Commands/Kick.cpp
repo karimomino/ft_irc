@@ -21,7 +21,7 @@ void Kick::initArgs( const std::string& rawCommand ) {
 
     _channel = chan_it->second;
     _kickedNick = args[1];
-    _reason = args[2];
+    _reason = args[2].substr( 1, args[2].length() - 1 );
 }
 
 void Kick::validateArgs( void ) const {
@@ -40,16 +40,27 @@ void Kick::validateArgs( void ) const {
     }
 }
 
+void sendResponse( Channel* chan, AClient* client, AClient* kickedClient, const std::string& reason ) {
+        std::string kickResponse = client->getOrigin() + " KICK " + chan->getName()
+        + " " + kickedClient->getNick() + " :";
+        kickResponse += reason.empty() ? "No reason given\r\n" : reason + "\r\n";
+        kickedClient->addMsg( kickResponse );
+        chan->addMsg( kickedClient->getNick(), kickResponse );
+}
+
 void Kick::execute( AClient* client, const std::string& rawCommand ) {
     _client = client;
     try {
         initArgs( rawCommand );
         validateArgs();
-        std::string kickResponse = _client->getOrigin() + " KICK " + _channel->getName()
-        + " " + _kickedNick + " :";
-        kickResponse += _reason.empty() ? "No Reason\r\n" : _reason + "\r\n";
-        _channel->kickUser( _kickedNick, kickResponse );
-        _channel->addMsg( _kickedNick, kickResponse );
+        AClient* kickedClient = _ircServ._findClientByNick( _kickedNick );
+        _channel->removeUser( kickedClient->getNick() );
+
+        kickedClient->removeChannel( _channel->getName() );
+        sendResponse( _channel, client, kickedClient, _reason );
+
+        if ( !_channel->getUsersCount() )
+            _ircServ.removeChannel( _channel->getName() );
     } catch ( const std::exception& e ) {
         _client->addMsg( e.what() );
     }

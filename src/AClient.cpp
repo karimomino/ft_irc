@@ -56,3 +56,10 @@ void AClient::setPurge( const bool& purge ) { _purge = purge; }
 std::vector<std::string> AClient::getChannels( void ) const { return ( _channels ); }
 
 void AClient::addChannel( const std::string& chanName ) { _channels.push_back( chanName ); }
+
+void AClient::removeChannel( const std::string& chanName ) {
+     std::vector<std::string>::iterator it;
+    it = find( _channels.begin(), _channels.end(), chanName );
+    if ( it != _channels.end() )
+        _channels.erase( it );
+}

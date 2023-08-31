@@ -45,5 +45,6 @@ public:
     void setUser( const std::string& );
     void setPurge( const bool& purge );
     void addChannel( const std::string& );
+    void removeChannel( const std::string& );
 };
 

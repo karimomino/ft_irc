@@ -196,13 +196,11 @@ void Server::_purgeClient(const int& fd) {
     const std::vector<std::string> chanList = _clients[fd]->getChannels();
     delete _clients[fd];
     _clients.erase(fd);
-    for ( std::vector<std::string>::const_iterator names_it = chanList.begin(); names_it != chanList.end(); names_it++ ) {
-        std::map<const std::string, Channel*>::iterator chan_it = _channels.find( *names_it );
+    for ( std::vector<std::string>::const_iterator it = chanList.begin(); it != chanList.end(); it++ ) {
+        std::map<const std::string, Channel*>::iterator chan_it = _channels.find( *it );
         chan_it->second->removeUser( clientNick );
-        if ( !_channels[*names_it]->getUsersCount() ) {
-            delete chan_it->second;
-            _channels.erase( chan_it );
-        }
+        if ( !chan_it->second->getUsersCount() )
+            removeChannel( *it );
     }
 
     for (poll_it = _pollFds.begin(); poll_it != _pollFds.end(); poll_it++) {
@@ -400,6 +398,14 @@ void Server::exit( void ) {
 
     for (cmd_it = _cmds.begin() ; cmd_it != _cmds.end() ; cmd_it++)
         delete _cmds[cmd_it->first];
+}
+
+void Server::removeChannel( const std::string& chanName ) {
+    std::map<const std::string, Channel*>::iterator chan_it;
+    if ( ( chan_it = _channels.find( chanName ) ) != _channels.end() ) {
+        delete chan_it->second;
+        _channels.erase( chan_it );
+    }
 }
 
 /**
