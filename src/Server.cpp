@@ -24,10 +24,10 @@ Server::~Server( void ) {
 
     for (client_it = _clients.begin() ; client_it != _clients.end() ; client_it++)
         delete _clients[client_it->first];
-    
+
     for (chan_it = _channels.begin() ; chan_it != _channels.end() ; chan_it++)
         delete _channels[chan_it->first];
-    
+
     for (cmd_it = _cmds.begin() ; cmd_it != _cmds.end() ; cmd_it++)
         delete _cmds[cmd_it->first];
 }
@@ -201,7 +201,6 @@ void Server::_purgeClient(const int& fd) {
     _clients.erase(fd);
     for ( std::vector<std::string>::const_iterator it = chanList.begin(); it != chanList.end(); it++ ) {
         _channels[*it]->removeUser( clientNick );
-        std::cout << "count: [" << _channels[*it]->getUsersCount() << "]" << std::endl;
         if ( !_channels[*it]->getUsersCount() ) {
             delete _channels[*it];
             _channels.erase( *it );
@@ -311,26 +310,6 @@ static std::pair<std::string const , std::string> extractCommand( std::string ra
 }
 
 /**
- * @brief This function will check the command name to see if its in the allowed commands by the server.
- * 
- * @param cmd > command name
- * @return `true` if command is allowed by server | 
- * @return `false` if command is not allowed by server
- */
-static bool isValidCommand( std::string cmd ) {
-    bool isValid = false;
-    std::string cmdList[] = {"JOIN" , "INVITE" , "KICK" , "MODE" , "PASS", "TOPIC", "USER" , "PRIVMSG" , "NOTICE" , "NICK" , "PING" , "NOTICE" };
-    for (size_t i = 0; i < sizeof(cmdList)/sizeof(cmdList[0]); i++)
-    {
-        if ( !cmdList[i].compare(cmd) ) {
-            isValid = true;
-            break;
-        }
-    }
-    return ( isValid );
-}
-
-/**
  * @brief This function will execute each command recieved from the client in the order it came in
  * if its allowed by the server
  * 
@@ -346,7 +325,8 @@ void execCommand( Server& ircServ , std::string clientMsg , AClient* cli) {
     for (std::vector<std::string>::iterator it = commands.begin(); it != commands.end(); it++) {
         std::pair<std::string , std::string> cmdParts = extractCommand(*it);
 
-        if ( isValidCommand(cmdParts.first) && !cli->getPurge() )
+        std::map<const std::string, ICommand*>::iterator cmd_it = ircServ._cmds.find( cmdParts.first );
+        if ( cmd_it != ircServ._cmds.end() )
             ircServ._cmds[cmdParts.first]->execute( cli , cmdParts.second);
     }
 }
