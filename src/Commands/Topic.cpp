@@ -14,10 +14,11 @@ std::vector<std::string> findTargetTopic(const std::string& rawCommand) {
     if (splitCommand.size() >= 1) {
         targetTopic.push_back(*cmd_it);
         while (++cmd_it != splitCommand.end())
-            topic += *cmd_it + " ";
+            topic += " " + *cmd_it;
+        utils::trim(topic , " ");
         targetTopic.push_back(topic);
     }
-    return splitCommand;
+    return targetTopic;
 }
 
 void Topic::execute( AClient* client, const std::string & rawCommand ) {
@@ -65,6 +66,7 @@ void Topic::_whichTopicExecute(AClient* client, Channel* chan , std::vector<std:
             chan->setTopic(client , "");
         else {
             std::string topic = targetTopic.back();
+            std::cout << "[topic] #####" << topic << std::endl;
             topic.erase(topic.begin());
             chan->setTopic(client , topic);
         }
