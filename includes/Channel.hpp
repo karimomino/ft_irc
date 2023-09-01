@@ -3,6 +3,7 @@
 #include "Server.hpp"
 #include <deque>
 
+class Server;
 class Channel {
     friend std::string names(const Channel& chan);
 private:
@@ -10,6 +11,7 @@ private:
     std::string _topic;
     std::string _key;
     std::string _topicAuthor;
+    Server&     _ircServ;
     time_t      _topicSetTime;
     bool        _isInviteOnly;
     bool        _isTopicOnly;
@@ -22,7 +24,7 @@ private:
     void _sendNames( AClient* client );
 
 public:
-    Channel( const std::string& name, const std::string& topic );
+    Channel( Server& ircServ, const std::string& name, const std::string& topic );
     ~Channel();
 
     /* PUBLIC Methods */

@@ -11,6 +11,7 @@
 #include <sstream>
 #include <cstring>
 #include <vector>
+#include <csignal>
 
 #include "AClient.hpp"
 #include "Client.hpp"
@@ -62,7 +63,7 @@ private:
     void _removeChannel( const std::string& name );
 
     void _handlePreClientReg (void);
-    void _handleClientSend(const int& socket);
+    void _handleClientSend(int socket);
     void _handleClientRecv(const int& socket);
 
     AClient* _findClientByNick( const std::string& nick  ) const;
@@ -75,7 +76,7 @@ public:
     void init( void );
     void run( void );
     bool nickInUse ( const std::string& nick ) const;
-    void exit( void );
+    void exit( int sigNum );
     void removeChannel( const std::string& );
 
     /* Getters */

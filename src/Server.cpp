@@ -108,24 +108,23 @@ void Server::init( void ) {
  * 
  */
 void Server::run( void ) {
-    pollfd* pFdsData;
+
     while (!_serverEnd) {
-        pFdsData = _pollFds.data();
-        poll(pFdsData, _pollFds.size(), -1);
+        poll(_pollFds.data(), _pollFds.size(), -1);
 
         for (size_t i = 0; i < _pollFds.size(); i++) {
-            if (pFdsData[i].revents == 0)
+            if (_pollFds[i].revents == 0)
                 continue;
 
-            int fd = pFdsData[i].fd;
+            int fd = _pollFds[i].fd;
             if ( fd == _socketFd)
                 _handlePreClientReg();
-            else if (pFdsData[i].revents & POLLOUT && fd != _socketFd && _clients[fd]->getQueueSize() )
+            else if (_pollFds[i].revents & POLLOUT && fd != _socketFd && _clients[fd]->getQueueSize() )
                 _handleClientSend( fd );
-            else if (pFdsData[i].revents & POLLIN && fd != _socketFd)
+            else if (_pollFds[i].revents & POLLIN && fd != _socketFd)
                 _handleClientRecv( fd );
 
-            pFdsData[i].revents = 0;
+            _pollFds[i].revents = 0;
         }
     }
 }
@@ -167,7 +166,7 @@ void Server::_handlePreClientReg( void ) {
  * @note     - purge the client from the server
  * 
  */
-void Server::_handleClientSend(const int& socket) {
+void Server::_handleClientSend(int socket) {
     AClient &cli= *_clients[socket];
 
     std::cout << "[ " << GREEN << "ATTEMPTING TO SEND - " << cli.getNick() << " " << RESET << "]" << std::endl;
@@ -200,7 +199,7 @@ void Server::_purgeClient(const int& fd) {
         std::map<const std::string, Channel*>::iterator chan_it = _channels.find( *it );
         chan_it->second->removeUser( clientNick );
         if ( !chan_it->second->getUsersCount() )
-            removeChannel( *it );
+            _removeChannel( *it );
     }
 
     for (poll_it = _pollFds.begin(); poll_it != _pollFds.end(); poll_it++) {
@@ -261,8 +260,8 @@ void Server::_handleClientRecv(const int& socket) {
             memset(buff, 0, 1024);
         } while (rcv > 0);
 
-        // std::cout << "[" << BLUE << "RECEIVED" << RESET << "]" <<std::endl << partialMsg << std::endl;
-        // std::cout <<"[" << BLUE << "END RECEIVE" << RESET << "]\n" << std::endl;
+        std::cout << "[" << BLUE << "RECEIVED" << RESET << "]" <<std::endl << _clients[socket]->partialCmd << std::endl;
+        std::cout <<"[" << BLUE << "END RECEIVE" << RESET << "]\n" << std::endl;
 
         _clients[socket]->partialCmd = findCommands(fullMsg ,_clients[socket]->partialCmd);
         execCommand( *this , fullMsg , _clients[socket]);
@@ -345,7 +344,7 @@ void Server::_addClient( const AClient* client ) {
  * @param topic > topic of the channel to create
  */
 void Server::_addChannel( const std::string& name , const std::string& topic ) {
-	Channel *newChan = new Channel( name , topic );
+	Channel *newChan = new Channel( *this, name , topic );
 	_channels.insert( std::make_pair( name , newChan ) );
 }
 
@@ -385,27 +384,9 @@ void Server::_removeChannel( const std::string& name ) {
  * dynamic memory allocated.
  * 
  */
-void Server::exit( void ) {
-    std::map<int, AClient*>::iterator client_it;
-    std::map<const std::string, Channel*>::iterator chan_it;
-    std::map<const std::string, ICommand*>::iterator cmd_it;
-
-    for (client_it = _clients.begin() ; client_it != _clients.end() ; client_it++)
-        delete _clients[client_it->first];
-
-    for (chan_it = _channels.begin() ; chan_it != _channels.end() ; chan_it++)
-        delete _channels[chan_it->first];
-
-    for (cmd_it = _cmds.begin() ; cmd_it != _cmds.end() ; cmd_it++)
-        delete _cmds[cmd_it->first];
-}
-
-void Server::removeChannel( const std::string& chanName ) {
-    std::map<const std::string, Channel*>::iterator chan_it;
-    if ( ( chan_it = _channels.find( chanName ) ) != _channels.end() ) {
-        delete chan_it->second;
-        _channels.erase( chan_it );
-    }
+void Server::exit( int sigNum ) {
+    if (sigNum == SIGINT)
+        _serverEnd = true;
 }
 
 /**

@@ -1,6 +1,7 @@
 #include "AClient.hpp"
 
 AClient::AClient( int socketFd, struct sockaddr_in* hint ) : _socketFd( socketFd ) , _purge(false), _ip( inet_ntoa( (struct in_addr)hint->sin_addr ) ) {
+    _purge = false;
 }
 
 AClient::AClient( const AClient& original ) {
@@ -9,6 +10,7 @@ AClient::AClient( const AClient& original ) {
     _user = original.getUser();
     _pass = original.getPass();
     _ip = original.getIp();
+    _purge = original.getPurge();
 }
 
 AClient::~AClient() {
@@ -39,7 +41,7 @@ const std::string AClient::getOrigin( void ) const {
 
 const int& AClient::getSocketFd( void ) const { return( _socketFd ); }
 
-const bool& AClient::getPurge( void ) const { return _purge; }
+bool AClient::getPurge( void ) const { return _purge; }
 
 int AClient::getQueueSize( void ) const { return _msgs.size(); }
 
@@ -56,10 +58,10 @@ void AClient::setPurge( const bool& purge ) { _purge = purge; }
 std::vector<std::string> AClient::getChannels( void ) const { return ( _channels ); }
 
 void AClient::addChannel( const std::string& chanName ) { _channels.push_back( chanName ); }
-
+#include <algorithm>
 void AClient::removeChannel( const std::string& chanName ) {
      std::vector<std::string>::iterator it;
-    it = find( _channels.begin(), _channels.end(), chanName );
+    it = std::find( _channels.begin(), _channels.end(), chanName );
     if ( it != _channels.end() )
         _channels.erase( it );
 }
