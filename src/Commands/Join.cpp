@@ -44,7 +44,7 @@ void Join::execute( AClient* client, const std::string & rawCommand ){
         std::map<const std::string, Channel*>::iterator channel = _ircServ._channels.find( keyPair.first );
         bool errorFound = false;
         if ( channel == (_ircServ._channels).end() ) {
-            if ( (keyPair.first.at(0) != '#' && keyPair.first.at(0) != '%') || keyPair.first.find_first_of(" ,") != std::string::npos ) {
+            if ( (keyPair.first.at(0) != '#' && keyPair.first.at(0) != '&') || keyPair.first.find_first_of(" ,") != std::string::npos ) {
                 client->addMsg(ERR_BADCHANMASK(client->getIp() , keyPair.first));
                 errorFound = true;
             }
