@@ -23,8 +23,7 @@ void Nick::updateNick( AClient* client, const std::string& newNick ) {
 
     client->setNick( newNick );
     for ( std::vector<std::string>::iterator it = chanList.begin(); it != chanList.end(); it++ )
-        ;
-        // _ircServ._channels[*it]->updateUserNick(oldNick);
+        _ircServ._channels[*it]->updateUserNick(oldNick);
 }
 
 void Nick::execute( AClient* const client, const std::string & rawCommand ){

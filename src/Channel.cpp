@@ -77,7 +77,7 @@ void Channel::addMsg( const std::string& cli , const std::string& msg ) {
     std::map<std::string, AClient*>::iterator it;
 
     for ( it = _operators.begin(); it != _operators.end(); it++ )
-        if ( cli != it->first )
+        if ( "@" + cli != it->first )
             it->second->addMsg( msg );
     for ( it = _clients.begin(); it != _clients.end(); it++ )
         if (cli != it->second->getNick())
@@ -91,9 +91,9 @@ void Channel::updateUserNick( const std::string& nick ) {
         _clients[it->second->getNick()] = it->second;
         _clients.erase( it );
     }
-    it = _operators.find( nick );
+    it = _operators.find( "@" + nick );
     if ( it != _operators.end() ) {
-        _operators[it->second->getNick()] = it->second;
+        _operators["@" + it->second->getNick()] = it->second;
         _operators.erase( it );
     }
 }
