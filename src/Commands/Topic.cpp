@@ -14,10 +14,11 @@ std::vector<std::string> findTargetTopic(const std::string& rawCommand) {
     if (splitCommand.size() >= 1) {
         targetTopic.push_back(*cmd_it);
         while (++cmd_it != splitCommand.end())
-            topic += *cmd_it + " ";
+            topic += " " + *cmd_it;
+        utils::trim(topic , " ");
         targetTopic.push_back(topic);
     }
-    return splitCommand;
+    return targetTopic;
 }
 
 void Topic::execute( AClient* client, const std::string & rawCommand ) {
