@@ -17,13 +17,23 @@ static bool nickAuthorizedChars(const std::string& nick) {
     return (isAuthorized);
 }
 
+void Nick::updateNick( AClient* client, const std::string& newNick ) {
+    const std::string oldNick = client->getNick();
+    std::vector<std::string> chanList = client->getChannels();
+
+    client->setNick( newNick );
+    for ( std::vector<std::string>::iterator it = chanList.begin(); it != chanList.end(); it++ )
+        ;
+        // _ircServ._channels[*it]->updateUserNick(oldNick);
+}
+
 void Nick::execute( AClient* const client, const std::string & rawCommand ){
     PreClient *target = dynamic_cast<PreClient *>(client);
     if (nickAuthorizedChars(rawCommand)) {
         if (!_ircServ.nickInUse(rawCommand)) {
             if (!target)
                 client->addMsg( client->getOrigin() + " NICK :" + rawCommand + "\r\n" );
-            client->setNick(rawCommand);
+            updateNick( client, rawCommand );
         }
         else
             client->addMsg(ERR_NICKNAMEINUSE( rawCommand ));

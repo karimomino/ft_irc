@@ -5,6 +5,8 @@
 #include "../Server.hpp"
 
 class Nick: public ICommand {
+private:
+    void updateNick( AClient* client, const std::string& newNick );
 public:
     Nick( Server& ircServ );
     ~Nick( void );
