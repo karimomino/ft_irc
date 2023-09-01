@@ -62,7 +62,7 @@ private:
     void _removeChannel( const std::string& name );
 
     void _handlePreClientReg (void);
-    void _handleClientSend(const int& socket);
+    void _handleClientSend(int socket);
     void _handleClientRecv(const int& socket);
 
     AClient* _findClientByNick( const std::string& nick  ) const;
