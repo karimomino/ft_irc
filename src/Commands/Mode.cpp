@@ -140,7 +140,7 @@ pSS Mode::executeMode( vec_pCS modes ) {
 }
 
 void Mode::execute( AClient* client, const std::string & rawCommand ) {
-    if ( rawCommand.find( "#" ) == std::string::npos )
+    if ( rawCommand.find( "#" ) == std::string::npos || rawCommand.find( "&" ) == std::string::npos )
         return ;
     try {
         validateArgs( client, rawCommand );
