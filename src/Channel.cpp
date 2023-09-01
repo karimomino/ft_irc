@@ -84,6 +84,20 @@ void Channel::addMsg( const std::string& cli , const std::string& msg ) {
 	        it->second->addMsg( msg );
 }
 
+void Channel::updateUserNick( const std::string& nick ) {
+    std::map<std::string, AClient*>::iterator it;
+    it = _clients.find( nick );
+    if ( it != _clients.end() ) {
+        _clients[it->second->getNick()] = it->second;
+        _clients.erase( it );
+    }
+    it = _operators.find( "@" + nick );
+    if ( it != _operators.end() ) {
+        _operators["@" + it->second->getNick()] = it->second;
+        _operators.erase( it );
+    }
+}
+
 bool  Channel::isInvited( const std::string& nick ) const {
     std::vector<std::string>::const_iterator begin = _invitations.begin();
     std::vector<std::string>::const_iterator end = _invitations.end();

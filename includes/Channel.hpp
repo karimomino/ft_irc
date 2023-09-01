@@ -36,6 +36,7 @@ public:
     void addInvitation( const std::string& nick );
     void removeInvitation( const std::string& nick );
     void addMsg( const std::string& cli , const std::string& msg );
+    void updateUserNick( const std::string& );
 
     /* Getters */
     bool  isInvited( const std::string& nick ) const;
