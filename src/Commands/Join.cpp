@@ -42,15 +42,23 @@ void Join::execute( AClient* client, const std::string & rawCommand ){
     if ( expectedArgs( tokens.size() )) {
         strPair keyPair = findChanKey( tokens );
         std::map<const std::string, Channel*>::iterator channel = _ircServ._channels.find( keyPair.first );
-
-        if ( channel == (_ircServ._channels).end() )
-            _ircServ._addChannel( keyPair.first , "" );
-
-        Channel *chan = (_ircServ._channels.find(keyPair.first))->second;
-        if ( allowedToJoin(chan, client , keyPair) ) {
-            chan->addUser( client );
+        bool errorFound = false;
+        if ( channel == (_ircServ._channels).end() ) {
+            if ( (keyPair.first.at(0) != '#' && keyPair.first.at(0) != '%') || keyPair.first.find_first_of(" ,") != std::string::npos ) {
+                client->addMsg(ERR_BADCHANMASK(client->getIp() , keyPair.first));
+                errorFound = true;
+            }
+            else
+                _ircServ._addChannel( keyPair.first , "" );
         }
-        client->addChannel( keyPair.first );
+
+        if (!errorFound) {
+            Channel *chan = _ircServ._channels.find( keyPair.first )->second;
+            if ( allowedToJoin(chan, client , keyPair) ) {
+                chan->addUser( client );
+            }
+            client->addChannel( keyPair.first );
+        }
     }
 }
 

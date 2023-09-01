@@ -20,13 +20,17 @@ static std::string extractUser( const std::string& rawCommand) {
 }
 
 void User::execute( AClient* const client, const std::string & rawCommand ){
-    PreClient *target = dynamic_cast<PreClient *>(client);
-    client->setUser(extractUser(rawCommand));
-    if ( target && !client->getUser().empty() && !client->getNick().empty() && !client->getPass().empty() ) {
-        _ircServ._clients.erase(client->getSocketFd());
-        _ircServ._addClient(client);
-        delete client;
-	}
+    if (rawCommand.empty())
+        client->addMsg(ERR_NEEDMOREPARAMS(_ircServ.getIp() , client->getNick() + " USER"));
+    else {
+        PreClient *target = dynamic_cast<PreClient *>(client);
+        client->setUser(extractUser(rawCommand));
+        if ( target && !client->getUser().empty() && !client->getNick().empty() && !client->getPass().empty() ) {
+            _ircServ._clients.erase(client->getSocketFd());
+            _ircServ._addClient(client);
+            delete client;
+        }
+    }
 }
 
 void User::clearCmd( void ){};

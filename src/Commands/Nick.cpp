@@ -38,9 +38,10 @@ void Nick::execute( AClient* const client, const std::string & rawCommand ){
             client->addMsg(ERR_NICKNAMEINUSE( rawCommand ));
     }
     else {
-        client->addMsg(ERR_ERRONEUSNICKNAME(client->getNick() + " " + rawCommand));
         if (target)
-            client->setPurge(true);
+            client->addMsg(ERR_ERRONEUSNICKNAME(client->getIp(), rawCommand + " " + rawCommand));
+        else
+            client->addMsg(ERR_ERRONEUSNICKNAME(client->getIp(), client->getNick() + " " + rawCommand));
     }
     if ( target && !client->getNick().empty() && !client->getUser().empty() && !client->getPass().empty() ) {
         _ircServ._clients.erase(client->getSocketFd());
