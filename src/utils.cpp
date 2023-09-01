@@ -1,25 +1,13 @@
 #include "utils.hpp"
 
-void utils::trim( std::string& str ) {
-    for (std::string::iterator i = str.begin(); i != str.end(); i++)
-    {
-        if ( std::isspace(*i) || !std::isprint(*i) ) {
-            str.erase(i);
-            i = str.begin();
-        }
-        else
-        break;
-    }
-
-    for (std::string::iterator i = str.end(); i != str.begin(); i--)
-    {
-        if ( std::isspace(*i) || !std::isprint(*i) ) {
-            str.erase(i);
-            i = str.end();
-        }
-        else
-        break;
-    }
+void utils::trim( std::string& str, const std::string& delm ) {
+    size_t start = str.find_first_not_of( delm );
+    size_t end = str.find_last_not_of( delm );
+    if ( start == std::string::npos )
+        start = 0;
+    if ( end == std::string::npos )
+        end = str.length();
+    str = str.substr( start, end - start + 1 );
 }
 
 std::vector<std::string> utils::split( std::string str , std::string delm) {

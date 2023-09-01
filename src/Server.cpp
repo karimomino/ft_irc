@@ -385,9 +385,19 @@ void Server::_removeChannel( const std::string& name ) {
  * dynamic memory allocated.
  * 
  */
-void Server::exit( int sigNum ) {
-    if (sigNum == SIGINT)
-        _serverEnd = true;
+void Server::exit( void ) {
+    std::map<int, AClient*>::iterator client_it;
+    std::map<const std::string, Channel*>::iterator chan_it;
+    std::map<const std::string, ICommand*>::iterator cmd_it;
+
+    for (client_it = _clients.begin() ; client_it != _clients.end() ; client_it++)
+        delete _clients[client_it->first];
+
+    for (chan_it = _channels.begin() ; chan_it != _channels.end() ; chan_it++)
+        delete _channels[chan_it->first];
+
+    for (cmd_it = _cmds.begin() ; cmd_it != _cmds.end() ; cmd_it++)
+        delete _cmds[cmd_it->first];
 }
 
 void Server::removeChannel( const std::string& chanName ) {
