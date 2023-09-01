@@ -61,7 +61,7 @@ void Kick::execute( AClient* client, const std::string& rawCommand ) {
         sendResponse( _channel, client, kickedClient, _reason );
 
         if ( !_channel->getUsersCount() )
-            _ircServ.removeChannel( _channel->getName() );
+            _ircServ._removeChannel( _channel->getName() );
     } catch ( const std::exception& e ) {
         _client->addMsg( e.what() );
     }
