@@ -66,7 +66,6 @@ void Topic::_whichTopicExecute(AClient* client, Channel* chan , std::vector<std:
             chan->setTopic(client , "");
         else {
             std::string topic = targetTopic.back();
-            std::cout << "[topic] #####" << topic << std::endl;
             topic.erase(topic.begin());
             chan->setTopic(client , topic);
         }
