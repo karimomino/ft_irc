@@ -14,7 +14,7 @@
 # define ERR_NOSUCHNICK( ip, arg ) ( ":" + ip + " 401 " + (std::string)arg + " :No such nick\r\n")
 # define ERR_NOSUCHCHANNEL( ip, arg ) ( ":" + ip + " 403 " + (std::string)arg + " :No such channel\r\n")
 # define ERR_USERNOTINCHANNEL( ip, arg ) ( ":" + ip + " 441 " + (std::string)arg + " :User not on channel\r\n")
-# define ERR_ERRONEUSNICKNAME( arg ) std::string(":0.0.0.0 432 ") + arg + std::string(" :Erroneous Nickname\r\n")
+# define ERR_ERRONEUSNICKNAME( ip, arg ) (":" + ip + " 432 ") + arg + std::string(" :Erroneous Nickname\r\n")
 # define ERR_NOTONCHANNEL( ip, arg ) ( ":" + ip + " 442 " + (std::string)arg + " :You're not on channel\r\n")
 # define ERR_USERONCHANNEL( ip, arg ) ( ":" + ip + " 443 " + (std::string)arg + " :is already on channel\r\n")
 # define ERR_NICKNAMEINUSE( arg ) std::string(":0.0.0.0 433 nick ") + arg + std::string(" :Nickname is already in use\r\n")
@@ -23,6 +23,7 @@
 # define ERR_PASSWDMISMATCH( arg ) std::string(":0.0.0.0 464 ") + arg + std::string(" :Password incorrect\r\n")
 # define ERR_INVITEONLYCHAN( arg ) std::string(":0.0.0.0 473 ") + arg + std::string(" :Cannot join channel (+i) - invite only\r\n")
 # define ERR_BADCHANNELKEY( arg ) std::string(":0.0.0.0 475 ") + arg + std::string(" :Cannot join channel (+k) - bad key\r\n")
+# define ERR_BADCHANMASK(ip , arg) ( ":" + ip + " 476 " + (std::string)arg + " :Bad channel mask.\r\n")
 # define ERR_CHANOPRIVSNEEDED( ip, arg ) ( ":" + ip + " 482 " + (std::string)arg + " :You're not a channel operator\r\n")
 
 # define ERR_UMODEUNKNOWNFLAG( ip, arg ) ( ":" + ip + " 501 " + (std::string)arg + ":Unknown MODE flag\r\n")
