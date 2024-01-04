@@ -40,23 +40,22 @@
 class Channel;
 
 class Server {
+
 private:
-    bool                            _serverEnd;
-    const int                       _port;
-    const std::string               _pass;
-    int                             _socketFd;
-    std::string                     _ip;
-    size_t                          _connectionCount;
-    std::vector<pollfd>             _pollFds;
-    struct sockaddr_in              _hint;
-    // std::deque<AClient*>            _preClients;
-    std::map<int, AClient*>         _clients;
-    std::map<const std::string, Channel*> _channels;
-    std::map<const std::string, ICommand*> _cmds;
+    bool                                    _serverEnd;
+    const int                               _port;
+    const std::string                       _pass;
+    int                                     _socketFd;
+    std::string                             _ip;
+    size_t                                  _connectionCount;
+    std::vector<pollfd>                     _pollFds;
+    struct sockaddr_in                      _hint;
+    std::map<int, AClient*>                 _clients;
+    std::map<const std::string, Channel*>   _channels;
+    std::map<const std::string, ICommand*>  _cmds;
 
     /* Methods */
     void _initCmds( void );
-    void _removeCmd( const std::string& name );
     void _addClient( const AClient* client );
     void _purgeClient(const int& fd);
     void _addChannel( const std::string& name , const std::string& topic );
