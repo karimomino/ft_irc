@@ -117,11 +117,12 @@ void Server::run( void ) {
                 continue;
 
             int fd = _pollFds[i].fd;
-            if ( fd == _socketFd)
+
+            if ( fd == _socketFd )
                 _handlePreClientReg();
             else if (_pollFds[i].revents & POLLOUT && fd != _socketFd && _clients[fd]->getQueueSize() )
                 _handleClientSend( fd );
-            else if (_pollFds[i].revents & POLLIN && fd != _socketFd)
+            else if ( _pollFds[i].revents & POLLIN && fd != _socketFd )
                 _handleClientRecv( fd );
 
             _pollFds[i].revents = 0;

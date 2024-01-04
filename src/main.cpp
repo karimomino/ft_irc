@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kamin <kamin@student.42abudhabi.ae>        +#+  +:+       +#+        */
+/*   By: myvh <myvh@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/12 18:23:28 by kamin             #+#    #+#             */
-/*   Updated: 2023/09/01 14:12:48 by kamin            ###   ########.fr       */
+/*   Updated: 2024/01/01 15:19:51 by myvh             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,9 @@ bool validParams( int ac, char **av ) {
         valid_params = false;
     }
     ( void )av;
-    // TODO: check valid port range
     return ( valid_params );
 }
+
 Server* serv;
 
 static void sigHandler(int sigNum) {
