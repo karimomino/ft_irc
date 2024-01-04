@@ -321,8 +321,12 @@ void execCommand( Server& ircServ , std::string clientMsg , AClient* cli) {
         std::pair<std::string , std::string> cmdParts = extractCommand(*it);
 
         std::map<const std::string, ICommand*>::iterator cmd_it = ircServ._cmds.find( cmdParts.first );
-        if ( cmd_it != ircServ._cmds.end() )
-            ircServ._cmds[cmdParts.first]->execute( cli , cmdParts.second);
+        if ( cmd_it != ircServ._cmds.end() ) {
+            if (dynamic_cast<Client *> (cli))
+                ircServ._cmds[cmdParts.first]->execute( cli , cmdParts.second);
+            else if (cmdParts.first == "NICK" || cmdParts.first == "USER" || cmdParts.first == "PASS")
+                ircServ._cmds[cmdParts.first]->execute( cli , cmdParts.second);
+        }
     }
 }
 
