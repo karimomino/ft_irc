@@ -20,7 +20,7 @@ The server is written in C++ and uses socket programming to handle client connec
 
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/your_username/ft_irc.git
+   git clone https://github.com/karimomino/ft_irc.git
    cd ft_irc
    ```
 
